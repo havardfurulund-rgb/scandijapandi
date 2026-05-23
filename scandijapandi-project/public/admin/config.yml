@@ -1,0 +1,82 @@
+backend:
+  name: git-gateway
+  branch: main
+
+publish_mode: editorial_workflow
+
+media_folder: "public/images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "designers"
+    label: "Designers / Producers"
+    folder: "content/designers"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: name
+    fields:
+      - label: "Name"
+        name: "name"
+        widget: "string"
+        hint: "Full name of the designer or producer."
+
+      - label: "Biography"
+        name: "biography"
+        widget: "markdown"
+        hint: "A short biography or description of the designer's background and philosophy."
+
+      - label: "Profile Image"
+        name: "profile_image"
+        widget: "image"
+        required: false
+        hint: "Portrait or logo of the designer."
+
+      - label: "Endpoint Key"
+        name: "endpoint_key"
+        widget: "select"
+        options:
+          - { label: "Tokyo Lounge", value: "tokyo-lounge" }
+          - { label: "Norway Home", value: "norwayhome" }
+          - { label: "Tokyo Living", value: "tokyoliving" }
+          - { label: "Sarah Reed", value: "sarah-reed" }
+          - { label: "Oslo Design", value: "oslo-design" }
+          - { label: "Kyoto Craft", value: "kyoto-craft" }
+        hint: "Backend producer endpoint identifier matching the PRODUCER_ENDPOINTS configuration."
+
+  - name: "products"
+    label: "Products"
+    folder: "content/products"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: name
+    fields:
+      - label: "Name"
+        name: "name"
+        widget: "string"
+        hint: "Product display name."
+
+      - label: "Price"
+        name: "price"
+        widget: "number"
+        value_type: "int"
+        min: 0
+        hint: "Price in Japanese Yen (whole number, no currency symbol)."
+
+      - label: "Description"
+        name: "description"
+        widget: "markdown"
+        hint: "Detailed product description."
+
+      - label: "Image"
+        name: "image"
+        widget: "image"
+        hint: "Main product image (recommended 4:5 aspect ratio)."
+
+      - label: "Designer"
+        name: "designer"
+        widget: "relation"
+        collection: "designers"
+        search_fields: ["name"]
+        value_field: "{{slug}}"
+        display_fields: ["name"]
+        hint: "Select the designer or producer for this product."
