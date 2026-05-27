@@ -31,12 +31,7 @@
             body { @apply bg-white text-navy font-sans antialiased; }
             h1, h2, h3 { @apply font-serif font-light; }
         }
-        
-        .hero-bg {
-            background-size: cover;
-            background-position: center;
-        }
-
+        .hero-bg { background-size: cover; background-position: center; }
         .fade-in { animation: fadeIn 1.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -90,7 +85,6 @@
                 </a>
             </div>
         </div>
-        
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/50">
             <span class="text-[9px] uppercase tracking-[0.2em] font-bold">Scroll</span>
             <div class="w-px h-12 bg-white/30"></div>
@@ -110,7 +104,6 @@
                 <h2 data-t="col-title" class="text-4xl md:text-6xl font-light mt-4">The Collection</h2>
                 <div class="w-16 h-px bg-gold/30 mx-auto mt-8"></div>
             </div>
-
             <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24">
                 </div>
         </div>
@@ -127,7 +120,7 @@
                     <h2 data-t="story-title" class="text-4xl md:text-7xl font-light leading-tight">A bridge between <br> two worlds</h2>
                     <div class="space-y-8 text-navy/70 leading-relaxed text-xl font-light italic">
                         <p data-t="story-p1">Scandi Japandi Collection brings together the best of Scandinavian craftsmanship and Japanese aesthetic sensibility.</p>
-                        <p data-t="story-p2">We work directly with small-scale makers who value quality, honesty and timeless design — creating pieces that feel both rooted in tradition and perfectly at home in modern Japanese living spaces.</p>
+                        <p data-t="story-p2">We work directly with small-scale makers who value quality, honesty and timeless design.</p>
                     </div>
                 </div>
             </div>
@@ -167,324 +160,12 @@
     <footer id="contact" class="py-24 bg-white border-t border-softGrey">
         <div class="max-w-7xl mx-auto px-6 text-center">
             <div class="flex flex-col items-center gap-10">
-                <div class="flex items-center gap-4 opacity-70">
-                    <span class="text-xs font-bold tracking-[0.2em] uppercase text-navy">Oslo • Tokyo</span>
-                </div>
-                <p class="text-[10px] uppercase tracking-[0.4em] text-navy/30 font-bold">
-                    &copy; 2026 Scandi Japandi Collection. <span data-t="footer-rights">All Rights Reserved.</span>
-                </p>
-                <div class="flex gap-8 text-[9px] uppercase tracking-[0.1em] opacity-40 font-bold">
-                    <a href="#" class="hover:text-navy transition-colors">Privacy</a>
-                    <a href="#" class="hover:text-navy transition-colors">Terms</a>
-                    <a href="#" class="hover:text-navy transition-colors">Shipping</a>
-                </div>
+                <p class="text-xs font-bold tracking-[0.2em] uppercase text-navy">Oslo • Tokyo</p>
+                <p class="text-[10px] uppercase tracking-[0.4em] text-navy/30 font-bold">&copy; 2026 Scandi Japandi Collection. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
     <script>
         const translations = {
-            'EN': {
-                'nav-collection': 'Collection',
-                'nav-story': 'Our Story',
-                'nav-makers': 'For Makers',
-                'nav-contact': 'Contact',
-                'hero-title': 'Timeless Scandinavian Craftsmanship',
-                'hero-subtitle': 'Curated for Japanese homes through trusted curators',
-                'hero-button': 'Explore the Collection',
-                'welcome-text': 'Welcome to the',
-                'col-tag': 'Curated Selection',
-                'col-title': 'The Collection',
-                'story-tag': 'Our Story',
-                'story-title': 'A bridge between two worlds',
-                'story-p1': 'Scandi Japandi Collection brings together the best of Scandinavian craftsmanship and Japanese aesthetic sensibility.',
-                'story-p2': 'We work directly with small-scale makers who value quality, honesty and timeless design — creating pieces that feel both rooted in tradition and perfectly at home in modern Japanese living spaces.',
-                'makers-tag': 'Partnership',
-                'makers-title': 'Join the Collection',
-                'makers-desc': 'Are you a Scandinavian maker or designer with a focus on simplicity and quality? We invite you to join our curated network.',
-                'form-maker': 'Brand or Maker Name',
-                'form-category': 'Product Category',
-                'form-person': 'Contact Person',
-                'form-email': 'Email',
-                'form-message': 'Tell us about your work',
-                'form-submit': 'Send Application',
-                'footer-rights': 'All Rights Reserved.'
-            },
-            'NO': {
-                'nav-collection': 'Kolleksjon',
-                'nav-story': 'Vår Historie',
-                'nav-makers': 'For Håndverkere',
-                'nav-contact': 'Kontakt',
-                'hero-title': 'Tidløst Skandinaviskt Håndverk',
-                'hero-subtitle': 'Kurert for japanske hjem gjennom utvalgte kuratorer',
-                'hero-button': 'Utforsk Kolleksjonen',
-                'welcome-text': 'Velkommen til utvalget fra',
-                'col-tag': 'Eksklusivt Utvalg',
-                'col-title': 'Kolleksjonen',
-                'story-tag': 'Vår Historie',
-                'story-title': 'En bro mellom to verdener',
-                'story-p1': 'Scandi Japandi Collection forener det beste av skandinavisk håndverk og japansk estetikk.',
-                'story-p2': 'Vi samarbeider direkte med småskala produsenter som verdsetter kvalitet og ærlig design.',
-                'makers-tag': 'Partnerskap',
-                'makers-title': 'Bli med i nettverket',
-                'makers-desc': 'Er du en skandinavisk produsent med fokus på kvalitet? Vi inviterer deg til vårt nettverk.',
-                'form-maker': 'Merkenavn',
-                'form-category': 'Kategori',
-                'form-person': 'Kontaktperson',
-                'form-email': 'E-post',
-                'form-message': 'Fortell oss om ditt arbeid',
-                'form-submit': 'Send Søknad',
-                'footer-rights': 'Alle rettigheter reservert.'
-            },
-            'SV': {
-                'nav-collection': 'Kollektion',
-                'nav-story': 'Vår Historia',
-                'nav-makers': 'För Hantverkare',
-                'nav-contact': 'Kontakt',
-                'hero-title': 'Tidlöst Skandinaviskt Hantverk',
-                'hero-subtitle': 'Kurerat för japanska hem genom betrodda samarbeten',
-                'hero-button': 'Utforska Kollektionen',
-                'welcome-text': 'Välkommen till valen från',
-                'col-tag': 'Kurerat Urval',
-                'col-title': 'Kollektionen',
-                'story-tag': 'Vår Historia',
-                'story-title': 'En bro mellan två världar',
-                'story-p1': 'Scandi Japandi Collection förenar det beste av skandinaviskt hantverk.',
-                'story-p2': 'Vi skapar tidlösa föremål som passar perfekt i moderna japanska hem.',
-                'makers-tag': 'Partnerskap',
-                'makers-title': 'Bli en del av kollektionen',
-                'form-submit': 'Skicka Ansökan',
-                'footer-rights': 'Alla rättigheter förbehållna.'
-            },
-            'DA': {
-                'nav-collection': 'Kollektion',
-                'nav-story': 'Vores Historie',
-                'nav-makers': 'Til Håndværkere',
-                'nav-contact': 'Kontakt',
-                'hero-title': 'Tidløst Skandinaviskt Håndværk',
-                'hero-subtitle': 'Kureret til japanske hjem gennem betroede partnere',
-                'hero-button': 'Udforsk Kollektionen',
-                'welcome-text': 'Velkommen til udvalget fra',
-                'col-tag': 'Eksklusivt Udvalg',
-                'col-title': 'Kollektionen',
-                'story-tag': 'Vores Historie',
-                'story-title': 'En bro mellem to verdener',
-                'form-submit': 'Send Ansøgning',
-                'footer-rights': 'Alle rettigheder forbeholdes.'
-            },
-            'JA': {
-                'nav-collection': 'コレクション',
-                'nav-story': '私たちの物語',
-                'nav-makers': '作家・職人の皆様へ',
-                'nav-contact': 'お問い合わせ',
-                'hero-title': '時代を超える北欧の職人技',
-                'hero-subtitle': '信頼できるキュレーターを通じて、日本の住まいに厳選された美しさを',
-                'hero-button': 'コレクションを見る',
-                'welcome-text': 'ようこそ、',
-                'col-tag': '厳選されたエディット',
-                'col-title': 'コレクション',
-                'story-tag': '私たちの物語',
-                'story-title': '二つの世界を繋ぐ架け橋',
-                'story-p1': 'Scandi Japandi Collectionは、スカンジナビア de 職人技 og 日本 de 美意識を融合させています。',
-                'story-p2': '品質、誠実さ、精度、そして時代を超越したデザインを大切にする小規模な作り手と直接提携しています。',
-                'makers-tag': 'パートナーシップ',
-                'makers-title': 'コレクションに参加する',
-                'form-maker': 'ブランド / 作家名',
-                'form-category': 'カテゴリー',
-                'form-person': '担当者',
-                'form-email': 'メールアドレス',
-                'form-message': '活動内容について',
-                'form-submit': '申請を送信',
-                'footer-rights': '無断複写・転載を禁じます。'
-            }
-        };
-
-        let currentLang = 'EN';
-        let adminHeroData = null;
-        let products = [];
-
-        // Dynamisk henting via Vites import.meta.glob løsning
-        function parseMarkdownContent() {
-            const modules = import.meta.glob('/content/designers/*.md', { eager: true, as: 'raw' });
-            const loadedProducts = [];
-            let idCounter = 1;
-
-            for (const path in modules) {
-                const rawText = modules[path];
-                const matches = rawText.match(/---([\s\S]*?)---/);
-                if (matches && matches[1]) {
-                    const yamlLines = matches[1].split('\n');
-                    const data = {};
-                    yamlLines.forEach(line => {
-                        const splitIdx = line.indexOf(':');
-                        if (splitIdx > -1) {
-                            const key = line.substring(0, splitIdx).trim();
-                            const val = line.substring(splitIdx + 1).trim().replace(/^["']|["']$/g, '');
-                            if (key && val) data[key] = val;
-                        }
-                    });
-
-                    if (data.title || data.name) {
-                        loadedProducts.push({
-                            id: idCounter++,
-                            name: data.title || data.name,
-                            name_JA: data.title_ja || data.name_ja || data.title || data.name,
-                            price: data.price || "Contact for pricing",
-                            ref: data.ref || "tokyoliving",
-                            img: data.image || "/images/hero.jpg"
-                        });
-                    }
-                }
-            }
-
-            if (loadedProducts.length === 0) {
-                return [
-                    { id: 1, name: "Handcrafted Oak Table", name_JA: "手作りのオークテーブル", price: "245,000 ¥", ref: "norwayhome", img: "/images/hero.jpg" },
-                    { id: 2, name: "Lofoten Wood Blanket", name_JA: "ロフォーテン・ウールブランケット", price: "32,000 ¥", ref: "norwayhome", img: "/images/hero.jpg" }
-                ];
-            }
-            return loadedProducts;
-        }
-
-        async function fetchAdminHero() {
-            try {
-                const response = await fetch('/content/home.md');
-                if (!response.ok) return;
-                const text = await response.text();
-                
-                const matches = text.match(/---([\s\S]*?)---/);
-                if (matches && matches[1]) {
-                    const yamlLines = matches[1].split('\n');
-                    const data = {};
-                    yamlLines.forEach(line => {
-                        const parts = line.split(':');
-                        if (parts.length >= 2) {
-                            const key = parts[0].trim();
-                            const val = parts.slice(1).join(':').trim().replace(/^["']|["']$/g, '');
-                            if (key && val) data[key] = val;
-                        }
-                    });
-                    adminHeroData = data;
-                    applyAdminHero();
-                }
-            } catch (e) {
-                console.log("Kunne ikke hente home.md automatisk.");
-            }
-        }
-
-        function applyAdminHero() {
-            if (!adminHeroData) return;
-            
-            const titleEl = document.getElementById('hero-title');
-            const subtitleEl = document.getElementById('hero-subtitle');
-            const sectionEl = document.getElementById('hero-section');
-
-            if (currentLang !== 'JA') {
-                if (adminHeroData.hero_title) titleEl.innerText = adminHeroData.hero_title;
-                if (adminHeroData.hero_subtitle) subtitleEl.innerText = adminHeroData.hero_subtitle;
-            }
-            
-            if (adminHeroData.hero_image) {
-                sectionEl.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.3)), url('${adminHeroData.hero_image}')`;
-            }
-        }
-
-        function setLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                if (translations[lang] && translations[lang][key]) {
-                    el.innerText = translations[lang][key];
-                }
-            });
-            document.querySelectorAll('button[id^="btn-"]').forEach(btn => {
-                btn.style.opacity = btn.id === `btn-${lang}` ? '1' : '0.4';
-                btn.style.color = btn.id === `btn-${lang}` ? '#C5A05B' : 'inherit';
-            });
-            
-            if (adminHeroData) {
-                applyAdminHero();
-            }
-            renderProducts();
-        }
-
-        function renderProducts() {
-            const grid = document.getElementById('product-grid');
-            if (!grid) return;
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const ref = urlParams.get('ref');
-            
-            let filtered = products;
-            if (ref === 'norwayhome') filtered = products.filter(p => p.ref === 'norwayhome');
-            if (ref === 'tokyoliving') filtered = products.filter(p => p.ref === 'tokyoliving');
-
-            grid.innerHTML = filtered.map(p => `
-                <div class="group cursor-pointer">
-                    <div class="aspect-[4/5] overflow-hidden bg-softGrey mb-8 transition-shadow duration-700 hover:shadow-2xl relative">
-                        <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-navy/0 group-hover:bg-navy/5 transition-colors duration-500"></div>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <span class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold">@${p.ref}</span>
-                        <h3 class="text-2xl font-light group-hover:text-gold transition-colors">${currentLang === 'JA' ? p.name_JA : p.name}</h3>
-                        <p class="text-navy/50 font-light text-lg">${p.price}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function checkReferral() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const ref = urlParams.get('ref');
-            if (ref) {
-                const banner = document.getElementById('welcome-banner');
-                const label = document.getElementById('ref-name');
-                const refMap = { 'norwayhome': 'Norway Home', 'tokyoliving': 'Tokyo Living' };
-                
-                banner.classList.remove('hidden');
-                label.innerText = refMap[ref] || (ref.charAt(0).toUpperCase() + ref.slice(1));
-            }
-        }
-
-        window.addEventListener('load', async () => {
-            products = parseMarkdownContent();
-            setLang('EN');
-            checkReferral();
-            renderProducts();
-            await fetchAdminHero();
-        });
-
-        document.querySelector('form[name="makers-application"]').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            try {
-                const response = await fetch('/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(new FormData(form)).toString(),
-                });
-                if (response.ok) {
-                    alert('Your membership application has been received. Our curators will review your work shortly.');
-                    form.reset();
-                } else {
-                    alert('Something went wrong. Please try again.');
-                }
-            } catch (err) {
-                alert('Something went wrong. Please try again.');
-            }
-        });
-    </script>
-    <script>
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", function(user) {
-                if (!user) {
-                    window.netlifyIdentity.on("login", function() {
-                        document.location.href = "/admin/";
-                    });
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+            'EN': { 'nav-collection': 'Collection', 'nav-story': 'Our Story', 'nav-makers': 'For Makers', 'nav-contact': 'Contact', 'hero-title': '
