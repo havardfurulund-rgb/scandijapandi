@@ -80,3 +80,14 @@ collections:
         value_field: "{{slug}}"
         display_fields: ["name"]
         hint: "Select the designer or producer for this product."
+        - name: "pages"
+    label: "Pages"
+    files:
+      - file: "scandijapandi-project/content/home.md"
+        label: "Home Page"
+        name: "home"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Hero Title", name: "hero_title", widget: "string" }
+          - { label: "Hero Subtitle", name: "hero_subtitle", widget: "text" }
+          - { label: "Hero Image", name: "hero_image", widget: "image" }
