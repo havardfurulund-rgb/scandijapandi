@@ -32,8 +32,8 @@
             h1, h2, h3 { @apply font-serif font-light; }
         }
         
+        /* Dynamisk hero-bakgrunn styres via JS nå */
         .hero-bg {
-            background-image: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(255,255,255,0.15)), url('/images/hero.jpg');
             background-size: cover;
             background-position: center;
         }
@@ -44,10 +44,8 @@
 </head>
 <body class="bg-white text-navy overflow-x-hidden">
 
-    <!-- HEADER -->
     <header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-softGrey">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <!-- Logo area -->
             <div class="flex items-center gap-4 cursor-pointer group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <div class="w-10 h-10 flex items-center justify-center text-black">
                     <svg viewBox="0 0 100 120" class="w-full h-full text-current transition-transform duration-500 group-hover:scale-110">
@@ -62,7 +60,6 @@
                 </div>
             </div>
 
-            <!-- Main navigation -->
             <nav class="hidden md:flex items-center gap-10 text-xs font-bold uppercase tracking-[0.2em]">
                 <a href="#collection" data-t="nav-collection" class="hover:text-gold transition-colors">Collection</a>
                 <a href="#story" data-t="nav-story" class="hover:text-gold transition-colors">Our Story</a>
@@ -70,7 +67,6 @@
                 <a href="#contact" data-t="nav-contact" class="hover:text-gold transition-colors">Contact</a>
             </nav>
 
-            <!-- Language selector -->
             <div class="flex gap-4 text-[10px] font-bold uppercase tracking-widest text-navy/40">
                 <button onclick="setLang('EN')" id="btn-EN" class="hover:text-navy transition-colors">EN</button>
                 <button onclick="setLang('NO')" id="btn-NO" class="hover:text-navy transition-colors">NO</button>
@@ -81,37 +77,33 @@
         </div>
     </header>
 
-    <!-- HERO SECTION -->
-    <section class="hero-bg h-screen flex items-center justify-center text-center relative px-6">
-        <div class="relative z-10 max-w-5xl fade-in">
-            <h1 data-t="hero-title" class="text-5xl md:text-7xl lg:text-8xl font-light leading-tight mb-8 tracking-tight">
+    <section id="hero-section" class="hero-bg h-screen flex items-center justify-center text-center relative px-6" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.3)), url('/images/hero.jpg');">
+        <div class="relative z-10 max-w-5xl fade-in text-white">
+            <h1 id="hero-title" data-t="hero-title" class="text-5xl md:text-7xl lg:text-8xl font-light leading-tight mb-8 tracking-tight drop-shadow-sm">
                 Timeless Scandinavian<br>Craftsmanship
             </h1>
-            <p data-t="hero-subtitle" class="text-lg md:text-2xl font-light opacity-80 mb-12 max-w-2xl mx-auto tracking-wide">
+            <p id="hero-subtitle" data-t="hero-subtitle" class="text-lg md:text-2xl font-light opacity-90 mb-12 max-w-2xl mx-auto tracking-wide drop-shadow-sm">
                 Curated for Japanese homes through trusted curators
             </p>
             <div class="flex justify-center">
-                <a href="#collection" data-t="hero-button" class="inline-block px-12 py-5 border border-navy text-xs font-bold uppercase tracking-[0.4em] hover:bg-navy hover:text-white transition-all duration-700">
+                <a href="#collection" data-t="hero-button" class="inline-block px-12 py-5 border border-white text-xs font-bold uppercase tracking-[0.4em] hover:bg-white hover:text-navy transition-all duration-700">
                     Explore the Collection
                 </a>
             </div>
         </div>
         
-        <!-- Scroll indicator -->
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-navy/30">
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 text-white/50">
             <span class="text-[9px] uppercase tracking-[0.2em] font-bold">Scroll</span>
-            <div class="w-px h-12 bg-navy/20"></div>
+            <div class="w-px h-12 bg-white/30"></div>
         </div>
     </section>
 
-    <!-- DYNAMIC WELCOME BANNER -->
     <div id="welcome-banner" class="hidden bg-softGrey py-8 text-center border-b border-navy/5">
         <p class="text-xs uppercase tracking-[0.5em] font-bold text-navy/50 italic">
             <span data-t="welcome-text">Welcome to the</span> <span id="ref-name" class="text-navy"></span> Selection
         </p>
     </div>
 
-    <!-- MAIN COLLECTION -->
     <section id="collection" class="py-32 bg-white">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-24">
@@ -120,14 +112,11 @@
                 <div class="w-16 h-px bg-gold/30 mx-auto mt-8"></div>
             </div>
 
-            <!-- Product grid -->
             <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-24">
-                <!-- Data injected by JavaScript -->
-            </div>
+                </div>
         </div>
     </section>
 
-    <!-- BRAND STORY -->
     <section id="story" class="py-32 bg-softGrey">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid lg:grid-cols-2 gap-24 items-center">
@@ -146,7 +135,6 @@
         </div>
     </section>
 
-    <!-- PARTNERSHIP FORM -->
     <section id="makers" class="py-32 bg-white">
         <div class="max-w-4xl mx-auto px-6 text-center">
             <span data-t="makers-tag" class="text-gold text-xs uppercase tracking-[0.5em] font-bold">Partnership</span>
@@ -177,7 +165,6 @@
         </div>
     </section>
 
-    <!-- MINIMAL FOOTER -->
     <footer id="contact" class="py-24 bg-white border-t border-softGrey">
         <div class="max-w-7xl mx-auto px-6 text-center">
             <div class="flex flex-col items-center gap-10">
@@ -196,7 +183,6 @@
         </div>
     </footer>
 
-    <!-- INTERACTION SCRIPTS -->
     <script>
         const translations = {
             'EN': {
@@ -220,210 +206,4 @@
                 'form-maker': 'Brand or Maker Name',
                 'form-category': 'Product Category',
                 'form-person': 'Contact Person',
-                'form-email': 'Email',
-                'form-message': 'Tell us about your work',
-                'form-submit': 'Send Application',
-                'footer-rights': 'All Rights Reserved.'
-            },
-            'NO': {
-                'nav-collection': 'Kolleksjon',
-                'nav-story': 'Vår Historie',
-                'nav-makers': 'For Håndverkere',
-                'nav-contact': 'Kontakt',
-                'hero-title': 'Tidløst Skandinavisk Håndverk',
-                'hero-subtitle': 'Kurert for japanske hjem gjennom utvalgte kuratorer',
-                'hero-button': 'Utforsk Kolleksjonen',
-                'welcome-text': 'Velkommen til utvalget fra',
-                'col-tag': 'Eksklusivt Utvalg',
-                'col-title': 'Kolleksjonen',
-                'story-tag': 'Vår Historie',
-                'story-title': 'En bro mellom to verdener',
-                'story-p1': 'Scandi Japandi Collection forener det beste av skandinavisk håndverk og japansk estetikk.',
-                'story-p2': 'Vi samarbeider direkte med småskala produsenter som verdsetter kvalitet og ærlig design.',
-                'makers-tag': 'Partnerskap',
-                'makers-title': 'Bli med i nettverket',
-                'makers-desc': 'Er du en skandinavisk produsent med fokus på kvalitet? Vi inviterer deg til vårt nettverk.',
-                'form-maker': 'Merkenavn',
-                'form-category': 'Kategori',
-                'form-person': 'Kontaktperson',
-                'form-email': 'E-post',
-                'form-message': 'Fortell oss om ditt arbeid',
-                'form-submit': 'Send Søknad',
-                'footer-rights': 'Alle rettigheter reservert.'
-            },
-            'SV': {
-                'nav-collection': 'Kollektion',
-                'nav-story': 'Vår Historia',
-                'nav-makers': 'För Hantverkare',
-                'nav-contact': 'Kontakt',
-                'hero-title': 'Tidlöst Skandinaviskt Hantverk',
-                'hero-subtitle': 'Kurerat för japanska hem genom betrodda samarbeten',
-                'hero-button': 'Utforska Kollektionen',
-                'welcome-text': 'Välkommen till valen från',
-                'col-tag': 'Kurerat Urval',
-                'col-title': 'Kollektionen',
-                'story-tag': 'Vår Historia',
-                'story-title': 'En bro mellan två världar',
-                'story-p1': 'Scandi Japandi Collection förenar det bästa av skandinaviskt hantverk.',
-                'story-p2': 'Vi skapar tidlösa föremål som passar perfekt i moderna japanska hem.',
-                'makers-tag': 'Partnerskap',
-                'makers-title': 'Bli en del av kollektionen',
-                'form-submit': 'Skicka Ansökan',
-                'footer-rights': 'Alla rättigheter förbehållna.'
-            },
-            'DA': {
-                'nav-collection': 'Kollektion',
-                'nav-story': 'Vores Historie',
-                'nav-makers': 'Til Håndværkere',
-                'nav-contact': 'Kontakt',
-                'hero-title': 'Tidløst Skandinaviskt Håndværk',
-                'hero-subtitle': 'Kureret til japanske hjem gennem betroede partnere',
-                'hero-button': 'Udforsk Kollektionen',
-                'welcome-text': 'Velkommen til udvalget fra',
-                'col-tag': 'Eksklusivt Udvalg',
-                'col-title': 'Kollektionen',
-                'story-tag': 'Vores Historie',
-                'story-title': 'En bro mellem to verdener',
-                'form-submit': 'Send Ansøgning',
-                'footer-rights': 'Alle rettigheder forbeholdes.'
-            },
-            'JA': {
-                'nav-collection': 'コレクション',
-                'nav-story': '私たちの物語',
-                'nav-makers': '作家・職人の皆様へ',
-                'nav-contact': 'お問い合わせ',
-                'hero-title': '時代を超える北欧の職人技',
-                'hero-subtitle': '信頼できるキュレーターを通じて、日本の住まいに厳選された美しさを',
-                'hero-button': 'コレクションを見る',
-                'welcome-text': 'ようこそ、',
-                'col-tag': '厳選されたエディット',
-                'col-title': 'コレクション',
-                'story-tag': '私たちの物語',
-                'story-title': '二つの世界を繋ぐ架け橋',
-                'story-p1': 'Scandi Japandi Collectionは、スカンジナビアの職人技と日本の美意識を融合させています。',
-                'story-p2': '品質、誠実さ、そして時代を超越したデザインを大切にする小規模な作り手と直接提携しています。',
-                'makers-tag': 'パートナーシップ',
-                'makers-title': 'コレクションに参加する',
-                'form-maker': 'ブランド / 作家名',
-                'form-category': 'カテゴリー',
-                'form-person': '担当者',
-                'form-email': 'メールアドレス',
-                'form-message': '活動内容について',
-                'form-submit': '申請を送信',
-                'footer-rights': '無断複写・転載を禁じます。'
-            }
-        };
-
-        let currentLang = 'EN';
-
-        /**
-         * Updates the page language content
-         */
-        function setLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const key = el.getAttribute('data-t');
-                if (translations[lang] && translations[lang][key]) {
-                    el.innerText = translations[lang][key];
-                }
-            });
-            document.querySelectorAll('button[id^="btn-"]').forEach(btn => {
-                btn.style.opacity = btn.id === `btn-${lang}` ? '1' : '0.4';
-                btn.style.color = btn.id === `btn-${lang}` ? '#C5A05B' : 'inherit';
-            });
-            renderProducts();
-        }
-
-        const products = [
-            { id: 1, name: "Handcrafted Oak Table", name_JA: "手作りのオークテーブル", price: "245,000 ¥", ref: "norwayhome", img: "/images/products/oak-table.jpg" },
-            { id: 2, name: "Lofoten Wood Blanket", name_JA: "ロフォーテン・ウールブランケット", price: "32,000 ¥", ref: "norwayhome", img: "/images/products/wool-blanket.jpg" },
-            { id: 3, name: "Minimalist Ceramic Vase", name_JA: "ミニマリスト・セラミック花瓶", price: "18,500 ¥", ref: "tokyoliving", img: "/images/products/ceramic-vase.jpg" },
-            { id: 4, name: "Oslo Study Chair", name_JA: "オスロ・スタディチェア", price: "88,000 ¥", ref: "norwayhome", img: "/images/products/study-chair.jpg" },
-            { id: 5, name: "Nordic Wood Tray", name_JA: "北欧のウッドトレイ", price: "12,000 ¥", ref: "tokyoliving", img: "/images/products/wood-tray.jpg" },
-            { id: 6, name: "Zen Night Lamp", name_JA: "禅ナイトランプ", price: "45,000 ¥", ref: "tokyoliving", img: "/images/products/night-lamp.jpg" }
-        ];
-
-        /**
-         * Renders the product grid with optional URL filtering
-         */
-        function renderProducts() {
-            const grid = document.getElementById('product-grid');
-            const urlParams = new URLSearchParams(window.location.search);
-            const ref = urlParams.get('ref');
-            
-            let filtered = products;
-            if (ref === 'norwayhome') filtered = products.filter(p => p.ref === 'norwayhome');
-            if (ref === 'tokyoliving') filtered = products.filter(p => p.ref === 'tokyoliving');
-
-            grid.innerHTML = filtered.map(p => `
-                <div class="group cursor-pointer">
-                    <div class="aspect-[4/5] overflow-hidden bg-softGrey mb-8 transition-shadow duration-700 hover:shadow-2xl relative">
-                        <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                        <div class="absolute inset-0 bg-navy/0 group-hover:bg-navy/5 transition-colors duration-500"></div>
-                    </div>
-                    <div class="flex flex-col gap-2">
-                        <span class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold">@${p.ref}</span>
-                        <h3 class="text-2xl font-light group-hover:text-gold transition-colors">${currentLang === 'JA' ? p.name_JA : p.name}</h3>
-                        <p class="text-navy/50 font-light text-lg">${p.price}</p>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        /**
-         * Displays personal welcome banner based on referral
-         */
-        function checkReferral() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const ref = urlParams.get('ref');
-            if (ref) {
-                const banner = document.getElementById('welcome-banner');
-                const label = document.getElementById('ref-name');
-                const refMap = { 'norwayhome': 'Norway Home', 'tokyoliving': 'Tokyo Living' };
-                
-                banner.classList.remove('hidden');
-                label.innerText = refMap[ref] || (ref.charAt(0).toUpperCase() + ref.slice(1));
-            }
-        }
-
-        // Initialize
-        window.addEventListener('load', () => {
-            setLang('EN');
-            checkReferral();
-            renderProducts();
-        });
-
-        // Netlify Forms AJAX submission
-        document.querySelector('form[name="makers-application"]').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            try {
-                const response = await fetch('/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: new URLSearchParams(new FormData(form)).toString(),
-                });
-                if (response.ok) {
-                    alert('Your membership application has been received. Our curators will review your work shortly.');
-                    form.reset();
-                } else {
-                    alert('Something went wrong. Please try again.');
-                }
-            } catch (err) {
-                alert('Something went wrong. Please try again.');
-            }
-        });
-    </script>
-    <script>
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", function(user) {
-                if (!user) {
-                    window.netlifyIdentity.on("login", function() {
-                        document.location.href = "/admin/";
-                    });
-                }
-            });
-        }
-    </script>
-</body>
-</html>
+                'form-email': 'Email
