@@ -285,7 +285,7 @@
                 'col-title': 'コレクション',
                 'story-tag': '私たちの物語',
                 'story-title': '二つの世界を繋ぐ架け橋',
-                'story-p1': 'Scandi Japandi Collectionは、スカンジナビアの職人技 og 日本 de 美意識を融合させています。',
+                'story-p1': 'Scandi Japandi Collectionは、スカンジナビア de 職人技 og 日本 de 美意識を融合させています。',
                 'story-p2': '品質、誠実さ、精度、そして時代を超越したデザインを大切にする小規模な作り手と直接提携しています。',
                 'makers-tag': 'パートナーシップ',
                 'makers-title': 'コレクションに参加する',
@@ -303,8 +303,188 @@
         let adminHeroData = null;
         let products = [];
 
-        // Hent alle markdown filer fra content/designers katalogen dynamisk via Vite
+        // Dynamisk henting via Vites import.meta.glob løsning
         function parseMarkdownContent() {
             const modules = import.meta.glob('/content/designers/*.md', { eager: true, as: 'raw' });
             const loadedProducts = [];
             let idCounter = 1;
+
+            for (const path in modules) {
+                const rawText = modules[path];
+                const matches = rawText.match(/---([\s\S]*?)---/);
+                if (matches && matches[1]) {
+                    const yamlLines = matches[1].split('\n');
+                    const data = {};
+                    yamlLines.forEach(line => {
+                        const splitIdx = line.indexOf(':');
+                        if (splitIdx > -1) {
+                            const key = line.substring(0, splitIdx).trim();
+                            const val = line.substring(splitIdx + 1).trim().replace(/^["']|["']$/g, '');
+                            if (key && val) data[key] = val;
+                        }
+                    });
+
+                    if (data.title || data.name) {
+                        loadedProducts.push({
+                            id: idCounter++,
+                            name: data.title || data.name,
+                            name_JA: data.title_ja || data.name_ja || data.title || data.name,
+                            price: data.price || "Contact for pricing",
+                            ref: data.ref || "tokyoliving",
+                            img: data.image || "/images/hero.jpg"
+                        });
+                    }
+                }
+            }
+
+            if (loadedProducts.length === 0) {
+                return [
+                    { id: 1, name: "Handcrafted Oak Table", name_JA: "手作りのオークテーブル", price: "245,000 ¥", ref: "norwayhome", img: "/images/hero.jpg" },
+                    { id: 2, name: "Lofoten Wood Blanket", name_JA: "ロフォーテン・ウールブランケット", price: "32,000 ¥", ref: "norwayhome", img: "/images/hero.jpg" }
+                ];
+            }
+            return loadedProducts;
+        }
+
+        async function fetchAdminHero() {
+            try {
+                const response = await fetch('/content/home.md');
+                if (!response.ok) return;
+                const text = await response.text();
+                
+                const matches = text.match(/---([\s\S]*?)---/);
+                if (matches && matches[1]) {
+                    const yamlLines = matches[1].split('\n');
+                    const data = {};
+                    yamlLines.forEach(line => {
+                        const parts = line.split(':');
+                        if (parts.length >= 2) {
+                            const key = parts[0].trim();
+                            const val = parts.slice(1).join(':').trim().replace(/^["']|["']$/g, '');
+                            if (key && val) data[key] = val;
+                        }
+                    });
+                    adminHeroData = data;
+                    applyAdminHero();
+                }
+            } catch (e) {
+                console.log("Kunne ikke hente home.md automatisk.");
+            }
+        }
+
+        function applyAdminHero() {
+            if (!adminHeroData) return;
+            
+            const titleEl = document.getElementById('hero-title');
+            const subtitleEl = document.getElementById('hero-subtitle');
+            const sectionEl = document.getElementById('hero-section');
+
+            if (currentLang !== 'JA') {
+                if (adminHeroData.hero_title) titleEl.innerText = adminHeroData.hero_title;
+                if (adminHeroData.hero_subtitle) subtitleEl.innerText = adminHeroData.hero_subtitle;
+            }
+            
+            if (adminHeroData.hero_image) {
+                sectionEl.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.3)), url('${adminHeroData.hero_image}')`;
+            }
+        }
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-t]').forEach(el => {
+                const key = el.getAttribute('data-t');
+                if (translations[lang] && translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            document.querySelectorAll('button[id^="btn-"]').forEach(btn => {
+                btn.style.opacity = btn.id === `btn-${lang}` ? '1' : '0.4';
+                btn.style.color = btn.id === `btn-${lang}` ? '#C5A05B' : 'inherit';
+            });
+            
+            if (adminHeroData) {
+                applyAdminHero();
+            }
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            if (!grid) return;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            
+            let filtered = products;
+            if (ref === 'norwayhome') filtered = products.filter(p => p.ref === 'norwayhome');
+            if (ref === 'tokyoliving') filtered = products.filter(p => p.ref === 'tokyoliving');
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="group cursor-pointer">
+                    <div class="aspect-[4/5] overflow-hidden bg-softGrey mb-8 transition-shadow duration-700 hover:shadow-2xl relative">
+                        <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-navy/0 group-hover:bg-navy/5 transition-colors duration-500"></div>
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <span class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold">@${p.ref}</span>
+                        <h3 class="text-2xl font-light group-hover:text-gold transition-colors">${currentLang === 'JA' ? p.name_JA : p.name}</h3>
+                        <p class="text-navy/50 font-light text-lg">${p.price}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function checkReferral() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            if (ref) {
+                const banner = document.getElementById('welcome-banner');
+                const label = document.getElementById('ref-name');
+                const refMap = { 'norwayhome': 'Norway Home', 'tokyoliving': 'Tokyo Living' };
+                
+                banner.classList.remove('hidden');
+                label.innerText = refMap[ref] || (ref.charAt(0).toUpperCase() + ref.slice(1));
+            }
+        }
+
+        window.addEventListener('load', async () => {
+            products = parseMarkdownContent();
+            setLang('EN');
+            checkReferral();
+            renderProducts();
+            await fetchAdminHero();
+        });
+
+        document.querySelector('form[name="makers-application"]').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(new FormData(form)).toString(),
+                });
+                if (response.ok) {
+                    alert('Your membership application has been received. Our curators will review your work shortly.');
+                    form.reset();
+                } else {
+                    alert('Something went wrong. Please try again.');
+                }
+            } catch (err) {
+                alert('Something went wrong. Please try again.');
+            }
+        });
+    </script>
+    <script>
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", function(user) {
+                if (!user) {
+                    window.netlifyIdentity.on("login", function() {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
