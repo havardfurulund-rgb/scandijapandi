@@ -6,7 +6,7 @@
     <title>Scandi Japandi Collection</title>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght=300;400;500;600&family=Inter:wght=300;400;500&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
@@ -55,11 +55,11 @@
             </nav>
 
             <div class="flex gap-4 text-[10px] font-bold uppercase tracking-widest text-navy/40">
-                <button onclick="setLang('EN')" id="btn-EN" class="hover:text-navy transition-colors">EN</button>
-                <button onclick="setLang('NO')" id="btn-NO" class="hover:text-navy transition-colors">NO</button>
-                <button onclick="setLang('SV')" id="btn-SV" class="hover:text-navy transition-colors">SV</button>
-                <button onclick="setLang('DA')" id="btn-DA" class="hover:text-navy transition-colors">DA</button>
-                <button onclick="setLang('JA')" id="btn-JA" class="hover:text-navy transition-colors">JA</button>
+                <button onclick="setLang('EN')" class="hover:text-navy transition-colors">EN</button>
+                <button onclick="setLang('NO')" class="hover:text-navy transition-colors">NO</button>
+                <button onclick="setLang('SV')" class="hover:text-navy transition-colors">SV</button>
+                <button onclick="setLang('DA')" class="hover:text-navy transition-colors">DA</button>
+                <button onclick="setLang('JA')" class="hover:text-navy transition-colors">JA</button>
             </div>
         </div>
     </header>
@@ -143,86 +143,4 @@
         const translations = {
             'EN': { 'nav-collection': 'Collection', 'nav-story': 'Our Story', 'nav-makers': 'For Makers', 'nav-contact': 'Contact', 'hero-title': 'Timeless Scandinavian Craftsmanship', 'hero-subtitle': 'Curated for Japanese homes', 'hero-button': 'Explore', 'welcome-text': 'Welcome to', 'col-tag': 'Curated', 'col-title': 'The Collection', 'story-tag': 'Story', 'form-submit': 'Send Application' },
             'NO': { 'nav-collection': 'Kolleksjon', 'nav-story': 'Vår Historie', 'nav-makers': 'For Håndverkere', 'nav-contact': 'Kontakt', 'hero-title': 'Tidløst Skandinavisk Håndverk', 'hero-subtitle': 'Kurert for japanske hjem', 'hero-button': 'Utforsk', 'welcome-text': 'Velkommen til', 'col-tag': 'Utvalg', 'col-title': 'Kolleksjonen', 'story-tag': 'Historie', 'form-submit': 'Send Søknad' },
-            'JA': { 'nav-collection': 'コレクション', 'nav-story': '私たちの物語', 'nav-makers': '作家・職人へ', 'nav-contact': 'お問い合わせ', 'hero-title': '時代を超える北欧の職人技', 'hero-subtitle': '日本の住まいに厳選された美しさを', 'hero-button': '見る', 'welcome-text': 'ようこそ', 'col-tag': '厳選', 'col-title': 'コレクション', 'story-tag': '物語', 'form-submit': '申請を送信' }
-        };
-
-        let currentLang = 'EN';
-        let products = [];
-
-        async function loadPlatformContent() {
-            try {
-                const repoUrl = 'https://api.github.com/repos/havardfurulund-rgb/scandijapandi/contents/content/designers';
-                const res = await fetch(repoUrl);
-                if (!res.ok) throw new Error('API Fallback');
-                const files = await res.json();
-                const fetched = [];
-                let c = 1;
-
-                for (let f of files) {
-                    if (f.name.endsWith('.md')) {
-                        const r = await fetch(f.download_url);
-                        const txt = await r.text();
-                        const m = txt.match(/---([\s\S]*?)---/);
-                        if (m) {
-                            const d = {};
-                            m[1].split('\n').forEach(l => {
-                                const i = l.indexOf(':');
-                                if (i > -1) { k = l.substring(0, i).trim(); v = l.substring(i + 1).trim().replace(/^["']|["']$/g, ''); if (k && v) d[k] = v; }
-                            });
-                            fetched.push({
-                                id: c++,
-                                name: d.title || d.name || f.name.replace('.md', ''),
-                                name_JA: d.title_ja || d.name_ja || d.title || d.name,
-                                price: d.price || "Contact for pricing",
-                                ref: d.ref || "tokyoliving",
-                                img: d.image || "/images/hero.jpg"
-                            });
-                        }
-                    }
-                }
-                return fetched.length > 0 ? fetched : getFallbackData();
-            } catch (e) {
-                return getFallbackData();
-            }
-        }
-
-        function getFallbackData() {
-            return [
-                { id: 1, name: "Flow Linen Collection", name_JA: "フローリネン・コレクション", price: "185,000 ¥", ref: "tokyoliving", img: "/images/hero.jpg" },
-                { id: 2, name: "Handcrafted Oak Table", name_JA: "手作りのオークテーブル", price: "245,000 ¥", ref: "norwayhome", img: "/images/hero.jpg" }
-            ];
-        }
-
-        function setLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('[data-t]').forEach(el => {
-                const k = el.getAttribute('data-t');
-                if (translations[lang] && translations[lang][k]) el.innerText = translations[lang][k];
-            });
-            renderProducts();
-        }
-
-        async function handleCheckout(id, name, price) {
-            try {
-                const res = await fetch('/.netlify/functions/create-checkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, name, price })
-                });
-                const data = await res.json();
-                if (data.url) window.location.href = data.url;
-                else alert('Simulert Checkout: Stripe gateway OK.');
-            } catch (e) {
-                alert(`Testmodus aktiv: Valgt ${name} (${price}).`);
-            }
-        }
-
-        function renderProducts() {
-            const grid = document.getElementById('product-grid');
-            if (!grid) return;
-            const ref = new URLSearchParams(window.location.search).get('ref');
-            let filtered = ref ? products.filter(p => p.ref === ref) : products;
-
-            grid.innerHTML = filtered.map(p => `
-                <div class="group cursor-pointer" onclick="handleCheckout(${p.id}, '${p.name}', '${p.price}')">
-                    <div class="aspect-[4/5]
+            'JA': { 'nav-collection': 'コレクション', 'nav-story': '私たちの物語', 'nav-makers': '作家・職人へ', 'nav-contact': 'お問い合わせ', 'hero-title': '時代
