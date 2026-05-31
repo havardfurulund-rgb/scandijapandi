@@ -1,0 +1,22 @@
+backend:
+  name: git-gateway
+  branch: main
+
+local_backend: true
+
+media_folder: "scandijapandi-project/images"
+public_folder: "/images"
+
+collections:
+  - name: "designers"
+    label: "Produkter"
+    folder: "scandijapandi-project/content/designers"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Tittel (Engelsk)", name: "title", widget: "string" }
+      - { label: "Tittel (Japansk)", name: "title_ja", widget: "string", required: false }
+      - { label: "Pris (f.eks. 145,000 ¥)", name: "price", widget: "string" }
+      - { label: "Referanse-tag (f.eks. tokyoliving)", name: "ref", widget: "string" }
+      - { label: "Produktbilde", name: "image", widget: "image" }
+      - { label: "Beskrivelse", name: "body", widget: "markdown" }
