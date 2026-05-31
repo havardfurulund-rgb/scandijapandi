@@ -26,6 +26,7 @@
 </head>
 <body class="bg-white text-navy overflow-x-hidden">
 
+    <!-- HEADER -->
     <header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-softGrey">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <div class="flex items-center gap-4 cursor-pointer group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
@@ -55,6 +56,7 @@
         </div>
     </header>
 
+    <!-- HERO -->
     <section id="hero-section" class="hero-bg h-screen flex items-center justify-center text-center relative px-6" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.3)), url('/images/hero.jpg');">
         <div class="relative z-10 max-w-5xl fade-in text-white">
             <h1 id="hero-title" data-t="hero-title" class="text-5xl md:text-7xl lg:text-8xl font-light leading-tight mb-8 tracking-tight">Timeless Scandinavian Craftsmanship</h1>
@@ -65,10 +67,12 @@
         </div>
     </section>
 
+    <!-- WELCOME BANNER -->
     <div id="welcome-banner" class="hidden bg-softGrey py-8 text-center border-b border-navy/5">
         <p class="text-xs uppercase tracking-widest font-bold text-navy/50 italic"><span data-t="welcome-text">Welcome to</span> <span id="ref-name" class="text-navy"></span></p>
     </div>
 
+    <!-- COLLECTION -->
     <section id="collection" class="py-32 bg-white">
         <div class="max-w-7xl mx-auto px-6">
             <div class="text-center mb-24">
@@ -80,6 +84,7 @@
         </div>
     </section>
 
+    <!-- STORY -->
     <section id="story" class="py-32 bg-softGrey">
         <div class="max-w-7xl mx-auto px-6">
             <div class="grid lg:grid-cols-2 gap-24 items-center">
@@ -93,6 +98,7 @@
         </div>
     </section>
 
+    <!-- FORM -->
     <section id="makers" class="py-32 bg-white">
         <div class="max-w-4xl mx-auto px-6 text-center">
             <span data-t="makers-tag" class="text-gold text-xs uppercase tracking-[0.5em] font-bold">Partnership</span>
@@ -107,18 +113,27 @@
         </div>
     </section>
 
+    <!-- FOOTER -->
     <footer id="contact" class="py-24 bg-white border-t border-softGrey text-center">
         <p class="text-xs font-bold tracking-[0.2em] uppercase text-navy">Oslo • Tokyo</p>
         <p class="text-[10px] uppercase tracking-[0.4em] text-navy/30 font-bold mt-4">&copy; 2026 Scandi Japandi Collection. Secure Logistics provided by SKM Secure Nordic.</p>
     </footer>
 
+    <!-- LOGIC -->
     <script>
         const tr = {
             'EN': { 'nav-collection': 'Collection', 'nav-story': 'Our Story', 'nav-makers': 'For Makers', 'nav-contact': 'Contact', 'hero-title': 'Timeless Scandinavian Craftsmanship', 'hero-subtitle': 'Curated for Japanese homes', 'hero-button': 'Explore', 'welcome-text': 'Welcome to', 'col-tag': 'Curated', 'col-title': 'The Collection', 'story-tag': 'Story', 'story-p1': 'Scandi Japandi Collection brings together the raw, unfiltered beauty of Nordic nature and the refined, intentional minimalism of Japanese design. Born from a shared reverence for natural materials, timeless craftsmanship, and the quiet spaces in between, our collection bridges the miles between Oslo and Tokyo.', 'form-submit': 'Send Application' },
             'NO': { 'nav-collection': 'Kolleksjon', 'nav-story': 'Vår Historie', 'nav-makers': 'For Håndverkere', 'nav-contact': 'Kontakt', 'hero-title': 'Tidløst Skandinavisk Håndverk', 'hero-subtitle': 'Kurert for japanske hjem', 'hero-button': 'Utforsk', 'welcome-text': 'Velkommen til', 'col-tag': 'Utvalg', 'col-title': 'Kolleksjonen', 'story-tag': 'Historie', 'story-p1': 'Scandi Japandi Collection forener den rå, ufiltrerte skjønnheten i nordisk natur med den raffinerte, intensjonelle minimalismen i japansk design. Født ut av en felles ærefrykt for naturlige materialer og tidløst håndverk, bygger vår kolleksjon bro mellom Oslo og Tokyo.', 'form-submit': 'Send Søknad' },
-            'JA': { 'nav-collection': 'コレクション', 'nav-story': '私たちの物語', 'nav-makers': '作家・職人へ', 'nav-contact': 'お問い合わせ', 'hero-title': '時代を超える北欧の職人技', 'hero-subtitle': '日本の住まいに厳選された美しさを', 'hero-button': '見る', 'welcome-text': 'ようこそ', 'col-tag': '厳選', 'col-title': 'コレクション', 'story-tag': '物語', 'story-p1': 'スカンジ・ジャパンディ・コレクションは、北欧のありのままの自然の美しさと、日本の洗練されたミニマリズムを融合させています。天然素材とタイムレスな職人技への敬意から生まれ、オスロと東京の距離を結びます。', 'form-submit': '申請を送信' }
+            'JA': { 'nav-collection': 'コレクション', 'nav-story': '私たちの物語', 'nav-makers': '作家・職人へ', 'nav-contact': 'お問い合わせ', 'hero-title': '時代を超える北欧の職人技', 'hero-subtitle': '日本の住まいに厳選された美しさを', 'hero-button': '見る', 'welcome-text': 'ようこそ', 'col-tag': '厳選', 'col-title': 'コレクション', 'story-tag': '物語', 'story-p1': 'スカンジ・ジャパンディ・コレクションは、北欧のありのままของ自然の美しさと、日本の洗練されたミニマリズムを融合させています。天然素材とタイムレスな職人技への敬意から生まれ、オスロと東京の距離を結びます。', 'form-submit': '申請を送信' }
         };
         let lang = 'EN', products = [];
+
+        function cleanImagePath(p) {
+            if (!p) return "/images/hero.jpg";
+            let f = p.replace(/^["']|["']$/g, '').trim();
+            f = f.replace(/^(scandijapandi-project\/images\/|scandijapandi-project\/|\/images\/|images\/)/, '');
+            return "/images/" + f;
+        }
 
         async function loadContent() {
             try {
@@ -130,7 +145,7 @@
                         const r = await fetch(f.download_url); const txt = await r.text(); const m = txt.match(/---([\s\S]*?)---/);
                         if (m) {
                             const d = {}; m[1].split('\n').forEach(l => { const i = l.indexOf(':'); if (i > -1) { d[l.substring(0, i).trim()] = l.substring(i + 1).trim().replace(/^["']|["']$/g, ''); } });
-                            fetched.push({ id: c++, name: d.title || d.name || f.name.replace('.md', ''), name_JA: d.title_ja || d.name_ja || d.title, price: d.price || "Contact for pricing", ref: d.ref || "tokyoliving", img: d.image || "/images/hero.jpg" });
+                            fetched.push({ id: c++, name: d.title || d.name || f.name.replace('.md', ''), name_JA: d.title_ja || d.name_ja || d.title, price: d.price || "Contact for pricing", ref: d.ref || "tokyoliving", img: cleanImagePath(d.image) });
                         }
                     }
                 }
@@ -162,7 +177,7 @@
                 let dn = lang === 'JA' ? p.name_JA : p.name;
                 h += '<div class="group cursor-pointer" onclick="checkout(' + p.id + ',\'' + p.name + '\',\'' + p.price + '\')">';
                 h += '<div class="aspect-[4/5] overflow-hidden bg-softGrey mb-8 relative">';
-                h += '<img src="' + p.img + '" alt="' + p.name + '" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">';
+                h += '<img src="' + p.img + '" alt="' + p.name + '" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" onerror="this.src=\'/images/hero.jpg\'">';
                 h += '<div class="absolute inset-0 bg-navy/0 group-hover:bg-navy/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">';
                 h += '<span class="bg-white text-navy px-6 py-3 text-xs uppercase font-bold tracking-widest border border-navy shadow-lg">Test Purchase</span>';
                 h += '</div></div><div class="flex flex-col gap-2"><span class="text-gold text-[10px] uppercase tracking-[0.3em] font-bold">@' + p.ref + '</span>';
