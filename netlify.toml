@@ -1,3 +1,8 @@
+[build.environment]
+  # Sanity dataset, consumed at build time via process.env.PUBLIC_SANITY_DATASET.
+  # PUBLIC_SANITY_PROJECT_ID is configured as a site environment variable in the Netlify dashboard.
+  PUBLIC_SANITY_DATASET = "production"
+
 [[redirects]]
   from = "/studio/*"
   to = "/studio/index.html"
