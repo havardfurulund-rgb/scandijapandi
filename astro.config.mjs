@@ -3,9 +3,6 @@ import sanity from '@sanity/astro';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  redirects: {
-    '/studio': '/studio/index.html'
-  },
   integrations: [
     react(),
     sanity({
