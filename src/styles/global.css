@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv01';
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-serif font-light;
+    /* Soft optical settings give Fraunces its airy, high-end character. */
+    font-variation-settings: 'SOFT' 100, 'opsz' 80;
+  }
+
+  ::selection {
+    @apply bg-clay/20 text-ink;
+  }
+}
+
+@layer components {
+  /* Scroll-driven reveal. Elements only hide once JS confirms it can reveal
+     them again, so no-JS visitors and crawlers always see full content. */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hairline divider used throughout the editorial layout. */
+  .rule {
+    @apply h-px w-14 bg-clay/40;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}
