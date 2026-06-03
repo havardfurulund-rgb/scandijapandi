@@ -1,5 +1,6 @@
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
+import { schemaTypes } from './schemaTypes';
 
 // NOTE: `basePath` is intentionally omitted here — the embedded Studio path is
 // controlled by `studioBasePath` in astro.config.mjs. Setting it in both places
@@ -11,6 +12,6 @@ export default defineConfig({
   dataset: import.meta.env.PUBLIC_SANITY_DATASET || 'production',
   plugins: [structureTool()],
   schema: {
-    types: [],
+    types: schemaTypes,
   },
 });
