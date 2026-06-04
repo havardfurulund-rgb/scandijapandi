@@ -1,47 +1,60 @@
-import { defineType, defineField } from 'sanity';
-
-export default defineType({
+export default {
   name: 'product',
-  title: 'Produkt',
+  title: 'Produkter',
   type: 'document',
   fields: [
-    defineField({
+    {
       name: 'title',
-      title: 'Tittel',
+      title: 'Produktnavn',
       type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'price',
-      title: 'Pris',
-      type: 'number',
-    }),
-    defineField({
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: 'slug',
+      title: 'Slug (Nettadresse-lenke)',
+      type: 'slug',
+      options: {
+        source: 'title',
+        maxLength: 96,
+      },
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
       name: 'mainImage',
-      title: 'Hovedbilde',
+      title: 'Hovedbilde (Stiplet drag-and-drop)',
       type: 'image',
       options: {
         hotspot: true,
       },
-    }),
-    defineField({
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
       name: 'gallery',
-      title: 'Bildegalleri',
+      title: 'Bildegalleri (Flere bilder)',
       type: 'array',
       of: [{ type: 'image', options: { hotspot: true } }],
-    }),
-    defineField({
-      name: 'body',
-      title: 'Beskrivelse',
-      type: 'array',
-      of: [{ type: 'block' }],
-    }),
-  ],
-  preview: {
-    select: {
-      title: 'title',
-      subtitle: 'price',
-      media: 'mainImage',
     },
-  },
-});
+    {
+      name: 'price',
+      title: 'Pris (NOK)',
+      type: 'number',
+      validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: 'curator',
+      title: 'Tilknyttet Kurator / Influenser',
+      type: 'reference',
+      to: [{ type: 'curator' }], // Sørger for at vi kan koble på margin-logikken senere
+    },
+    {
+      name: 'description',
+      title: 'Beskrivelse (Norsk)',
+      type: 'text',
+    },
+    {
+      name: 'description_jp',
+      title: 'Beskrivelse (Japansk)',
+      type: 'text',
+    }
+  ],
+}
