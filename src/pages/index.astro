@@ -15,22 +15,192 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
 <html lang="no">
 <head>
   <meta charset="utf-8" />
-  <title>Scandi Japandi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scandi Japandi — Minimalist Living</title>
   <style>
-    body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #fcfbf9; color: #2c2a29; margin: 0; padding: 40px; }
-    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e6e3df; padding-bottom: 20px; margin-bottom: 40px; }
-    .logo { font-size: 24px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; }
-    .lang-switcher { display: flex; gap: 15px; }
-    .lang-btn { background: none; border: none; font-size: 14px; cursor: pointer; color: #8c8882; padding: 5px; transition: color 0.2s; }
-    .lang-btn.active { color: #2c2a29; font-weight: bold; border-bottom: 1px solid #2c2a29; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
-    .product-card { background: #ffffff; padding: 20px; border: 1px solid #f0ede9; border-radius: 4px; }
-    .product-image { width: 100%; height: 350px; object-fit: cover; background-color: #f7f5f2; margin-bottom: 15px; }
-    .product-title { font-size: 18px; font-weight: 400; margin: 10px 0; }
-    .product-price { font-size: 16px; color: #615e5a; margin-bottom: 10px; }
-    .product-curator { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #9c968f; margin-bottom: 15px; }
-    .buy-btn { width: 100%; background-color: #2c2a29; color: #ffffff; border: none; padding: 12px; font-size: 14px; cursor: pointer; transition: background 0.2s; }
-    .buy-btn:hover { background-color: #4a4744; }
+    /* Premium Japandi Estetikk - Lys sand, dyp jord og ren minimalisme */
+    :root {
+      --bg-color: #f7f4ef;
+      --text-color: #232220;
+      --accent-color: #5a534c;
+      --white: #ffffff;
+      --border: #e8e2da;
+    }
+
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color); 
+      color: var(--text-color); 
+      margin: 0; 
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Elegant, tynn topplinje */
+    .header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 30px 60px;
+      border-bottom: 1px solid var(--border);
+      background-color: rgba(247, 244, 239, 0.8);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo { 
+      font-size: 20px; 
+      font-weight: 300; 
+      letter-spacing: 4px; 
+      text-transform: uppercase; 
+    }
+
+    .lang-switcher { 
+      display: flex; 
+      gap: 20px; 
+    }
+
+    .lang-btn { 
+      background: none; 
+      border: none; 
+      font-size: 12px; 
+      letter-spacing: 1px;
+      cursor: pointer; 
+      color: #9e9890; 
+      padding: 5px 0;
+      transition: color 0.3s ease, border-color 0.3s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    .lang-btn.active { 
+      color: var(--text-color); 
+      font-weight: 500; 
+      border-bottom: 1px solid var(--text-color); 
+    }
+
+    /* Hero-seksjon for å sette stemningen */
+    .hero {
+      max-width: 1400px;
+      margin: 60px auto 80px auto;
+      padding: 0 60px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 300;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+      color: var(--text-color);
+    }
+
+    .hero p {
+      font-size: 16px;
+      color: var(--accent-color);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Produktgrid med luft og eleganse */
+    .grid { 
+      max-width: 1400px;
+      margin: 0 auto 100px auto;
+      padding: 0 60px;
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); 
+      gap: 60px 40px; 
+    }
+
+    .product-card { 
+      background: transparent; 
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .image-container {
+      width: 100%;
+      height: 480px;
+      overflow: hidden;
+      background-color: #eeeae3;
+      margin-bottom: 25px;
+      border-radius: 2px;
+    }
+
+    .product-image { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.03);
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .product-title { 
+      font-size: 18px; 
+      font-weight: 400; 
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .product-price { 
+      font-size: 16px; 
+      font-weight: 500;
+      color: var(--text-color); 
+    }
+
+    .product-curator { 
+      font-size: 11px; 
+      text-transform: uppercase; 
+      letter-spacing: 1.5px; 
+      color: #9e9890; 
+      margin-bottom: 12px; 
+    }
+
+    .product-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--accent-color);
+      margin: 0 0 25px 0;
+      min-height: 45px;
+    }
+
+    /* Eksklusiv, minimalistisk knapp */
+    .buy-btn { 
+      width: 100%; 
+      background-color: var(--text-color); 
+      color: var(--white); 
+      border: 1px solid var(--text-color); 
+      padding: 16px; 
+      font-size: 13px; 
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer; 
+      transition: background-color 0.3s ease, color 0.3s ease;
+      border-radius: 2px;
+    }
+
+    .buy-btn:hover { 
+      background-color: transparent;
+      color: var(--text-color);
+    }
+
+    @media (max-width: 768px) {
+      .header { padding: 20px; }
+      .grid { padding: 0 20px; grid-template-columns: 1fr; }
+      .hero { padding: 0 20px; margin: 40px auto; }
+      .hero h1 { font-size: 32px; }
+    }
   </style>
 </head>
 <body>
@@ -38,26 +208,36 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
   <header class="header">
     <div class="logo">Scandi Japandi</div>
     <div class="lang-switcher">
-      <button class="lang-btn active" onclick="setLanguage('no')">NO</button>
-      <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+      <button class="lang-btn active" onclick="setLanguage('no')">NORSK</button>
+      <button class="lang-btn" onclick="setLanguage('en')">ENGLISH</button>
     </div>
   </header>
+
+  <section class="hero">
+    <h1>Flawless Minimalism</h1>
+    <p>A curated collection of functional beauty, bridging Northern light and Japanese craftsmanship.</p>
+  </section>
 
   <main class="grid">
     {products && products.map((product) => (
       <div class="product-card">
-        {product.mainImage?.asset?.url && (
-          <img class="product-image" src={product.mainImage.asset.url} alt="Produktbilde" />
-        )}
+        <div class="image-container">
+          {product.mainImage?.asset?.url ? (
+            <img class="product-image" src={product.mainImage.asset.url} alt="Scandi Japandi Collection" />
+          ) : (
+            <div style="width:100%; height:100%; background:#eeeae3;"></div>
+          )}
+        </div>
         
-        <h2 class="product-title" data-no={product.title?.no} data-en={product.title?.en}>
-          {product.title?.no || 'Uten navn'}
-        </h2>
-        
-        <div class="product-price">{product.price} NOK</div>
+        <div class="product-meta">
+          <h2 class="product-title" data-no={product.title?.no} data-en={product.title?.en}>
+            {product.title?.no || 'Uten navn'}
+          </h2>
+          <div class="product-price">{product.price} NOK</div>
+        </div>
         
         {product.curator && (
-          <div class="product-curator">Curated by: {product.curator.name}</div>
+          <div class="product-curator">Curated by {product.curator.name}</div>
         )}
         
         <p class="product-desc" data-no={product.description?.no} data-en={product.description?.en}>
@@ -65,7 +245,7 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
         </p>
 
         <button class="buy-btn" onclick={`checkout('${product.slug?.current}')`}>
-          <span class="btn-text" data-no="KJØP NÅ" data-en="BUY NOW">KJØP NÅ</span>
+          <span class="btn-text" data-no="Kjøp nå" data-en="Purchase">Kjøp nå</span>
         </button>
       </div>
     ))}
