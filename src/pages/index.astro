@@ -1,5 +1,4 @@
 ---
----
 // src/pages/index.astro
 import { sanityClient } from 'sanity:client';
 
@@ -12,14 +11,12 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
   curator->{name, instagramHandle}
 }`);
 ---
----
 
 <html lang="no">
 <head>
   <meta charset="utf-8" />
   <title>Scandi Japandi</title>
   <style>
-    /* Premium Japandi Minimalisme */
     body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #fcfbf9; color: #2c2a29; margin: 0; padding: 40px; }
     .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e6e3df; padding-bottom: 20px; margin-bottom: 40px; }
     .logo { font-size: 24px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; }
@@ -43,18 +40,17 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
     <div class="lang-switcher">
       <button class="lang-btn active" onclick="setLanguage('no')">NO</button>
       <button class="lang-btn" onclick="setLanguage('en')">EN</button>
-      <button class="lang-btn" onclick="setLanguage('jp')">JP</button>
     </div>
   </header>
 
   <main class="grid">
-    {products.map((product) => (
+    {products && products.map((product) => (
       <div class="product-card">
         {product.mainImage?.asset?.url && (
           <img class="product-image" src={product.mainImage.asset.url} alt="Produktbilde" />
         )}
         
-        <h2 class="product-title" data-no={product.title?.no} data-en={product.title?.en} data-jp={product.title?.jp}>
+        <h2 class="product-title" data-no={product.title?.no} data-en={product.title?.en}>
           {product.title?.no || 'Uten navn'}
         </h2>
         
@@ -64,26 +60,24 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
           <div class="product-curator">Curated by: {product.curator.name}</div>
         )}
         
-        <p class="product-desc" data-no={product.description?.no} data-en={product.description?.en} data-jp={product.description?.jp}>
+        <p class="product-desc" data-no={product.description?.no} data-en={product.description?.en}>
           {product.description?.no}
         </p>
 
         <button class="buy-btn" onclick={`checkout('${product.slug?.current}')`}>
-          <span class="btn-text" data-no="KJØP NÅ" data-en="BUY NOW" data-jp="今すぐ購入">KJØP NÅ</span>
+          <span class="btn-text" data-no="KJØP NÅ" data-en="BUY NOW">KJØP NÅ</span>
         </button>
       </div>
     ))}
   </main>
 
   <script is:inline>
-    // Sjekker om det ligger en influenser-ID i nettadressen (?ref=navn) og lagrer den
     const urlParams = new URLSearchParams(window.location.search);
     const ref = urlParams.get('ref');
     if (ref) {
       localStorage.setItem('curator_ref', ref);
     }
 
-    // Funksjon for å bytte språk live på siden uten omdirigering
     function setLanguage(lang) {
       document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
       event.target.classList.add('active');
@@ -91,16 +85,11 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
       document.querySelectorAll('[data-no]').forEach(el => {
         const txt = el.getAttribute('data-' + lang);
         if (txt) {
-          if (el.classList.contains('btn-text')) {
-            el.innerText = txt;
-          } else {
-            el.innerText = txt;
-          }
+          el.innerText = txt;
         }
       });
     }
 
-    // Sender kunden til betaling med produkt og kurator-ID
     function checkout(slug) {
       const curator = localStorage.getItem('curator_ref') || '';
       window.location.href = `/api/checkout?slug=${slug}&ref=${curator}`;
