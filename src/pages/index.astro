@@ -1,9 +1,9 @@
 ---
+---
 // src/pages/index.astro
 import { sanityClient } from 'sanity:client';
-// Henter produktene og kurator-dataen direkte fra Sanity
-const products = await client.fetch(`*[_type == "product"]{
- const products = await sanityClient.fetch(`*[_type == "product"]{
+
+const products = await sanityClient.fetch(`*[_type == "product"]{
   title,
   slug,
   price,
@@ -11,12 +11,7 @@ const products = await client.fetch(`*[_type == "product"]{
   description,
   curator->{name, instagramHandle}
 }`);
-  slug,
-  price,
-  mainImage{asset->{url}},
-  description,
-  curator->{name, instagramHandle}
-}`);
+---
 ---
 
 <html lang="no">
