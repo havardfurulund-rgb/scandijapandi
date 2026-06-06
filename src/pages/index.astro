@@ -1,274 +1,109 @@
 ---
-import '../styles/global.css';
-import { sanityClient } from 'sanity:client';
-import imageUrlBuilder from '@sanity/image-url';
+// src/pages/index.astro
+import { client } from '../sanity/client';
 
-// --- Data: prefer live Studio content, fall back to a curated collection ----
-// The query is wrapped so a fresh/empty/locked-down dataset can never break the
-// build — the page always renders a premium collection either way.
-const QUERY = `*[_type == "product" && defined(title)] | order(_createdAt asc){
-  _id,
+// Henter produktene og kurator-dataen direkte fra Sanity
+const products = await client.fetch(`*[_type == "product"]{
   title,
+  slug,
   price,
-  "excerpt": pt::text(body),
-  mainImage{ ..., asset->{ url, metadata{ lqip } } }
-}`;
-
-let docs = [];
-try {
-  docs = (await sanityClient.fetch(QUERY)) ?? [];
-} catch {
-  docs = [];
-}
-
-const builder = imageUrlBuilder(sanityClient);
-const buildImage = (img) => {
-  const base = builder.image(img).auto('format').fit('crop').quality(78);
-  return {
-    src: base.width(800).height(1000).url(),
-    srcset: [400, 800, 1200]
-      .map((w) => `${base.width(w).height(Math.round(w * 1.25)).url()} ${w}w`)
-      .join(', '),
-    lqip: img?.asset?.metadata?.lqip ?? null,
-  };
-};
-
-const sanityItems = docs.map((d) => ({
-  title: d.title,
-  maker: '',
-  price: d.price,
-  excerpt: d.excerpt ? d.excerpt.slice(0, 150) : '',
-  alt: d.mainImage?.alt ?? d.title,
-  ...(d.mainImage?.asset ? buildImage(d.mainImage) : { src: null, srcset: null, lqip: null }),
-}));
-
-// Curated fallback — shown until the Studio is populated. Realistic makers and
-// organic NOK prices, no round marketing numbers.
-const fallback = [
-  { title: 'Curved Birch Tray', maker: 'Studio Bjørk · Bergen', price: 895, alt: 'Curved birch serving tray', src: '/images/products/wood-tray.jpg', excerpt: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.' },
-  { title: 'Matte Stoneware Vase', maker: 'Sōen Keramikk · Kyoto', price: 1450, alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' },
-  { title: 'Washi Paper Lamp', maker: 'Atelier Nord · Oslo', price: 2380, alt: 'Washi paper table lamp', src: '/images/products/night-lamp.jpg', excerpt: 'Mulberry-paper shade over an oak base, diffusing a warm, low evening light.' },
-  { title: 'Lofoten Wool Throw', maker: 'Røros Tweed', price: 1690, alt: 'Folded wool throw', src: '/images/products/wool-blanket.jpg', excerpt: 'Brushed lambswool woven in undyed naturals — heavy enough to settle the room.' },
-  { title: 'Solid Oak Low Table', maker: 'Tømmer Verksted · Trondheim', price: 12400, alt: 'Solid oak low table', src: '/images/products/oak-table.jpg', excerpt: 'A plain slab on tapered legs, joined without hardware and finished in matte wax.' },
-  { title: 'Oslo Spindle Chair', maker: 'Furu & Form', price: 4950, alt: 'Oak spindle chair', src: '/images/products/study-chair.jpg', excerpt: 'A quiet reading chair, its spindle back turned from a single length of ash.' },
-];
-
-const usingSanity = sanityItems.length > 0;
-const products = usingSanity ? sanityItems : fallback;
-
-const nok = new Intl.NumberFormat('nb-NO', {
-  style: 'currency',
-  currency: 'NOK',
-  maximumFractionDigits: 0,
-});
-const formatPrice = (p) =>
-  typeof p === 'number' ? nok.format(p) : p || 'Pris på forespørsel';
+  mainImage{asset->{url}},
+  description,
+  curator->{name, instagramHandle}
+}`);
 ---
 
-<!doctype html>
-<html lang="no" class="scroll-smooth">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ScandiJapandi — Nordisk ro, japansk håndverk</title>
-    <meta
-      name="description"
-      content="En stille kolleksjon av håndlagde objekter der nordisk ro møter japansk håndverk. Oslo · Tokyo."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap"
-    />
-    <!-- Reveal-before-paint guard + scroll-driven fade-in (no library, ~20 lines). -->
-    <script is:inline>
-      document.documentElement.classList.add('js');
-      addEventListener('DOMContentLoaded', () => {
-        const els = document.querySelectorAll('.reveal');
-        if (!('IntersectionObserver' in window)) {
-          els.forEach((e) => e.classList.add('is-visible'));
-          return;
-        }
-        const io = new IntersectionObserver(
-          (entries) => {
-            for (const e of entries) {
-              if (e.isIntersecting) {
-                e.target.classList.add('is-visible');
-                io.unobserve(e.target);
-              }
-            }
-          },
-          { rootMargin: '0px 0px -10% 0px', threshold: 0.12 }
-        );
-        els.forEach((e) => io.observe(e));
-      });
-    </script>
-  </head>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <title>Scandi Japandi</title>
+  <style>
+    /* Premium Japandi Minimalisme */
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #fcfbf9; color: #2c2a29; margin: 0; padding: 40px; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e6e3df; padding-bottom: 20px; margin-bottom: 40px; }
+    .logo { font-size: 24px; font-weight: 300; letter-spacing: 2px; text-transform: uppercase; }
+    .lang-switcher { display: flex; gap: 15px; }
+    .lang-btn { background: none; border: none; font-size: 14px; cursor: pointer; color: #8c8882; padding: 5px; transition: color 0.2s; }
+    .lang-btn.active { color: #2c2a29; font-weight: bold; border-bottom: 1px solid #2c2a29; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 40px; }
+    .product-card { background: #ffffff; padding: 20px; border: 1px solid #f0ede9; border-radius: 4px; }
+    .product-image { width: 100%; height: 350px; object-fit: cover; background-color: #f7f5f2; margin-bottom: 15px; }
+    .product-title { font-size: 18px; font-weight: 400; margin: 10px 0; }
+    .product-price { font-size: 16px; color: #615e5a; margin-bottom: 10px; }
+    .product-curator { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #9c968f; margin-bottom: 15px; }
+    .buy-btn { width: 100%; background-color: #2c2a29; color: #ffffff; border: none; padding: 12px; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+    .buy-btn:hover { background-color: #4a4744; }
+  </style>
+</head>
+<body>
 
-  <body class="overflow-x-hidden">
-    <!-- HEADER -->
-    <header
-      class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md"
-    >
-      <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <a href="#top" class="group flex items-center gap-3">
-          <svg viewBox="0 0 32 40" class="h-7 w-7 text-ink transition-transform duration-700 ease-japandi group-hover:rotate-6" aria-hidden="true">
-            <path d="M16 38V6" stroke="currentColor" stroke-width="1.2" fill="none" />
-            <path d="M16 26C9 24 6 18 6 12c6 1 9 7 10 14Z" fill="currentColor" opacity="0.85" />
-            <path d="M16 20c6-1 9-6 9-11-5 1-8 5-9 11Z" fill="currentColor" opacity="0.55" />
-          </svg>
-          <span class="font-serif text-lg tracking-tight">ScandiJapandi</span>
-        </a>
-        <nav class="flex items-center gap-8 text-[11px] font-medium uppercase tracking-widest text-stone">
-          <a href="#collection" class="transition-colors hover:text-clay">Kolleksjon</a>
-          <a href="#ethos" class="hidden transition-colors hover:text-clay sm:inline">Historie</a>
-          <a href="/studio" class="transition-colors hover:text-clay">Studio</a>
-        </nav>
-      </div>
-    </header>
+  <header class="header">
+    <div class="logo">Scandi Japandi</div>
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLanguage('no')">NO</button>
+      <button class="lang-btn" onclick="setLanguage('en')">EN</button>
+      <button class="lang-btn" onclick="setLanguage('jp')">JP</button>
+    </div>
+  </header>
 
-    <!-- HERO -->
-    <section id="top" class="relative flex min-h-screen items-end overflow-hidden">
-      <img
-        src="/images/hero.jpg"
-        alt="Lyst interiør i naturlige materialer"
-        width="1920"
-        height="1280"
-        fetchpriority="high"
-        decoding="async"
-        class="absolute inset-0 h-full w-full object-cover"
-      />
-      <div class="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-ink/5"></div>
-      <div class="relative z-10 mx-auto w-full max-w-6xl px-6 pb-20 pt-32">
-        <div class="max-w-2xl text-paper">
-          <span class="block text-[11px] font-medium uppercase tracking-widest text-paper/80">
-            Oslo&nbsp;·&nbsp;Tokyo
-          </span>
-          <h1 class="mt-6 font-serif text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">
-            Der nordisk ro møter japansk håndverk
-          </h1>
-          <p class="mt-8 max-w-md text-base font-light leading-relaxed text-paper/85">
-            En stille kolleksjon av objekter laget for å leves med — i tre, leire og ull.
-          </p>
-          <a
-            href="#collection"
-            class="group mt-10 inline-flex items-center gap-3 border-b border-paper/40 pb-1 text-[11px] font-medium uppercase tracking-widest text-paper transition-colors hover:border-clay hover:text-clay"
-          >
-            Se kolleksjonen
-            <span class="transition-transform duration-500 ease-japandi group-hover:translate-x-1.5">→</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- COLLECTION -->
-    <section id="collection" class="scroll-mt-24 px-6 py-28 lg:py-36">
-      <div class="mx-auto max-w-6xl">
-        <header class="reveal max-w-2xl">
-          <span class="text-[11px] font-medium uppercase tracking-widest text-clay">Utvalgt</span>
-          <h2 class="mt-4 font-serif text-4xl leading-tight sm:text-5xl">Kolleksjonen</h2>
-          <div class="rule mt-7"></div>
-          <p class="mt-7 max-w-prose text-sm leading-relaxed text-stone">
-            Få stykker, valgt med omhu. Hvert objekt er laget i små serier av
-            håndverkere i Norden og Japan.
-          </p>
-        </header>
-
-        <div class="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3 lg:gap-y-24">
-          {
-            products.map((item, i) => (
-              <article
-                class:list={['reveal group', i % 3 === 1 && 'lg:mt-20']}
-                style={`transition-delay:${(i % 3) * 90}ms`}
-              >
-                <div
-                  class="relative aspect-[4/5] overflow-hidden bg-oat"
-                  style={item.lqip ? `background-image:url(${item.lqip});background-size:cover;background-position:center;` : ''}
-                >
-                  {item.src ? (
-                    <img
-                      src={item.src}
-                      srcset={item.srcset ?? undefined}
-                      sizes="(min-width:1024px) 30vw, (min-width:640px) 45vw, 90vw"
-                      width="800"
-                      height="1000"
-                      loading={i < 3 ? 'eager' : 'lazy'}
-                      decoding="async"
-                      alt={item.alt}
-                      class="h-full w-full object-cover transition duration-[1200ms] ease-japandi will-change-transform group-hover:scale-[1.06] group-hover:opacity-95"
-                    />
-                  ) : (
-                    <div class="flex h-full items-center justify-center p-6 text-center">
-                      <span class="font-serif text-2xl text-stone">{item.title}</span>
-                    </div>
-                  )}
-                  <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/30 to-transparent opacity-0 transition-opacity duration-700 ease-japandi group-hover:opacity-100" />
-                </div>
-
-                <div class="mt-6 flex items-baseline justify-between gap-4">
-                  <div>
-                    {item.maker && (
-                      <span class="block text-[10px] font-medium uppercase tracking-widest text-clay">
-                        {item.maker}
-                      </span>
-                    )}
-                    <h3 class="mt-1.5 font-serif text-2xl leading-snug transition-colors duration-500 ease-japandi group-hover:text-clay">
-                      {item.title}
-                    </h3>
-                  </div>
-                  <span class="shrink-0 text-sm font-light text-stone">{formatPrice(item.price)}</span>
-                </div>
-                {item.excerpt && (
-                  <p class="mt-3 max-w-prose text-sm leading-relaxed text-stone/90">{item.excerpt}</p>
-                )}
-              </article>
-            ))
-          }
-        </div>
-      </div>
-    </section>
-
-    <!-- ETHOS -->
-    <section id="ethos" class="scroll-mt-24 bg-oat px-6 py-28 lg:py-36">
-      <div class="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-12 lg:gap-20">
-        <div class="reveal lg:col-span-5">
-          <img
-            src="/images/hero.jpg"
-            alt="Detalj av naturlige materialer"
-            width="800"
-            height="1000"
-            loading="lazy"
-            decoding="async"
-            class="aspect-[4/5] w-full object-cover"
-          />
-        </div>
-        <div class="reveal lg:col-span-6 lg:col-start-7" style="transition-delay:120ms">
-          <span class="text-[11px] font-medium uppercase tracking-widest text-clay">Historie</span>
-          <h2 class="mt-4 font-serif text-4xl leading-tight sm:text-5xl">En bro mellom to verdener</h2>
-          <div class="rule mt-7"></div>
-          <p class="mt-7 text-lg font-light italic leading-relaxed text-ink/80">
-            Den rå skjønnheten i nordisk natur, og den intensjonelle stillheten i
-            japansk minimalisme.
-          </p>
-          <p class="mt-6 max-w-prose text-sm leading-relaxed text-stone">
-            Vi arbeider med håndverkere som deler en respekt for naturlige
-            materialer og tålmodig håndverk. Resultatet er objekter uten støy —
-            laget for å eldes vakkert i hjemmet ditt.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="px-6 py-20 text-center">
-      <div class="mx-auto max-w-6xl">
-        <div class="rule mx-auto"></div>
-        <p class="mt-8 text-[11px] font-medium uppercase tracking-widest text-ink">Oslo · Tokyo</p>
-        <p class="mt-3 text-[11px] uppercase tracking-widest text-stone/70">
-          © 2026 ScandiJapandi Collection
+  <main class="grid">
+    {products.map((product) => (
+      <div class="product-card">
+        {product.mainImage?.asset?.url && (
+          <img class="product-image" src={product.mainImage.asset.url} alt="Produktbilde" />
+        )}
+        
+        <h2 class="product-title" data-no={product.title?.no} data-en={product.title?.en} data-jp={product.title?.jp}>
+          {product.title?.no || 'Uten navn'}
+        </h2>
+        
+        <div class="product-price">{product.price} NOK</div>
+        
+        {product.curator && (
+          <div class="product-curator">Curated by: {product.curator.name}</div>
+        )}
+        
+        <p class="product-desc" data-no={product.description?.no} data-en={product.description?.en} data-jp={product.description?.jp}>
+          {product.description?.no}
         </p>
+
+        <button class="buy-btn" onclick={`checkout('${product.slug?.current}')`}>
+          <span class="btn-text" data-no="KJØP NÅ" data-en="BUY NOW" data-jp="今すぐ購入">KJØP NÅ</span>
+        </button>
       </div>
-    </footer>
-  </body>
+    ))}
+  </main>
+
+  <script is:inline>
+    // Sjekker om det ligger en influenser-ID i nettadressen (?ref=navn) og lagrer den
+    const urlParams = new URLSearchParams(window.location.search);
+    const ref = urlParams.get('ref');
+    if (ref) {
+      localStorage.setItem('curator_ref', ref);
+    }
+
+    // Funksjon for å bytte språk live på siden uten omdirigering
+    function setLanguage(lang) {
+      document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      document.querySelectorAll('[data-no]').forEach(el => {
+        const txt = el.getAttribute('data-' + lang);
+        if (txt) {
+          if (el.classList.contains('btn-text')) {
+            el.innerText = txt;
+          } else {
+            el.innerText = txt;
+          }
+        }
+      });
+    }
+
+    // Sender kunden til betaling med produkt og kurator-ID
+    function checkout(slug) {
+      const curator = localStorage.getItem('curator_ref') || '';
+      window.location.href = `/api/checkout?slug=${slug}&ref=${curator}`;
+    }
+  </script>
+</body>
 </html>
