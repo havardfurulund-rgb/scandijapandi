@@ -1,241 +1,106 @@
 ---
-import { sanityClient } from 'sanity:client';
-import imageUrlBuilder from '@sanity/image-url';
-
-// Henter alle produktdetaljer + SLUG fra Sanity
-const QUERY = `*[_type == "product" && defined(title)] | order(_createdAt asc){
-  _id,
-  title,
-  price,
-  subtitle,
-  "slug": slug.current,
-  "excerpt": pt::text(body),
-  mainImage{ ..., asset->{ url, metadata{ lqip } } }
-}`;
-
-let docs = [];
-try {
-  docs = (await sanityClient.fetch(QUERY)) ?? [];
-} catch {
-  docs = [];
-}
-
-const builder = imageUrlBuilder(sanityClient);
-const buildImage = (img) => {
-  const base = builder.image(img).auto('format').fit('crop').quality(78);
-  return {
-    src: base.width(800).height(1000).url(),
-    srcset: [400, 800, 1200]
-      .map((w) => `${base.width(w).height(Math.round(w * 1.25)).url()} ${w}w`)
-      .join(', '),
-    lqip: img?.asset?.metadata?.lqip ?? null,
-  };
-};
-
-const sanityItems = docs.map((d) => ({
-  title: d.title,
-  maker: d.subtitle || 'ScandiJapandi Collection',
-  price: d.price,
-  slug: d.slug || '',
-  excerpt: d.excerpt ? d.excerpt.slice(0, 150) : '',
-  alt: d.mainImage?.alt ?? d.title,
-  ...(d.mainImage?.asset ? buildImage(d.mainImage) : { src: null, srcset: null, lqip: null }),
-}));
-
-const fallback = [
-  { title: 'Curved Birch Tray', maker: 'Studio Bjørk · Bergen', price: 895, slug: 'curved-birch-tray', alt: 'Curved birch serving tray', src: '/images/products/wood-tray.jpg', excerpt: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.' },
-  { title: 'Matte Stoneware Vase', maker: 'Sōen Keramikk · Oslo', price: 1450, slug: 'matte-stoneware-vase', alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' },
-];
-
-const products = sanityItems.length > 0 ? sanityItems : fallback;
-
-const nok = new Intl.NumberFormat('nb-NO', {
-  style: 'currency',
-  currency: 'NOK',
-  maximumFractionDigits: 0,
-});
+const title = "Scandi Japandi Collection";
+const description = "Tidløst skandinavisk håndverk møter japansk ro";
 ---
 
-<!doctype html>
-<html lang="no" class="scroll-smooth">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ScandiJapandi — Skandinavisk håndverk, ren nordisk ro</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap" />
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              paper: '#FBFBFA',
-              ink: '#1A1A1A',
-              stone: '#706E6B',
-              oat: '#F1EFEA',
-              clay: '#A37B65',
-            }
-          }
-        }
-      }
-    </script>
-    
-    <style>
-      body { font-family: 'Jost', sans-serif; background-color: #FBFBFA; color: #1A1A1A; }
-      .font-serif { font-family: 'Fraunces', serif; }
-    </style>
-  </head>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scandi Japandi Collection</title>
+  <meta name="description" content={description}>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
+    .hero-bg {
+      background-image: linear-gradient(rgba(0, 31, 63, 0.45), rgba(0, 31, 63, 0.45)), url('https://picsum.photos/id/1015/2000/1200');
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+</head>
+<body class="bg-[#F5F7FA] text-[#001F3F]">
 
-  <body class="overflow-x-hidden bg-paper text-ink antialiased">
-    
-    <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
-      <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
-        <a href="#top" class="font-serif text-xl tracking-tight">ScandiJapandi</a>
-        <nav class="flex items-center gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
-          <a href="#collection" class="hover:text-ink">Kolleksjon</a>
-          <a href="#about" class="hover:text-ink">Om oss</a>
-          <a href="#partner" class="hover:text-ink">Bli Partner</a>
-        </nav>
+  <!-- Navigation -->
+  <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-[#001F3F]/10">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
+      <div class="text-2xl tracking-widest font-light">SCANDI JAPANDI</div>
+      <div class="flex gap-8 text-sm uppercase tracking-widest">
+        <a href="#" class="hover:text-[#C5A05B] transition-colors">Produkter</a>
+        <a href="#" class="hover:text-[#C5A05B] transition-colors">Om Oss</a>
+        <a href="#" class="hover:text-[#C5A05B] transition-colors">Japandi</a>
+        <a href="#" class="hover:text-[#C5A05B] transition-colors">Kontakt</a>
       </div>
-    </header>
+      <div class="flex gap-4 text-sm">
+        <a href="/en" class="hover:text-[#C5A05B]">EN</a>
+        <a href="/" class="font-medium text-[#C5A05B]">NO</a>
+        <a href="/ja" class="hover:text-[#C5A05B]">JA</a>
+      </div>
+    </div>
+  </nav>
 
-    <section id="top" class="relative flex min-h-screen items-center overflow-hidden bg-[#E2DFD9] pt-20">
-      <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
-        <div class="max-w-2xl">
-          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Etablert 2026</span>
-          <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink">
-            Nordisk ro kuratert for verden
-          </h1>
-          <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg">
-            En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer, forent i en minimalistisk estetikk verdsatt fra Norden til Japan.
-          </p>
-          <div class="mt-10">
-            <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest hover:bg-clay transition-colors">
-              Utforsk kolleksjonen
-            </a>
-          </div>
+  <!-- Hero -->
+  <section class="hero-bg h-screen flex items-center justify-center text-white">
+    <div class="max-w-4xl mx-auto text-center px-6">
+      <p class="uppercase tracking-[0.4em] text-sm mb-4 text-white/80">Quiet Luxury • Timeless Craft</p>
+      <h1 class="text-6xl md:text-7xl font-light leading-tight mb-6">
+        Skandinavisk sjel.<br>
+        Japansk ro.
+      </h1>
+      <p class="text-xl max-w-md mx-auto mb-10 text-white/90">
+        Håndplukkede produkter fra de beste småskala produsentene i Norge og Skandinavia.
+      </p>
+      <a href="#collection" 
+         class="inline-block bg-white text-[#001F3F] px-10 py-4 text-sm uppercase tracking-widest hover:bg-[#C5A05B] hover:text-white transition-all duration-500">
+        Utforsk kolleksjonen
+      </a>
+    </div>
+  </section>
+
+  <!-- Collection Teaser -->
+  <section id="collection" class="max-w-7xl mx-auto px-6 py-24">
+    <h2 class="text-4xl font-light text-center mb-16">Våre kuraterte produkter</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <!-- Du kan legge til flere produkter her senere -->
+      <div class="group">
+        <div class="aspect-square bg-gray-200 mb-6 overflow-hidden">
+          <img src="https://picsum.photos/id/1015/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
         </div>
+        <h3 class="text-xl font-light">Håndvevd Linndekke</h3>
+        <p class="text-sm text-gray-600">Lofoten • Naturlig lin</p>
+        <p class="mt-2 text-lg">2 450 kr</p>
       </div>
-    </section>
 
-    <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
-      <div class="mx-auto max-w-3xl text-center">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Vår Filosofi</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Skandinavisk funksjonalitet møter global minimalisme. Vi feirer det ekte, det naturlige og det nordiske håndverket som er skapt for å vare i generasjoner.</h2>
-      </div>
-    </section>
-
-    <section id="collection" class="px-6 sm:px-12 py-32 mx-auto max-w-6xl">
-      <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-20">
-        <div>
-          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Kuratert utvalg</span>
-          <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
+      <div class="group">
+        <div class="aspect-square bg-gray-200 mb-6 overflow-hidden">
+          <img src="https://picsum.photos/id/201/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
         </div>
-        <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed">
-          Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
-        </p>
+        <h3 class="text-xl font-light">Minimalistisk Eikebolle</h3>
+        <p class="text-sm text-gray-600">Hardanger • Hånddreid</p>
+        <p class="mt-2 text-lg">980 kr</p>
       </div>
 
-      <div class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((item) => (
-          <article class="flex flex-col justify-between group">
-            <div>
-              <div class="relative aspect-[4/5] bg-oat overflow-hidden">
-                {item.src ? (
-                  <img src={item.src} srcset={item.srcset} alt={item.alt} class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
-                ) : (
-                  <div class="h-full w-full bg-stone/5 flex items-center justify-center text-stone/40 text-xs">Ingen bilde</div>
-                )}
-              </div>
-              <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
-                <div>
-                  <h3 class="font-serif text-2xl text-ink transition-colors">{item.title}</h3>
-                  <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{item.maker}</p>
-                </div>
-                <span class="text-base font-light text-ink">{typeof item.price === 'number' ? nok.format(item.price) : item.price}</span>
-              </div>
-              <p class="mt-4 text-sm text-stone/90 font-light leading-relaxed">{item.excerpt}</p>
-            </div>
-            
-            <button 
-              data-slug={item.slug}
-              class="checkout-button mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center hover:bg-clay transition-colors disabled:opacity-50"
-            >
-              Kjøp nå →
-            </button>
-          </article>
-        ))}
+      <div class="group">
+        <div class="aspect-square bg-gray-200 mb-6 overflow-hidden">
+          <img src="https://picsum.photos/id/870/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+        </div>
+        <h3 class="text-xl font-light">Keramikkvase – Kyst</h3>
+        <p class="text-sm text-gray-600">Vestlandet • Steinvar</p>
+        <p class="mt-2 text-lg">1 650 kr</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
-      <div class="max-w-md mx-auto text-center">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Samarbeid</span>
-        <h2 class="font-serif text-3xl text-ink">Bli en del av ScandiJapandi</h2>
-        <form name="collection-partner" method="POST" data-netlify="true" class="mt-12 text-left space-y-6">
-          <input type="hidden" name="form-name" value="collection-partner" />
-          <div>
-            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2">Ditt fulle navn</label>
-            <input type="text" name="name" required class="w-full p-4 bg-white border border-ink/10 outline-none text-sm font-light" />
-          </div>
-          <div>
-            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2">E-postadresse</label>
-            <input type="email" name="email" required class="w-full p-4 bg-white border border-ink/10 outline-none text-sm font-light" />
-          </div>
-          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest hover:bg-clay transition-colors mt-4">
-            Send søknad
-          </button>
-        </form>
-      </div>
-    </section>
+  <footer class="bg-[#001F3F] text-white py-16">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+      <p class="text-sm tracking-widest">© 2026 Scandi Japandi Collection</p>
+      <p class="text-xs mt-4 text-white/60">Kuratert med ro og respekt for håndverk</p>
+    </div>
+  </footer>
 
-    <footer class="bg-ink text-paper/60 px-6 sm:px-12 py-12 text-center text-[10px] uppercase tracking-widest">
-      <p class="text-paper/40">&copy; 2026 ScandiJapandi. Alle rettigheter reservert.</p>
-    </footer>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const ref = urlParams.get('ref');
-        const buttons = document.querySelectorAll('.checkout-button');
-        
-        buttons.forEach(button => {
-          button.addEventListener('click', async (e) => {
-            const btn = e.currentTarget;
-            const slug = btn.getAttribute('data-slug');
-            
-            if (!slug) return;
-            
-            try {
-              btn.disabled = true;
-              btn.innerText = 'Laster kasse...';
-
-              // Bruker en relativ filbane slik at Netlify-funksjonen garantert trigges på gjeldende domene
-              const response = await fetch('./api/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ slug, ref })
-              });
-
-              const data = await response.json();
-
-              if (data.url) {
-                window.location.href = data.url;
-              } else {
-                throw new Error(data.error || 'Kunne ikke opprette Stripe-sesjon');
-              }
-
-            } catch (err) {
-              console.error('Utsjekksfeil:', err);
-              alert('Kunne ikke åpne kassen. Sjekk at produktet har en gyldig Stripe Price ID i Sanity.');
-              btn.disabled = false;
-              btn.innerText = 'Kjøp nå →';
-            }
-          });
-        });
-      });
-    </script>
-
-  </body>
+</body>
 </html>
