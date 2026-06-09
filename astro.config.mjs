@@ -9,7 +9,7 @@ export default defineConfig({
   adapter: netlify(),
   integrations: [
     tailwind({ applyBaseStyles: true }),
-    react(),                    // <--- Viktig for Studio
+    react(),           // <--- Må være med
     sanity({
       projectId: 'v7f0k69w',
       dataset: 'production',
