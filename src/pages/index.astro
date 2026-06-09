@@ -1,623 +1,466 @@
 ---
-// src/pages/index.astro
 import { sanityClient } from 'sanity:client';
 
-// Backend data fetch — unchanged contract. The storefront pulls every product
-// from Sanity together with its curator reference so the "Kjøp nå" button can
-// attribute sales. Field names mirror the live schema (`schemaTypes/product.ts`):
-// `description` holds the Norwegian copy and `description_jp` the Japanese copy.
+// 1. DATA FETCHING (Sanity DB)
+// Henter alle aktive produkter med nødvendige felter for både norsk og japansk innhold
 const products = await sanityClient.fetch(`*[_type == "product"]{
   title,
-  slug,
+  "slug": slug.current,
   price,
-  mainImage{asset->{url}},
-  description,
-  description_jp,
-  curator->{name, instagramHandle}
+  mainImage,
+  description_no,
+  description_ja,
+  curator->{
+    title,
+    "id": _id
+  }
 }`);
 ---
 
 <html lang="no">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scandi Japandi — Minimalist Living</title>
-  <style>
-    /* Premium Japandi Estetikk - Lys sand, dyp jord og ren minimalisme */
-    :root {
-      --bg-color: #f7f4ef;
-      --bg-alt: #f1ece4;
-      --text-color: #232220;
-      --accent-color: #5a534c;
-      --muted: #9e9890;
-      --white: #ffffff;
-      --border: #e8e2da;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 0;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* Elegant, tynn topplinje */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 30px 60px;
-      border-bottom: 1px solid var(--border);
-      background-color: rgba(247, 244, 239, 0.8);
-      backdrop-filter: blur(10px);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      font-size: 20px;
-      font-weight: 300;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-    }
-
-    .lang-switcher {
-      display: flex;
-      gap: 20px;
-    }
-
-    .lang-btn {
-      background: none;
-      border: none;
-      font-size: 12px;
-      letter-spacing: 1px;
-      cursor: pointer;
-      color: var(--muted);
-      padding: 5px 0;
-      transition: color 0.3s ease, border-color 0.3s ease;
-      border-bottom: 1px solid transparent;
-    }
-
-    .lang-btn.active {
-      color: var(--text-color);
-      font-weight: 500;
-      border-bottom: 1px solid var(--text-color);
-    }
-
-    /* Diskret statuslinje etter retur fra Stripe-checkout */
-    .checkout-banner {
-      display: none;
-      max-width: 1400px;
-      margin: 30px auto 0 auto;
-      padding: 16px 60px;
-      font-size: 13px;
-      letter-spacing: 1px;
-      text-align: center;
-      color: var(--accent-color);
-      background-color: var(--bg-alt);
-      border: 1px solid var(--border);
-      border-radius: 2px;
-    }
-
-    /* Hero-seksjon for å sette stemningen */
-    .hero {
-      max-width: 1400px;
-      margin: 90px auto 100px auto;
-      padding: 0 60px;
-      text-align: center;
-    }
-
-    .hero h1 {
-      font-size: 52px;
-      font-weight: 300;
-      letter-spacing: -1px;
-      margin-bottom: 24px;
-      color: var(--text-color);
-    }
-
-    .hero p {
-      font-size: 16px;
-      color: var(--accent-color);
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.7;
-    }
-
-    /* Produktgrid med luft og eleganse */
-    .grid {
-      max-width: 1400px;
-      margin: 0 auto 140px auto;
-      padding: 0 60px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-      gap: 80px 40px;
-    }
-
-    .product-card {
-      background: transparent;
-      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .image-container {
-      width: 100%;
-      height: 480px;
-      overflow: hidden;
-      background-color: #eeeae3;
-      margin-bottom: 25px;
-      border-radius: 2px;
-    }
-
-    .product-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .product-card:hover .product-image {
-      transform: scale(1.03);
-    }
-
-    .product-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
-    }
-
-    .product-title {
-      font-size: 18px;
-      font-weight: 400;
-      margin: 0;
-      letter-spacing: 0.5px;
-    }
-
-    .product-price {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text-color);
-      white-space: nowrap;
-      padding-left: 16px;
-    }
-
-    .product-curator {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .product-desc {
-      font-size: 14px;
-      line-height: 1.6;
-      color: var(--accent-color);
-      margin: 0 0 25px 0;
-      min-height: 45px;
-    }
-
-    /* Eksklusiv, minimalistisk knapp */
-    .buy-btn {
-      width: 100%;
-      background-color: var(--text-color);
-      color: var(--white);
-      border: 1px solid var(--text-color);
-      padding: 16px;
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      border-radius: 2px;
-    }
-
-    .buy-btn:hover {
-      background-color: transparent;
-      color: var(--text-color);
-    }
-
-    /* Partner-seksjon — rolig, eksklusiv invitasjon rett over footeren */
-    .partner {
-      background-color: var(--bg-alt);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      padding: 120px 60px;
-    }
-
-    .partner-inner {
-      max-width: 760px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .partner-eyebrow {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: var(--muted);
-      margin-bottom: 20px;
-    }
-
-    .partner h2 {
-      font-size: 38px;
-      font-weight: 300;
-      letter-spacing: -0.5px;
-      margin: 0 0 20px 0;
-    }
-
-    .partner > .partner-inner > p {
-      font-size: 16px;
-      line-height: 1.7;
-      color: var(--accent-color);
-      max-width: 540px;
-      margin: 0 auto 50px auto;
-    }
-
-    .partner-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      text-align: left;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
-    }
-
-    .field label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .field input,
-    .field textarea {
-      font-family: inherit;
-      font-size: 15px;
-      color: var(--text-color);
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--border);
-      padding: 12px 0;
-      transition: border-color 0.3s ease;
-      border-radius: 0;
-    }
-
-    .field input:focus,
-    .field textarea:focus {
-      outline: none;
-      border-bottom-color: var(--text-color);
-    }
-
-    .field textarea {
-      resize: vertical;
-      min-height: 90px;
-    }
-
-    .partner-submit {
-      grid-column: 1 / -1;
-      justify-self: center;
-      margin-top: 20px;
-      background-color: var(--text-color);
-      color: var(--white);
-      border: 1px solid var(--text-color);
-      padding: 16px 60px;
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
-      border-radius: 2px;
-    }
-
-    .partner-submit:hover {
-      background-color: transparent;
-      color: var(--text-color);
-    }
-
-    .form-feedback {
-      grid-column: 1 / -1;
-      text-align: center;
-      font-size: 14px;
-      letter-spacing: 0.5px;
-      color: var(--accent-color);
-      margin-top: 10px;
-      min-height: 20px;
-    }
-
-    /* Skjult honeypot-felt for spam-beskyttelse */
-    .hp-field {
-      position: absolute;
-      left: -5000px;
-    }
-
-    /* Diskret footer */
-    .footer {
-      padding: 60px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      font-size: 12px;
-      letter-spacing: 1px;
-      color: var(--muted);
-    }
-
-    .footer a {
-      color: var(--muted);
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-
-    .footer a:hover {
-      color: var(--text-color);
-    }
-
-    /* Bevisst lavmælt portal-lenke for kuratorer */
-    .studio-link {
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      opacity: 0.6;
-      transition: opacity 0.3s ease;
-    }
-
-    .studio-link:hover {
-      opacity: 1;
-    }
-
-    @media (max-width: 768px) {
-      .header { padding: 20px; }
-      .grid { padding: 0 20px; grid-template-columns: 1fr; gap: 60px; }
-      .hero { padding: 0 20px; margin: 50px auto 70px auto; }
-      .hero h1 { font-size: 34px; }
-      .checkout-banner { padding: 16px 20px; }
-      .partner { padding: 80px 20px; }
-      .partner h2 { font-size: 30px; }
-      .partner-form { grid-template-columns: 1fr; gap: 24px; }
-      .footer { padding: 40px 20px; flex-direction: column; text-align: center; }
-    }
-  </style>
-</head>
-<body>
-
-  <header class="header">
-    <div class="logo">Scandi Japandi</div>
-    <div class="lang-switcher">
-      <button class="lang-btn active" data-lang="no">NORSK</button>
-      <button class="lang-btn" data-lang="en">ENGLISH</button>
-    </div>
-  </header>
-
-  <div id="checkout-banner" class="checkout-banner"></div>
-
-  <section class="hero">
-    <h1 data-no="Feilfri Minimalisme" data-en="Flawless Minimalism">Feilfri Minimalisme</h1>
-    <p
-      data-no="En kuratert kolleksjon av funksjonell skjønnhet, der nordisk lys møter japansk håndverk."
-      data-en="A curated collection of functional beauty, bridging Northern light and Japanese craftsmanship."
-    >En kuratert kolleksjon av funksjonell skjønnhet, der nordisk lys møter japansk håndverk.</p>
-  </section>
-
-  <main class="grid">
-    {products && products.map((product) => (
-      <div class="product-card">
-        <div class="image-container">
-          {product.mainImage?.asset?.url ? (
-            <img class="product-image" src={product.mainImage.asset.url} alt={product.title || 'Scandi Japandi Collection'} />
-          ) : (
-            <div style="width:100%; height:100%; background:#eeeae3;"></div>
-          )}
-        </div>
-
-        <div class="product-meta">
-          <h2 class="product-title" data-no={product.title} data-en={product.title}>
-            {product.title || 'Uten navn'}
-          </h2>
-          <div class="product-price">{product.price} NOK</div>
-        </div>
-
-        {product.curator && (
-          <div class="product-curator" data-no={`Kuratert av ${product.curator.name}`} data-en={`Curated by ${product.curator.name}`}>
-            Kuratert av {product.curator.name}
-          </div>
-        )}
-
-        <p class="product-desc" data-no={product.description} data-en={product.description}>
-          {product.description}
-        </p>
-
-        <button class="buy-btn" onclick={`checkout('${product.slug?.current}')`}>
-          <span class="btn-text" data-no="Kjøp nå" data-en="Buy Now">Kjøp nå</span>
-        </button>
-      </div>
-    ))}
-  </main>
-
-  <!-- Partner-registrering: håndteres av Netlify Forms. Som en statisk Astro-build
-       blir dette skjemaet detektert av Netlify ved deploy, så ingen egen
-       skjelett-HTML er nødvendig. -->
-  <section class="partner">
-    <div class="partner-inner">
-      <div class="partner-eyebrow" data-no="Samarbeid" data-en="Collaborate">Samarbeid</div>
-      <h2 data-no="Bli Collection Partner" data-en="Become a Collection Partner">Bli Collection Partner</h2>
-      <p
-        data-no="Vi inviterer et utvalg merkevarer og kuratorer til å forme den neste kolleksjonen. Fortell oss om deg, så tar vi kontakt."
-        data-en="We invite a select few brands and curators to shape the next collection. Tell us about yourself, and we will be in touch."
-      >Vi inviterer et utvalg merkevarer og kuratorer til å forme den neste kolleksjonen. Fortell oss om deg, så tar vi kontakt.</p>
-
-      <form
-        id="partner-form"
-        name="partner-application"
-        method="POST"
-        data-netlify="true"
-        netlify-honeypot="bot-field"
-        class="partner-form"
-      >
-        <input type="hidden" name="form-name" value="partner-application" />
-        <p class="hp-field">
-          <label>Ikke fyll ut dette feltet: <input name="bot-field" /></label>
-        </p>
-
-        <div class="field">
-          <label for="pf-name" data-no="Navn" data-en="Name">Navn</label>
-          <input
-            id="pf-name"
-            type="text"
-            name="name"
-            required
-            data-no-placeholder="Ola Nordmann"
-            data-en-placeholder="Jane Doe"
-            placeholder="Ola Nordmann"
-          />
-        </div>
-
-        <div class="field">
-          <label for="pf-email" data-no="E-post" data-en="Email">E-post</label>
-          <input
-            id="pf-email"
-            type="email"
-            name="email"
-            required
-            data-no-placeholder="navn@epost.no"
-            data-en-placeholder="name@email.com"
-            placeholder="navn@epost.no"
-          />
-        </div>
-
-        <div class="field full">
-          <label for="pf-brand" data-no="Merkevare / Selskap" data-en="Brand / Company">Merkevare / Selskap</label>
-          <input
-            id="pf-brand"
-            type="text"
-            name="brand"
-            data-no-placeholder="Ditt studio eller merkevare"
-            data-en-placeholder="Your studio or brand"
-            placeholder="Ditt studio eller merkevare"
-          />
-        </div>
-
-        <div class="field full">
-          <label for="pf-message" data-no="Melding" data-en="Message">Melding</label>
-          <textarea
-            id="pf-message"
-            name="message"
-            data-no-placeholder="Fortell oss kort om deg og hva du ønsker å skape."
-            data-en-placeholder="Tell us briefly about yourself and what you wish to create."
-            placeholder="Fortell oss kort om deg og hva du ønsker å skape."
-          ></textarea>
-        </div>
-
-        <button type="submit" class="partner-submit" data-no="Send søknad" data-en="Submit Application">Send søknad</button>
-        <div id="form-feedback" class="form-feedback"></div>
-      </form>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <div data-no="© 2026 Scandi Japandi — Oslo & Kyoto" data-en="© 2026 Scandi Japandi — Oslo & Kyoto">© 2026 Scandi Japandi — Oslo & Kyoto</div>
-    <a class="studio-link" href="/studio" data-no="Partnerinnlogging" data-en="Partner Login">Partnerinnlogging</a>
-  </footer>
-
-  <script is:inline>
-    // --- Kurator-referanse: fanges fra ?ref= og bevares for checkout ---
-    const urlParams = new URLSearchParams(window.location.search);
-    const ref = urlParams.get('ref');
-    if (ref) {
-      localStorage.setItem('curator_ref', ref);
-    }
-
-    // --- Språkveksling (NO / EN) ---
-    function setLanguage(lang) {
-      document.querySelectorAll('[data-no]').forEach((el) => {
-        const txt = el.getAttribute('data-' + lang);
-        if (txt !== null) {
-          el.textContent = txt;
-        }
-      });
-      document.querySelectorAll('[data-no-placeholder]').forEach((el) => {
-        const ph = el.getAttribute('data-' + lang + '-placeholder');
-        if (ph !== null) {
-          el.setAttribute('placeholder', ph);
-        }
-      });
-      document.querySelectorAll('.lang-btn').forEach((btn) => {
-        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
-      });
-      document.documentElement.setAttribute('lang', lang);
-      localStorage.setItem('lang', lang);
-    }
-
-    document.querySelectorAll('.lang-btn').forEach((btn) => {
-      btn.addEventListener('click', () => setLanguage(btn.getAttribute('data-lang')));
-    });
-
-    // Gjenopprett tidligere valgt språk
-    setLanguage(localStorage.getItem('lang') || 'no');
-
-    // --- Checkout: send slug + kurator-referanse til Netlify-funksjonen ---
-    function checkout(slug) {
-      const curator = localStorage.getItem('curator_ref') || '';
-      window.location.href = `/api/checkout?slug=${slug}&ref=${curator}`;
-    }
-
-    // --- Statuslinje etter retur fra Stripe ---
-    (function showCheckoutStatus() {
-      const status = urlParams.get('checkout');
-      if (!status) return;
-      const banner = document.getElementById('checkout-banner');
-      const lang = document.documentElement.getAttribute('lang') || 'no';
-      const messages = {
-        success: { no: 'Takk for din bestilling — en bekreftelse er på vei.', en: 'Thank you for your order — a confirmation is on its way.' },
-        cancel: { no: 'Betalingen ble avbrutt. Du er velkommen tilbake når som helst.', en: 'Checkout was cancelled. You are welcome back any time.' },
-        error: { no: 'Noe gikk galt under betalingen. Vennligst prøv igjen.', en: 'Something went wrong during checkout. Please try again.' },
-      };
-      const msg = messages[status] || messages.error;
-      banner.textContent = msg[lang] || msg.no;
-      banner.style.display = 'block';
-    })();
-
-    // --- Partner-skjema: AJAX-innsending mot Netlify Forms ---
-    const partnerForm = document.getElementById('partner-form');
-    const feedback = document.getElementById('form-feedback');
-    partnerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const lang = document.documentElement.getAttribute('lang') || 'no';
-      const sending = { no: 'Sender …', en: 'Sending …' };
-      const ok = { no: 'Takk! Søknaden din er mottatt.', en: 'Thank you! Your application has been received.' };
-      const fail = { no: 'Innsendingen feilet. Vennligst prøv igjen.', en: 'Submission failed. Please try again.' };
-
-      feedback.textContent = sending[lang];
-      try {
-        const body = new URLSearchParams(new FormData(partnerForm)).toString();
-        const res = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body,
-        });
-        if (res.ok) {
-          partnerForm.reset();
-          feedback.textContent = ok[lang];
-        } else {
-          feedback.textContent = fail[lang];
-        }
-      } catch (err) {
-        feedback.textContent = fail[lang];
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Scandi Japandi Collection</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+      /* 2. GLOBAL JAPANDI AESTHETIC (Minimalisme, luft og jordtoner) */
+      :root {
+        --color-bg: #fcfbfa;       /* Off-white / papirfarge */
+        --color-text: #1a1a1a;     /* Dempet sort */
+        --color-muted: #706e6b;    /* Jordete gråtone for sekundærtekst */
+        --color-border: #e6e4e0;   /* Myk, tynn delelinje */
+        --color-accent: #2b2927;   /* Dyp mørkegrå for knapper */
+        --font-sans: 'Inter', sans-serif;
       }
-    });
-  </script>
-</body>
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        padding-bottom: 6rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      /* Navigation Header */
+      header {
+        border-bottom: 1px solid var(--color-border);
+        padding: 2rem 0;
+        margin-bottom: 6rem;
+      }
+
+      .header-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.25rem;
+        font-weight: 400;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      /* Språkvelger (Premium & diskret) */
+      .lang-toggle {
+        background: none;
+        border: none;
+        font-family: var(--font-sans);
+        font-size: 0.875rem;
+        color: var(--color-muted);
+        cursor: pointer;
+        letter-spacing: 0.05em;
+        font-weight: 500;
+        transition: color 0.2s ease;
+      }
+
+      .lang-toggle:hover {
+        color: var(--color-text);
+      }
+
+      /* Intro seksjon */
+      .intro-section {
+        margin-bottom: 8rem;
+        max-width: 600px;
+      }
+
+      .intro-text {
+        font-size: 1.5rem;
+        font-weight: 300;
+        line-height: 1.6;
+        color: var(--color-text);
+        letter-spacing: -0.01em;
+      }
+
+      /* Produkt-grid (Lekker, luftig plassering) */
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 6rem 4rem;
+        margin-bottom: 10rem;
+      }
+
+      .product-card {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .image-wrapper {
+        background-color: #f5f3f0;
+        aspect-ratio: 4 / 5;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+
+      .product-card:hover .product-image {
+        transform: scale(1.02);
+      }
+
+      .product-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-title {
+        font-size: 1.125rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
+
+      .product-price {
+        font-size: 1rem;
+        font-weight: 400;
+        color: var(--color-muted);
+      }
+
+      .product-desc {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--color-muted);
+        margin-bottom: 1.5rem;
+        font-weight: 300;
+      }
+
+      /* Kjøp nå-knapp */
+      .buy-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-accent);
+        color: #ffffff;
+        border: none;
+        padding: 1rem;
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: background-color 0.2s ease;
+      }
+
+      .buy-button:hover {
+        background-color: #000000;
+      }
+
+      /* 3. PARTNER SØKNADSSKJEMA (Netlify Forms integrert) */
+      .partner-section {
+        border-top: 1px solid var(--color-border);
+        padding: 8rem 0;
+        max-width: 550px;
+        margin: 0 auto;
+      }
+
+      .partner-section h2 {
+        font-size: 1.5rem;
+        font-weight: 400;
+        margin-bottom: 1rem;
+        letter-spacing: -0.01em;
+        text-align: center;
+      }
+
+      .partner-section p {
+        font-size: 0.95rem;
+        color: var(--color-muted);
+        text-align: center;
+        margin-bottom: 3rem;
+        font-weight: 300;
+        line-height: 1.5;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+        color: var(--color-muted);
+      }
+
+      .form-control {
+        width: 100%;
+        background-color: #f5f3f0;
+        border: 1px solid transparent;
+        padding: 1rem;
+        font-family: var(--font-sans);
+        font-size: 0.95rem;
+        color: var(--color-text);
+        transition: border-color 0.2s ease;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--color-muted);
+      }
+
+      textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+      }
+
+      .submit-button {
+        width: 100%;
+        background-color: transparent;
+        color: var(--color-text);
+        border: 1px solid var(--color-text);
+        padding: 1rem;
+        font-family: var(--font-sans);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 1rem;
+      }
+
+      .submit-button:hover {
+        background-color: var(--color-text);
+        color: #ffffff;
+      }
+
+      /* 4. DISKRET FOOTER (Med gjemt Studio-lenke) */
+      footer {
+        border-top: 1px solid var(--color-border);
+        padding: 4rem 0 2rem 0;
+        margin-top: 4rem;
+      }
+
+      .footer-inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--color-muted);
+      }
+
+      .studio-link {
+        color: var(--color-muted);
+        text-decoration: none;
+        letter-spacing: 0.05em;
+        transition: color 0.2s ease;
+      }
+
+      .studio-link:hover {
+        color: var(--color-text);
+      }
+
+      /* Skjuler elementer basert på aktivt språk */
+      [data-lang]:hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <header>
+      <div class="container header-inner">
+        <div class="logo">Scandi Japandi</div>
+        <button id="langToggle" class="lang-toggle">EN / NO</button>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="intro-section">
+        <div data-lang="no" class="intro-text">
+          Få stykker, valgt med omhu. Hvert objekt er laget i små serier av håndverkere i Norden og Japan.
+        </div>
+        <div data-lang="en" class="intro-text" hidden>
+          Few pieces, carefully selected. Each object is crafted in small batches by artisans in the Nordic region and Japan.
+        </div>
+      </section>
+
+      <section class="product-grid">
+        {products && products.map((product) => (
+          <div class="product-card">
+            <div class="image-wrapper">
+              {product.mainImage && (
+                <img class="product-image" src={product.mainImage} alt={product.title} loading="lazy" />
+              )}
+            </div>
+            
+            <div class="product-meta">
+              <h3 class="product-title">{product.title}</h3>
+              <span class="product-price">{product.price.toLocaleString('no-NO')} kr</span>
+            </div>
+
+            {/* Lokalisert beskrivelse */}
+            <p data-lang="no" class="product-desc">{product.description_no || product.description_en}</p>
+            <p data-lang="en" class="product-desc" hidden>{product.description_ja || product.description_no}</p>
+
+            {/* Kjøp-knapp med Stripe-logikk */}
+            <button 
+              class="buy-button" 
+              data-slug={product.slug}
+              data-curator={product.curator?.id || ""}
+            >
+              <span data-lang="no">Kjøp nå →</span>
+              <span data-lang="en" hidden>Buy now →</span>
+            </button>
+          </div>
+        ))}
+      </section>
+
+      <section class="partner-section">
+        <h2 data-lang="no">Bli Collection Partner</h2>
+        <h2 data-lang="en" hidden>Become a Collection Partner</h2>
+        
+        <p data-lang="no">Ønsker du dine objekter vurdert for vår seleksjon? Send oss en henvendelse under.</p>
+        <p data-lang="en" hidden>Would you like your objects considered for our selection? Apply below.</p>
+
+        <form name="collection-partner" method="POST" data-netlify="true">
+          <input type="hidden" name="form-name" value="collection-partner" />
+          
+          <div class="form-group">
+            <label for="name" data-lang="no">Navn</label>
+            <label for="name" data-lang="en" hidden>Name</label>
+            <input type="text" id="name" name="name" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email" data-lang="no">E-post</label>
+            <label for="email" data-lang="en" hidden>Email</label>
+            <input type="email" id="email" name="email" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="brand" data-lang="no">Firmanavn / Merkevare</label>
+            <label for="brand" data-lang="en" hidden>Brand / Company</label>
+            <input type="text" id="brand" name="brand" class="form-control" required />
+          </div>
+
+          <div class="form-group">
+            <label for="message" data-lang="no">Melding / Søknad</label>
+            <label for="message" data-lang="en" hidden>Message / Application</label>
+            <textarea id="message" name="message" class="form-control" required></textarea>
+          </div>
+
+          <button type="submit" class="submit-button">
+            <span data-lang="no">Send søknad</span>
+            <span data-lang="en" hidden>Submit Application</span>
+          </button>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-inner">
+        <div>© 2026 Scandi Japandi Group.</div>
+        <div>
+          <a href="/studio" class="studio-link">Studio Portal</a>
+        </div>
+      </div>
+    </footer>
+
+    {/* CLIENT SCRIPT: Låser språksvitsj, sporer kurator (?ref=) og håndterer Stripe-kall */}
+    <script>
+      // 1. SPRÅKVELGER LOGIKK
+      let currentLang = 'no';
+      const langToggle = document.getElementById('langToggle');
+      const langElements = document.querySelectorAll('[data-lang]');
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        langElements.forEach(el => {
+          if (el.getAttribute('data-lang') === lang) {
+            el.removeAttribute('hidden');
+          } else {
+            el.setAttribute('hidden', 'true');
+          }
+        });
+      }
+
+      langToggle?.addEventListener('click', () => {
+        setLanguage(currentLang === 'no' ? 'en' : 'no');
+      });
+
+      // 2. SPORING AV KURATOR (localStorage-sjekk for ?ref= URL)
+      const urlParams = new URLSearchParams(window.location.search);
+      const refParam = urlParams.get('ref');
+      if (refParam) {
+        localStorage.setItem('curator_ref', refParam);
+      }
+
+      // 3. STRIPE CHECKOUT INTEGRASJON VIA /api/checkout
+      const buyButtons = document.querySelectorAll('.buy-button');
+      buyButtons.forEach(button => {
+        button.addEventListener('click', async (e) => {
+          const btn = e.currentTarget as HTMLButtonElement;
+          const slug = btn.getAttribute('data-slug');
+          const inlineCurator = btn.getAttribute('data-curator');
+          const storedCurator = localStorage.getItem('curator_ref');
+          
+          // Prioriterer aktiv ref-link over statisk kobling
+          const activeCurator = storedCurator || inlineCurator;
+
+          try {
+            const response = await fetch('/api/checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slug, ref: activeCurator })
+            });
+
+            const session = await response.json();
+            if (session.url) {
+              window.location.href = session.url; // Sender brukeren direkte til Stripe
+            } else {
+              console.error('Stripe Checkout Session feilet.');
+            }
+          } catch (error) {
+            console.error('Nettverksfeil mot Stripe API-endepunkt:', error);
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
