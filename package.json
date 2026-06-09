@@ -1,5 +1,23 @@
-"dependencies": {
-    "astro": "^4.0.0",
-    "stripe": "^14.0.0",
-    "sanity:client": "^1.0.0"
+{
+  "name": "scandijapandi-collection",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^5.0.0",
+    "@sanity/astro": "^3.0.0",
+    "@sanity/image-url": "^1.0.2",
+    "astro": "^4.8.0",
+    "sanity": "^3.40.0",
+    "stripe": "^14.25.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
   }
+}
