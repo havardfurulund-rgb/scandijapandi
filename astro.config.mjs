@@ -4,12 +4,17 @@ import tailwind from '@astrojs/tailwind';
 import sanity from '@sanity/astro';
 
 export default defineConfig({
-  output: 'static',           // <--- Viktigst
+  output: 'static',
   adapter: netlify(),
+  i18n: {
+    defaultLocale: 'no',
+    locales: ['no', 'en', 'ja'],
+    routing: {
+      prefixDefaultLocale: false   // Gjør norsk til rot-URL
+    }
+  },
   integrations: [
-    tailwind({
-      applyBaseStyles: true,
-    }),
+    tailwind({ applyBaseStyles: true }),
     sanity({
       projectId: 'v7f0k69w',
       dataset: 'production',
@@ -17,5 +22,4 @@ export default defineConfig({
       studioUrl: '/studio',
     }),
   ],
-  // Fjern eventuelle experimental eller hybrid-innstillinger
 });
