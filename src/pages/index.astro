@@ -230,18 +230,18 @@ const products = await sanityClient.fetch(`*[_type == "product"]{
         </div>
         
         <div class="product-meta">
-          <h2 class="product-title" data-no={product.title?.no} data-en={product.title?.en}>
-            {product.title?.no || 'Uten navn'}
+          <h2 class="product-title" data-no={product.title} data-en={product.title}>
+            {product.title || 'Uten navn'}
           </h2>
           <div class="product-price">{product.price} NOK</div>
         </div>
-        
+
         {product.curator && (
           <div class="product-curator">Curated by {product.curator.name}</div>
         )}
-        
-        <p class="product-desc" data-no={product.description?.no} data-en={product.description?.en}>
-          {product.description?.no}
+
+        <p class="product-desc" data-no={product.description} data-en={product.description}>
+          {product.description}
         </p>
 
         <button class="buy-btn" onclick={`checkout('${product.slug?.current}')`}>

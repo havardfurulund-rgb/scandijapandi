@@ -55,6 +55,17 @@ export default {
       name: 'description_jp',
       title: 'Beskrivelse (Japansk)',
       type: 'text',
+    },
+    {
+      // Eldre rik-tekst-felt fra et tidligere skjema. Eksisterende produkter i
+      // databasen har fortsatt data her, noe som ga «Unknown field found» i
+      // Studio. Feltet er nå definert slik at innholdet valideres. Bruk
+      // «Beskrivelse (Norsk)» for ny tekst — dette feltet beholdes kun for
+      // bakoverkompatibilitet og kan tømmes per produkt.
+      name: 'body',
+      title: 'Brødtekst (utdatert – bruk Beskrivelse)',
+      type: 'array',
+      of: [{ type: 'block' }],
     }
   ],
 }
