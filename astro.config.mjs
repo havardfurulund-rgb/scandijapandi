@@ -1,24 +1,26 @@
 import { defineConfig } from 'astro/config';
+import netlify from '@astrojs/netlify';
 import sanity from '@sanity/astro';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 
-// Static output (the default) — the embedded Sanity Studio is prerendered into
-// `dist/studio/index.html` by the @sanity/astro integration and served as a SPA.
 export default defineConfig({
+  // Tvinger Astro til å bygge prosjektet på server-nivå (SSR) for Netlify
+  output: 'server',
+  
+  // Kobler prosjektet eksplisitt til Netlify-adapteren
+  adapter: netlify({
+    edgeMiddleware: false
+  }),
+
   integrations: [
-    sanity({
-      projectId: process.env.PUBLIC_SANITY_PROJECT_ID,
-      dataset: process.env.PUBLIC_SANITY_DATASET || 'production',
-      useCdn: false,
-      // Registers and prerenders the Studio route at /studio.
-      studioBasePath: '/studio',
-    }),
-    // Required by Sanity Studio (renders React components).
     react(),
-    // Build-time Tailwind. `applyBaseStyles: false` keeps Tailwind's preflight
-    // reset out of every route by default — the storefront opts in by importing
-    // `src/styles/global.css`, so the embedded Studio at /studio stays pristine.
-    tailwind({ applyBaseStyles: false }),
+    tailwind(),
+    sanity({
+      projectId: 'v7f0k69w',
+      dataset: 'production',
+      useCdn: false,
+      studioUrl: '/studio',
+    }),
   ],
 });
