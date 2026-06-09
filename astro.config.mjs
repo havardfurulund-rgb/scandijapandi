@@ -5,13 +5,11 @@ import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 
 export default defineConfig({
-  // Tvinger Astro til å bygge prosjektet på server-nivå (SSR) for Netlify
-  output: 'server',
+  // Hybrid gjør at forsiden og Sanity-produktene bygges statisk og trygt,
+  // mens API-endepunkter kjører live på serveren.
+  output: 'hybrid',
   
-  // Kobler prosjektet eksplisitt til Netlify-adapteren
-  adapter: netlify({
-    edgeMiddleware: false
-  }),
+  adapter: netlify(),
 
   integrations: [
     react(),
