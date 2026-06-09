@@ -2,15 +2,19 @@
   command = "npm run build"
   publish = "dist"
 
-# The embedded Sanity Studio is a client-side single-page app prerendered to
-# /studio/index.html. Rewrite the Studio path (and any sub-paths it may request)
-# to that entry with a 200 so client-side routing never returns a Netlify 404.
+# SIKRER AT NETLIFY FINNER OG KJØRER LIVE SERVER-FUNKSJONER (FOR STRIPE API)
+[[redirects]]
+  from = "/api/*"
+  status = 200
+  to = "/.netlify/functions/entry"
+
+# SIKRER AT SANITY STUDIO PORTALEN FUNGERER
 [[redirects]]
   from = "/studio"
-  to = "/studio/index.html"
   status = 200
+  to = "/studio/index.html"
 
 [[redirects]]
   from = "/studio/*"
-  to = "/studio/index.html"
   status = 200
+  to = "/studio/index.html"
