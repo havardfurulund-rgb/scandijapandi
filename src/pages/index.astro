@@ -14,34 +14,30 @@ const title = "Scandi Japandi Collection";
     body { font-family: 'Inter', system-ui, sans-serif; }
     .serif { font-family: 'Cormorant Garamond', serif; }
     .hero {
-      background-image: linear-gradient(rgba(0, 31, 63, 0.48), rgba(0, 31, 63, 0.48)), 
+      background-image: linear-gradient(rgba(15, 15, 15, 0.42), rgba(15, 15, 15, 0.42)), 
                         url('https://picsum.photos/id/1015/2000/1200');
       background-size: cover;
       background-position: center;
-      background-attachment: fixed;
     }
-    .nav-link { transition: all 0.4s ease; }
-    .nav-link:hover { color: #C5A05B; }
   </style>
 </head>
-<body class="bg-[#F5F7FA] text-[#001F3F]">
+<body class="bg-[#FAF9F6] text-[#1F1F1F]">
 
   <!-- Navigation -->
-  <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-[#001F3F]/10">
+  <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-[#1F1F1F]/10">
     <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
-      <div class="text-2xl tracking-[0.2em] font-light serif">SCANDI JAPANDI</div>
+      <div class="text-2xl tracking-[0.25em] font-light serif">SCANDI JAPANDI</div>
       
       <div class="flex items-center gap-10 text-sm uppercase tracking-widest">
-        <a href="#collection" class="nav-link">Kolleksjon</a>
-        <a href="#" class="nav-link">Japandi</a>
-        <a href="#" class="nav-link">Produsenter</a>
-        <a href="#" class="nav-link">Kontakt</a>
+        <a href="#collection" class="hover:text-[#C5A05B] transition-colors">Kolleksjon</a>
+        <a href="#" class="hover:text-[#C5A05B] transition-colors">Japandi</a>
+        <a href="#" class="hover:text-[#C5A05B] transition-colors">Produsenter</a>
       </div>
 
-      <div class="flex gap-5 text-sm font-medium">
+      <div class="flex gap-6 text-sm font-medium">
         <a href="/" class="text-[#C5A05B]">NO</a>
-        <a href="/en" class="nav-link">EN</a>
-        <a href="/ja" class="nav-link">JA</a>
+        <a href="/en" class="hover:text-[#C5A05B]">EN</a>
+        <a href="/ja" class="hover:text-[#C5A05B]">JA</a>
       </div>
     </div>
   </nav>
@@ -49,59 +45,59 @@ const title = "Scandi Japandi Collection";
   <!-- Hero -->
   <section class="hero h-screen flex items-center justify-center text-white">
     <div class="max-w-5xl mx-auto text-center px-6">
-      <p class="uppercase tracking-[0.5em] text-sm mb-6 opacity-90">Quiet Luxury • Timeless Harmony</p>
-      <h1 class="serif text-6xl md:text-[68px] leading-none font-light tracking-tight mb-8">
+      <p class="uppercase tracking-[0.4em] text-sm mb-6 opacity-90">Quiet Luxury • Timeless Harmony</p>
+      <h1 class="serif text-6xl md:text-7xl leading-none font-light tracking-tight mb-10">
         Skandinavisk sjel.<br>
         Japansk ro.
       </h1>
       <p class="text-xl md:text-2xl max-w-xl mx-auto mb-12 opacity-90">
-        Kuratert samling av det beste innen skandinavisk håndverk — designet for de som verdsetter ro og tidløshet.
+        Håndplukkede objekter fra de beste småskala produsentene i Norge og Skandinavia.
       </p>
       <a href="#collection" 
-         class="inline-block border-2 border-white px-14 py-6 text-sm uppercase tracking-widest hover:bg-white hover:text-[#001F3F] transition-all duration-500">
+         class="inline-block border border-white px-14 py-6 text-sm uppercase tracking-widest hover:bg-white hover:text-[#1F1F1F] transition-all duration-500">
         Utforsk kolleksjonen
       </a>
     </div>
   </section>
 
-  <!-- Collection Preview -->
+  <!-- Collection -->
   <section id="collection" class="max-w-7xl mx-auto px-8 py-28">
-    <h2 class="serif text-5xl font-light text-center mb-20 tracking-tight">Kuratert med ro og respekt</h2>
+    <h2 class="serif text-5xl font-light text-center mb-20">Kuratert med ro</h2>
     
     <div class="grid md:grid-cols-3 gap-12">
-      <div class="group">
-        <div class="aspect-square overflow-hidden mb-6 bg-gray-100">
-          <img src="https://picsum.photos/id/1015/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+      <div class="group cursor-pointer">
+        <div class="aspect-square overflow-hidden mb-6 bg-[#F5F4F0]">
+          <img src="https://picsum.photos/id/1015/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Linndekke">
         </div>
-        <h3 class="serif text-2xl font-light">Naturlig Linndekke</h3>
-        <p class="text-[#001F3F]/70 mt-1">Lofoten • Håndvevd</p>
+        <h3 class="serif text-2xl font-light">Håndvevd Linndekke</h3>
+        <p class="text-[#555555] mt-1">Lofoten • Naturlig lin</p>
         <p class="mt-4 text-lg">2 450 kr</p>
       </div>
 
-      <div class="group">
-        <div class="aspect-square overflow-hidden mb-6 bg-gray-100">
-          <img src="https://picsum.photos/id/201/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+      <div class="group cursor-pointer">
+        <div class="aspect-square overflow-hidden mb-6 bg-[#F5F4F0]">
+          <img src="https://picsum.photos/id/201/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Eikebolle">
         </div>
         <h3 class="serif text-2xl font-light">Eikebolle – Hardanger</h3>
-        <p class="text-[#001F3F]/70 mt-1">Hånddreid eik</p>
+        <p class="text-[#555555] mt-1">Hånddreid eik</p>
         <p class="mt-4 text-lg">980 kr</p>
       </div>
 
-      <div class="group">
-        <div class="aspect-square overflow-hidden mb-6 bg-gray-100">
-          <img src="https://picsum.photos/id/870/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+      <div class="group cursor-pointer">
+        <div class="aspect-square overflow-hidden mb-6 bg-[#F5F4F0]">
+          <img src="https://picsum.photos/id/870/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Keramikk">
         </div>
         <h3 class="serif text-2xl font-light">Kystkeramikkvase</h3>
-        <p class="text-[#001F3F]/70 mt-1">Vestlandet • Steinvar</p>
+        <p class="text-[#555555] mt-1">Vestlandet • Steinvar</p>
         <p class="mt-4 text-lg">1 650 kr</p>
       </div>
     </div>
   </section>
 
-  <footer class="bg-[#001F3F] text-white py-20">
+  <footer class="bg-[#1F1F1F] text-white py-20">
     <div class="max-w-7xl mx-auto px-8 text-center">
       <p class="text-lg tracking-widest serif">SCANDI JAPANDI COLLECTION</p>
-      <p class="text-sm mt-6 opacity-60">© 2026 • Kuratert i Norge • Formidlet til verden</p>
+      <p class="text-sm mt-6 opacity-60">© 2026 • Kuratert med ro og respekt for håndverk</p>
     </div>
   </footer>
 
