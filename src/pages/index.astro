@@ -3,17 +3,14 @@ import '../styles/global.css';
 import { sanityClient } from 'sanity:client';
 import imageUrlBuilder from '@sanity/image-url';
 
-// 1. DATA FETCHING (Sanity DB)
+// Henter produktene, inkludert en direkte Stripe-link fra Sanity hvis den finnes
 const QUERY = `*[_type == "product" && defined(title)] | order(_createdAt asc){
   _id,
   title,
   price,
   "excerpt": pt::text(body),
-  "slug": slug.current,
-  mainImage{ ..., asset->{ url, metadata{ lqip } } },
-  curator->{
-    "id": _id
-  }
+  "stripeLink": stripeLink, 
+  mainImage{ ..., asset->{ url, metadata{ lqip } } }
 }`;
 
 let docs = [];
@@ -39,30 +36,24 @@ const sanityItems = docs.map((d) => ({
   title: d.title,
   maker: '',
   price: d.price,
-  slug: d.slug,
-  curatorId: d.curator?.id ?? '',
+  stripeLink: d.stripeLink ?? '#partner', // Fallback til partnerskjema hvis link mangler
   excerpt: d.excerpt ? d.excerpt.slice(0, 150) : '',
   alt: d.mainImage?.alt ?? d.title,
   ...(d.mainImage?.asset ? buildImage(d.mainImage) : { src: null, srcset: null, lqip: null }),
 }));
 
-// Curated fallback — vises dersom Sanity er tom eller feiler
 const fallback = [
-  { title: 'Curved Birch Tray', maker: 'Studio Bjørk · Bergen', price: 895, slug: 'curved-birch-tray', curatorId: '', alt: 'Curved birch serving tray', src: '/images/products/wood-tray.jpg', excerpt: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.' },
-  { title: 'Matte Stoneware Vase', maker: 'Sōen Keramikk · Kyoto', price: 1450, slug: 'matte-stoneware-vase', curatorId: '', alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' },
-  { title: 'Washi Paper Lamp', maker: 'Atelier Nord · Oslo', price: 2380, slug: 'washi-paper-lamp', curatorId: '', alt: 'Washi paper table lamp', src: '/images/products/night-lamp.jpg', excerpt: 'Mulberry-paper shade over an oak base, diffusing a warm, low evening light.' },
+  { title: 'Curved Birch Tray', maker: 'Studio Bjørk · Bergen', price: 895, stripeLink: '#partner', alt: 'Curved birch serving tray', src: '/images/products/wood-tray.jpg', excerpt: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.' },
+  { title: 'Matte Stoneware Vase', maker: 'Sōen Keramikk · Kyoto', price: 1450, stripeLink: '#partner', alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' },
 ];
 
-const usingSanity = sanityItems.length > 0;
-const products = usingSanity ? sanityItems : fallback;
+const products = sanityItems.length > 0 ? sanityItems : fallback;
 
 const nok = new Intl.NumberFormat('nb-NO', {
   style: 'currency',
   currency: 'NOK',
   maximumFractionDigits: 0,
 });
-const formatPrice = (p) =>
-  typeof p === 'number' ? nok.format(p) : p || 'Pris på forespørsel';
 ---
 
 <!doctype html>
@@ -71,17 +62,7 @@ const formatPrice = (p) =>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ScandiJapandi — Nordisk ro, japansk håndverk</title>
-    <meta
-      name="description"
-      content="En stille kolleksjon av håndlagde objekter der nordisk ro møter japansk håndverk. Oslo · Tokyo."
-    />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap"
-    />
-    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap" />
     <script is:inline>
       document.documentElement.classList.add('js');
       addEventListener('DOMContentLoaded', () => {
@@ -90,17 +71,11 @@ const formatPrice = (p) =>
           els.forEach((e) => e.classList.add('is-visible'));
           return;
         }
-        const io = new IntersectionObserver(
-          (entries) => {
-            for (const e of entries) {
-              if (e.isIntersecting) {
-                e.target.classList.add('is-visible');
-                io.unobserve(e.target);
-              }
-            }
-          },
-          { rootMargin: '0px 0px -10% 0px', threshold: 0.12 }
-        );
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+          }
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.12 });
         els.forEach((e) => io.observe(e));
       });
     </script>
@@ -109,205 +84,55 @@ const formatPrice = (p) =>
   <body class="overflow-x-hidden bg-paper text-ink">
     <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
       <div class="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-        <a href="#top" class="group flex items-center gap-3">
-          <svg viewBox="0 0 32 40" class="h-7 w-7 text-ink transition-transform duration-700 ease-japandi group-hover:rotate-6" aria-hidden="true">
-            <path d="M16 38V6" stroke="currentColor" stroke-width="1.2" fill="none" />
-            <path d="M16 26C9 24 6 18 6 12c6 1 9 7 10 14Z" fill="currentColor" opacity="0.85" />
-            <path d="M16 20c6-1 9-6 9-11-5 1-8 5-9 11Z" fill="currentColor" opacity="0.55" />
-          </svg>
-          <span class="font-serif text-lg tracking-tight">ScandiJapandi</span>
-        </a>
+        <a href="#top" class="font-serif text-lg tracking-tight">ScandiJapandi</a>
         <nav class="flex items-center gap-8 text-[11px] font-medium uppercase tracking-widest text-stone">
-          <a href="#collection" class="transition-colors hover:text-clay">Kolleksjon</a>
-          <a href="#ethos" class="hidden transition-colors hover:text-clay sm:inline">Historie</a>
-          <a href="#partner" class="transition-colors hover:text-clay">Bli Partner</a>
+          <a href="#collection">Kolleksjon</a>
+          <a href="#partner">Bli Partner</a>
         </nav>
       </div>
     </header>
 
-    <section id="top" class="relative flex min-h-screen items-end overflow-hidden">
-      <img
-        src="/images/hero.jpg"
-        alt="Lyst interiør i naturlige materialer"
-        width="1920"
-        height="1280"
-        fetchpriority="high"
-        decoding="async"
-        class="absolute inset-0 h-full w-full object-cover"
-      />
-      <div class="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-ink/5"></div>
-      <div class="relative z-10 mx-auto w-full max-w-6xl px-6 pb-20 pt-32">
-        <div class="max-w-2xl text-paper">
-          <span class="block text-[11px] font-medium uppercase tracking-widest text-paper/80">Oslo&nbsp;·&nbsp;Tokyo</span>
-          <h1 class="mt-6 font-serif text-5xl leading-[1.05] sm:text-6xl lg:text-7xl">Der nordisk ro møter japansk håndverk</h1>
-          <p class="mt-8 max-w-md text-base font-light leading-relaxed text-paper/85">En stille kolleksjon av objekter laget for å leves med — i tre, leire og ull.</p>
-          <a href="#collection" class="group mt-10 inline-flex items-center gap-3 border-b border-paper/40 pb-1 text-[11px] font-medium uppercase tracking-widest text-paper transition-colors hover:border-clay hover:text-clay">
-            Se kolleksjonen <span class="transition-transform duration-500 ease-japandi group-hover:translate-x-1.5">→</span>
-          </a>
-        </div>
+    <section id="top" class="relative flex min-h-screen items-end overflow-hidden bg-stone py-20">
+      <div class="relative z-10 mx-auto w-full max-w-6xl px-6 text-paper">
+        <h1 class="font-serif text-5xl sm:text-7xl max-w-3xl">Der nordisk ro møter japansk håndverk</h1>
       </div>
     </section>
 
-    <section id="collection" class="scroll-mt-24 px-6 py-28 lg:py-36">
-      <div class="mx-auto max-w-6xl">
-        <header class="reveal max-w-2xl">
-          <span class="text-[11px] font-medium uppercase tracking-widest text-clay">Utvalgt</span>
-          <h2 class="mt-4 font-serif text-4xl leading-tight sm:text-5xl">Kolleksjonen</h2>
-          <div class="h-[1px] w-12 bg-clay mt-7"></div>
-          <p class="mt-7 max-w-prose text-sm leading-relaxed text-stone">Få stykker, valgt med omhu. Hvert objekt er laget i små serier av håndverkere i Norden og Japan.</p>
-        </header>
-
-        <div class="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3 lg:gap-y-24">
-          {products.map((item, i) => (
-            <article class:list={['reveal group flex flex-col', i % 3 === 1 && 'lg:mt-20']} style={`transition-delay:${(i % 3) * 90}ms`}>
-              <div class="relative aspect-[4/5] overflow-hidden bg-oat" style={item.lqip ? `background-image:url(${item.lqip});background-size:cover;background-position:center;` : ''}>
-                {item.src ? (
-                  <img
-                    src={item.src}
-                    srcset={item.srcset ?? undefined}
-                    sizes="(min-width:1024px) 30vw, (min-width:640px) 45vw, 90vw"
-                    width="800"
-                    height="1000"
-                    loading={i < 3 ? 'eager' : 'lazy'}
-                    decoding="async"
-                    alt={item.alt}
-                    class="h-full w-full object-cover transition duration-[1200ms] ease-japandi will-change-transform group-hover:scale-[1.06] group-hover:opacity-95"
-                  />
-                ) : (
-                  <div class="flex h-full items-center justify-center p-6 text-center">
-                    <span class="font-serif text-2xl text-stone">{item.title}</span>
-                  </div>
-                )}
-                <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/30 to-transparent opacity-0 transition-opacity duration-700 ease-japandi group-hover:opacity-100" />
+    <section id="collection" class="px-6 py-28 mx-auto max-w-6xl">
+      <div class="grid grid-cols-1 gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((item, i) => (
+          <article class="reveal flex flex-col justify-between">
+            <div>
+              <div class="relative aspect-[4/5] bg-oat overflow-hidden">
+                {item.src && <img src={item.src} srcset={item.srcset} alt={item.alt} class="h-full w-full object-cover" />}
               </div>
-
-              <div class="mt-6 flex items-baseline justify-between gap-4">
-                <div>
-                  {item.maker && <span class="block text-[10px] font-medium uppercase tracking-widest text-clay">{item.maker}</span>}
-                  <h3 class="mt-1.5 font-serif text-2xl leading-snug transition-colors duration-500 ease-japandi group-hover:text-clay">{item.title}</h3>
-                </div>
-                <span class="shrink-0 text-sm font-light text-stone">{formatPrice(item.price)}</span>
+              <div class="mt-6 flex justify-between items-baseline">
+                <h3 class="font-serif text-2xl">{item.title}</h3>
+                <span class="text-sm font-light text-stone">{typeof item.price === 'number' ? nok.format(item.price) : item.price}</span>
               </div>
-              
-              {item.excerpt && <p class="mt-3 max-w-prose text-sm leading-relaxed text-stone/90 font-light">{item.excerpt}</p>}
-
-              {/* INTEGRERT STRIPE KJØPSKNAPP */}
-              <button 
-                class="buy-button mt-6 inline-flex items-center justify-center bg-ink text-paper py-3 px-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay text-center"
-                data-slug={item.slug}
-                data-curator={item.curatorId}
-              >
-                Kjøp nå →
-              </button>
-            </article>
-          ))}
-        </div>
+              <p class="mt-3 text-sm text-stone/90 font-light">{item.excerpt}</p>
+            </div>
+            
+            {/* IDIOTSIKKER DIREKTESTRAPPING */}
+            <a 
+              href={item.stripeLink}
+              class="mt-6 block w-full bg-ink text-paper py-3 text-[10px] font-medium uppercase tracking-widest text-center transition-colors hover:bg-clay"
+            >
+              Kjøp nå →
+            </a>
+          </article>
+        ))}
       </div>
     </section>
 
-    <section id="ethos" class="scroll-mt-24 bg-oat px-6 py-28 lg:py-36">
-      <div class="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-12 lg:gap-20">
-        <div class="reveal lg:col-span-5">
-          <img src="/images/hero.jpg" alt="Detalj av naturlige materialer" width="800" height="1000" loading="lazy" decoding="async" class="aspect-[4/5] w-full object-cover" />
-        </div>
-        <div class="reveal lg:col-span-6 lg:col-start-7" style="transition-delay:120ms">
-          <span class="text-[11px] font-medium uppercase tracking-widest text-clay">Historie</span>
-          <h2 class="mt-4 font-serif text-4xl leading-tight sm:text-5xl">En bro mellom to verdener</h2>
-          <div class="h-[1px] w-12 bg-clay mt-7"></div>
-          <p class="mt-7 text-lg font-light italic leading-relaxed text-ink/80">Den rå skjønnheten i nordisk natur, og den intensjonelle stillheten i japansk minimalisme.</p>
-          <p class="mt-6 max-w-prose text-sm leading-relaxed text-stone">Vi arbeider med håndverkere som deler en respekt for naturlige materialer og tålmodig håndverk. Resultatet er objekter uten støy — laget for å eldes vakkert i hjemmet ditt.</p>
-        </div>
-      </div>
+    <section id="partner" class="bg-oat px-6 py-28 text-center">
+      <h2 class="font-serif text-3xl">Bli Partner</h2>
+      <form name="collection-partner" method="POST" data-netlify="true" class="mt-8 max-w-md mx-auto space-y-4">
+        <input type="hidden" name="form-name" value="collection-partner" />
+        <input type="text" name="name" placeholder="Navn" required class="w-full p-3 bg-transparent border-b border-ink/20 outline-none" />
+        <input type="email" name="email" placeholder="E-post" required class="w-full p-3 bg-transparent border-b border-ink/20 outline-none" />
+        <button type="submit" class="w-full bg-ink text-paper py-3 uppercase text-[10px] tracking-widest">Send søknad</button>
+      </form>
     </section>
-
-    <section id="partner" class="scroll-mt-24 border-t border-ink/5 bg-paper px-6 py-28 lg:py-36">
-      <div class="mx-auto max-w-xl reveal">
-        <div class="text-center">
-          <span class="text-[11px] font-medium uppercase tracking-widest text-clay">Samarbeid</span>
-          <h2 class="mt-4 font-serif text-3xl leading-tight sm:text-4xl">Bli Collection Partner</h2>
-          <div class="h-[1px] w-12 bg-clay mx-auto mt-6"></div>
-          <p class="mt-6 text-sm leading-relaxed text-stone font-light">Ønsker du dine unike objekter vurdert for vår kuraterte seleksjon? Fortell oss kort om din merkevare under.</p>
-        </div>
-
-        <form name="collection-partner" method="POST" data-netlify="true" class="mt-12 space-y-6">
-          <input type="hidden" name="form-name" value="collection-partner" />
-          
-          <div>
-            <label for="name" class="block text-[10px] font-medium uppercase tracking-widest text-stone mb-2">Navn</label>
-            <input type="text" id="name" name="name" required class="w-full border-b border-ink/10 bg-transparent py-3 text-sm font-light text-ink outline-none focus:border-clay transition-colors" />
-          </div>
-
-          <div>
-            <label for="email" class="block text-[10px] font-medium uppercase tracking-widest text-stone mb-2">E-postadresse</label>
-            <input type="email" id="email" name="email" required class="w-full border-b border-ink/10 bg-transparent py-3 text-sm font-light text-ink outline-none focus:border-clay transition-colors" />
-          </div>
-
-          <div>
-            <label for="brand" class="block text-[10px] font-medium uppercase tracking-widest text-stone mb-2">Firmanavn / Merkevare</label>
-            <input type="text" id="brand" name="brand" required class="w-full border-b border-ink/10 bg-transparent py-3 text-sm font-light text-ink outline-none focus:border-clay transition-colors" />
-          </div>
-
-          <div>
-            <label for="message" class="block text-[10px] font-medium uppercase tracking-widest text-stone mb-2">Melding / Søknad</label>
-            <textarea id="message" name="message" required rows="4" class="w-full border border-ink/10 bg-transparent p-4 text-sm font-light text-ink outline-none focus:border-clay transition-colors resize-none"></textarea>
-          </div>
-
-          <button type="submit" class="w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay">
-            Send søknad
-          </button>
-        </form>
-      </div>
-    </section>
-
-    <footer class="px-6 py-16 bg-oat border-t border-ink/5">
-      <div class="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
-        <div>
-          <p class="text-[11px] font-medium uppercase tracking-widest text-ink">Oslo · Tokyo</p>
-          <p class="mt-1 text-[10px] uppercase tracking-widest text-stone/60">© 2026 ScandiJapandi Collection</p>
-        </div>
-        <div>
-          <a href="/studio" class="text-[10px] uppercase tracking-widest text-stone/60 hover:text-ink transition-colors border-b border-stone/20 pb-0.5">Studio Portal</a>
-        </div>
-      </div>
-    </footer>
-
-    <script>
-      // 1. SPORING AV KURATOR (?ref=)
-      const urlParams = new URLSearchParams(window.location.search);
-      const refParam = urlParams.get('ref');
-      if (refParam) {
-        localStorage.setItem('curator_ref', refParam);
-      }
-
-      // 2. STRIPE INTEGRASJON MOT /api/checkout
-      const buyButtons = document.querySelectorAll('.buy-button');
-      buyButtons.forEach(button => {
-        button.addEventListener('click', async (e) => {
-          const btn = e.currentTarget as HTMLButtonElement;
-          const slug = btn.getAttribute('data-slug');
-          const inlineCurator = btn.getAttribute('data-curator');
-          const storedCurator = localStorage.getItem('curator_ref');
-          
-          const activeCurator = storedCurator || inlineCurator;
-
-          try {
-            const response = await fetch('/api/checkout', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ slug, ref: activeCurator })
-            });
-
-            const session = await response.json();
-            if (session.url) {
-              window.location.href = session.url;
-            } else {
-              console.error('Stripe Checkout Session feilet.');
-            }
-          } catch (error) {
-            console.error('Nettverksfeil mot Stripe API:', error);
-          }
-        });
-      });
-    </script>
   </body>
 </html>
