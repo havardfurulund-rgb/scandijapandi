@@ -6,13 +6,6 @@ import sanity from '@sanity/astro';
 export default defineConfig({
   output: 'static',
   adapter: netlify(),
-  i18n: {
-    defaultLocale: 'no',
-    locales: ['no', 'en', 'ja'],
-    routing: {
-      prefixDefaultLocale: false   // Gjør norsk til rot-URL
-    }
-  },
   integrations: [
     tailwind({ applyBaseStyles: true }),
     sanity({
