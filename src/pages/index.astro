@@ -2,7 +2,7 @@
 import { sanityClient } from 'sanity:client';
 import imageUrlBuilder from '@sanity/image-url';
 
-// Henter alle produktdetaljer + SLUG (Viktig for API-et)
+// Henter alle produktdetaljer + SLUG fra Sanity
 const QUERY = `*[_type == "product" && defined(title)] | order(_createdAt asc){
   _id,
   title,
@@ -44,7 +44,7 @@ const sanityItems = docs.map((d) => ({
 
 const fallback = [
   { title: 'Curved Birch Tray', maker: 'Studio Bjørk · Bergen', price: 895, slug: 'curved-birch-tray', alt: 'Curved birch serving tray', src: '/images/products/wood-tray.jpg', excerpt: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.' },
-  { title: 'Matte Stoneware Vase', maker: 'Sōen Keramikk · Kyoto', price: 1450, slug: 'matte-stoneware-vase', alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' },
+  { title: 'Matte Stoneware Vase', maker: 'Sōen Keramikk · Oslo', price: 1450, slug: 'matte-stoneware-vase', alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' },
 ];
 
 const products = sanityItems.length > 0 ? sanityItems : fallback;
@@ -61,7 +61,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ScandiJapandi — Nordisk ro, japansk håndverk</title>
+    <title>ScandiJapandi — Skandinavisk håndverk, ren nordisk ro</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap" />
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -105,10 +105,10 @@ const nok = new Intl.NumberFormat('nb-NO', {
         <div class="max-w-2xl">
           <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Etablert 2026</span>
           <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink">
-            Der nordisk ro møter japansk håndverk
+            Nordisk ro kuratert for verden
           </h1>
           <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg">
-            En kuratert samling av tidløse objekter for det moderne hjem. Rene linjer fra den skandinaviske designtradisjonen forent med kompromissløs japansk estetikk og kvalitet.
+            En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer, forent i en minimalistisk estetikk verdsatt fra Norden til Japan.
           </p>
           <div class="mt-10">
             <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest hover:bg-clay transition-colors">
@@ -122,7 +122,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
     <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
       <div class="mx-auto max-w-3xl text-center">
         <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Vår Filosofi</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">«Wabi-sabi» og skandinavisk funksjonalitet. Vi feirer det uperfekte, det naturlige og det som er skapt for å vare i generasjoner.</h2>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Skandinavisk funksjonalitet møter global minimalisme. Vi feirer det ekte, det naturlige og det nordiske håndverket som er skapt for å vare i generasjoner.</h2>
       </div>
     </section>
 
@@ -133,7 +133,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
           <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
         </div>
         <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed">
-          Alle våre objekter er håndplukket eller utviklet i samarbeid med uavhengige kunstnere og håndverkere.
+          Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
         </p>
       </div>
 
@@ -158,7 +158,6 @@ const nok = new Intl.NumberFormat('nb-NO', {
               <p class="mt-4 text-sm text-stone/90 font-light leading-relaxed">{item.excerpt}</p>
             </div>
             
-            {/* ENDRET FRA EN LENKE TIL EN LIVE-KNAPP SOM SNAKKER MED API-ET DITT */}
             <button 
               data-slug={item.slug}
               class="checkout-button mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center hover:bg-clay transition-colors disabled:opacity-50"
@@ -197,10 +196,8 @@ const nok = new Intl.NumberFormat('nb-NO', {
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
-        // Henter 'ref' fra URL-en hvis den finnes (f.eks ?ref=kuratorNavn)
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
-
         const buttons = document.querySelectorAll('.checkout-button');
         
         buttons.forEach(button => {
@@ -214,8 +211,8 @@ const nok = new Intl.NumberFormat('nb-NO', {
               btn.disabled = true;
               btn.innerText = 'Laster kasse...';
 
-              // Sender forespørsel til det nye JavaScript API-endepunktet ditt
-              const response = await fetch('/api/checkout', {
+              // Bruker en relativ filbane slik at Netlify-funksjonen garantert trigges på gjeldende domene
+              const response = await fetch('./api/checkout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ slug, ref })
@@ -224,15 +221,14 @@ const nok = new Intl.NumberFormat('nb-NO', {
               const data = await response.json();
 
               if (data.url) {
-                // Sender brukeren rett videre til Stripe Checkout
                 window.location.href = data.url;
               } else {
                 throw new Error(data.error || 'Kunne ikke opprette Stripe-sesjon');
               }
 
             } catch (err) {
-              console.error('Nettverksfeil mot Stripe API:', err);
-              alert('Klarte ikke å koble til betalingen. Vennligst sjekk Sanity for gyldig Stripe Price ID.');
+              console.error('Utsjekksfeil:', err);
+              alert('Kunne ikke åpne kassen. Sjekk at produktet har en gyldig Stripe Price ID i Sanity.');
               btn.disabled = false;
               btn.innerText = 'Kjøp nå →';
             }
