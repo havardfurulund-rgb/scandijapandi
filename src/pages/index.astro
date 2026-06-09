@@ -1,6 +1,5 @@
 ---
 const title = "Scandi Japandi Collection";
-const description = "Tidløst skandinavisk håndverk møter japansk ro";
 ---
 
 <!DOCTYPE html>
@@ -9,96 +8,96 @@ const description = "Tidløst skandinavisk håndverk møter japansk ro";
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scandi Japandi Collection</title>
-  <meta name="description" content={description}>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    h1, h2, h3 { font-family: 'Cormorant Garamond', serif; }
-    .hero-bg {
-      background-image: linear-gradient(rgba(0, 31, 63, 0.45), rgba(0, 31, 63, 0.45)), url('https://picsum.photos/id/1015/2000/1200');
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .serif { font-family: 'Cormorant Garamond', serif; }
+    .hero {
+      background-image: linear-gradient(rgba(0, 31, 63, 0.5), rgba(0, 31, 63, 0.5)), 
+                        url('https://picsum.photos/id/1015/2000/1200');
       background-size: cover;
       background-position: center;
     }
   </style>
 </head>
-<body class="bg-[#F5F7FA] text-[#001F3F]">
+<body class="bg-[#F5F7FA] text-[#001F3F] overflow-x-hidden">
 
   <!-- Navigation -->
-  <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-[#001F3F]/10">
-    <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-      <div class="text-2xl tracking-widest font-light">SCANDI JAPANDI</div>
-      <div class="flex gap-8 text-sm uppercase tracking-widest">
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Produkter</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Om Oss</a>
+  <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-[#001F3F]/10">
+    <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
+      <div class="text-2xl tracking-[0.15em] font-light">SCANDI JAPANDI</div>
+      
+      <div class="hidden md:flex items-center gap-10 text-sm uppercase tracking-widest">
+        <a href="#collection" class="hover:text-[#C5A05B] transition-colors">Kolleksjon</a>
         <a href="#" class="hover:text-[#C5A05B] transition-colors">Japandi</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Kontakt</a>
+        <a href="#" class="hover:text-[#C5A05B] transition-colors">Om Oss</a>
       </div>
-      <div class="flex gap-4 text-sm">
+
+      <div class="flex gap-6 text-sm font-medium">
+        <a href="/" class="text-[#C5A05B]">NO</a>
         <a href="/en" class="hover:text-[#C5A05B]">EN</a>
-        <a href="/" class="font-medium text-[#C5A05B]">NO</a>
         <a href="/ja" class="hover:text-[#C5A05B]">JA</a>
       </div>
     </div>
   </nav>
 
   <!-- Hero -->
-  <section class="hero-bg h-screen flex items-center justify-center text-white">
-    <div class="max-w-4xl mx-auto text-center px-6">
-      <p class="uppercase tracking-[0.4em] text-sm mb-4 text-white/80">Quiet Luxury • Timeless Craft</p>
-      <h1 class="text-6xl md:text-7xl font-light leading-tight mb-6">
+  <section class="hero h-screen flex items-center justify-center text-white relative">
+    <div class="max-w-4xl mx-auto text-center px-6 z-10">
+      <p class="uppercase tracking-[0.4em] text-sm mb-6 opacity-90">Quiet Luxury • Timeless Harmony</p>
+      <h1 class="serif text-6xl md:text-7xl leading-tight font-light tracking-tight mb-8">
         Skandinavisk sjel.<br>
         Japansk ro.
       </h1>
-      <p class="text-xl max-w-md mx-auto mb-10 text-white/90">
-        Håndplukkede produkter fra de beste småskala produsentene i Norge og Skandinavia.
+      <p class="text-xl max-w-lg mx-auto mb-12 opacity-90">
+        Håndplukkede objekter fra de beste småskala produsentene i Norge og Skandinavia
       </p>
       <a href="#collection" 
-         class="inline-block bg-white text-[#001F3F] px-10 py-4 text-sm uppercase tracking-widest hover:bg-[#C5A05B] hover:text-white transition-all duration-500">
+         class="inline-block border border-white px-12 py-5 text-sm uppercase tracking-widest hover:bg-white hover:text-[#001F3F] transition-all duration-500">
         Utforsk kolleksjonen
       </a>
     </div>
   </section>
 
-  <!-- Collection Teaser -->
-  <section id="collection" class="max-w-7xl mx-auto px-6 py-24">
-    <h2 class="text-4xl font-light text-center mb-16">Våre kuraterte produkter</h2>
+  <!-- Collection -->
+  <section id="collection" class="max-w-7xl mx-auto px-8 py-28">
+    <h2 class="serif text-5xl font-light text-center mb-20">Kuratert med ro</h2>
     
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-      <!-- Du kan legge til flere produkter her senere -->
-      <div class="group">
-        <div class="aspect-square bg-gray-200 mb-6 overflow-hidden">
-          <img src="https://picsum.photos/id/1015/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+    <div class="grid md:grid-cols-3 gap-12">
+      <div class="group cursor-pointer">
+        <div class="aspect-[4/3] bg-gray-100 mb-6 overflow-hidden">
+          <img src="https://picsum.photos/id/1015/800/600" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
         </div>
-        <h3 class="text-xl font-light">Håndvevd Linndekke</h3>
-        <p class="text-sm text-gray-600">Lofoten • Naturlig lin</p>
-        <p class="mt-2 text-lg">2 450 kr</p>
+        <h3 class="serif text-2xl font-light">Håndvevd Linndekke</h3>
+        <p class="text-[#001F3F]/70">Lofoten • Naturlig lin</p>
+        <p class="mt-3 text-lg">2 450 kr</p>
       </div>
 
-      <div class="group">
-        <div class="aspect-square bg-gray-200 mb-6 overflow-hidden">
-          <img src="https://picsum.photos/id/201/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+      <div class="group cursor-pointer">
+        <div class="aspect-[4/3] bg-gray-100 mb-6 overflow-hidden">
+          <img src="https://picsum.photos/id/201/800/600" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
         </div>
-        <h3 class="text-xl font-light">Minimalistisk Eikebolle</h3>
-        <p class="text-sm text-gray-600">Hardanger • Hånddreid</p>
-        <p class="mt-2 text-lg">980 kr</p>
+        <h3 class="serif text-2xl font-light">Eikebolle – Hardanger</h3>
+        <p class="text-[#001F3F]/70">Hånddreid eik</p>
+        <p class="mt-3 text-lg">980 kr</p>
       </div>
 
-      <div class="group">
-        <div class="aspect-square bg-gray-200 mb-6 overflow-hidden">
-          <img src="https://picsum.photos/id/870/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+      <div class="group cursor-pointer">
+        <div class="aspect-[4/3] bg-gray-100 mb-6 overflow-hidden">
+          <img src="https://picsum.photos/id/870/800/600" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
         </div>
-        <h3 class="text-xl font-light">Keramikkvase – Kyst</h3>
-        <p class="text-sm text-gray-600">Vestlandet • Steinvar</p>
-        <p class="mt-2 text-lg">1 650 kr</p>
+        <h3 class="serif text-2xl font-light">Kystkeramikk</h3>
+        <p class="text-[#001F3F]/70">Vestlandet • Steinvar</p>
+        <p class="mt-3 text-lg">1 650 kr</p>
       </div>
     </div>
   </section>
 
-  <footer class="bg-[#001F3F] text-white py-16">
-    <div class="max-w-7xl mx-auto px-6 text-center">
-      <p class="text-sm tracking-widest">© 2026 Scandi Japandi Collection</p>
-      <p class="text-xs mt-4 text-white/60">Kuratert med ro og respekt for håndverk</p>
+  <footer class="bg-[#001F3F] text-white py-20">
+    <div class="max-w-7xl mx-auto px-8 text-center">
+      <p class="text-sm tracking-widest">SCANDI JAPANDI COLLECTION</p>
+      <p class="text-xs mt-6 opacity-60">© 2026 • Kuratert i Norge for verden</p>
     </div>
   </footer>
 
