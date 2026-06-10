@@ -1,81 +1,186 @@
 ---
-const title = "Scandi Japandi Collection";
+import { sanityClient } from 'sanity:client';
+import imageUrlBuilder from '@sanity/image-url';
+
+// Henter alle de ekte produktene dine fra Sanity
+const QUERY = `*[_type == "product" && defined(title)] | order(_createdAt asc){
+  _id,
+  title,
+  price,
+  subtitle,
+  "excerpt": pt::text(body),
+  "stripeLink": stripeLink, 
+  mainImage{ ..., asset->{ url, metadata{ lqip } } }
+}`;
+
+let docs = [];
+try {
+  docs = (await sanityClient.fetch(QUERY)) ?? [];
+} catch (e) {
+  docs = [];
+}
+
+const builder = imageUrlBuilder(sanityClient);
+const buildImage = (img) => {
+  const base = builder.image(img).auto('format').fit('crop').quality(80);
+  return {
+    src: base.width(800).height(1000).url(),
+    srcset: [400, 800, 1200]
+      .map((w) => `${base.width(w).height(Math.round(w * 1.25)).url()} ${w}w`)
+      .join(', '),
+    lqip: img?.asset?.metadata?.lqip ?? null,
+  };
+};
+
+const sanityItems = docs.map((d) => ({
+  title: d.title,
+  maker: d.subtitle || 'ScandiJapandi Collection',
+  price: d.price,
+  stripeLink: d.stripeLink ?? '#partner', // Fallback til partnerskjema hvis lenke mangler
+  excerpt: d.excerpt ? d.excerpt.slice(0, 150) : '',
+  alt: d.mainImage?.alt ?? d.title,
+  ...(d.mainImage?.asset ? buildImage(d.mainImage) : { src: null, srcset: null, lqip: null }),
+}));
+
+// Premium, estetiske fallback-produkter hvis Sanity-tilkoblingen skulle hikke under bygget
+const fallback = [
+  { title: 'Curved Birch Tray', maker: 'Studio Bjørk · Bergen', price: 895, stripeLink: '#partner', alt: 'Curved birch serving tray', src: '/images/products/wood-tray.jpg', excerpt: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.' },
+  { title: 'Matte Stoneware Vase', maker: 'Sōen Keramikk · Oslo', price: 1450, stripeLink: '#partner', alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' },
+];
+
+const products = sanityItems.length > 0 ? sanityItems : fallback;
+
+const nok = new Intl.NumberFormat('nb-NO', {
+  style: 'currency',
+  currency: 'NOK',
+  maximumFractionDigits: 0,
+});
 ---
 
-<!DOCTYPE html>
-<html lang="no">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scandi Japandi Collection</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { 
-      font-family: 'Inter', system-ui, sans-serif; 
-    }
-    .serif { 
-      font-family: 'Cormorant Garamond', serif; 
-    }
-    .hero {
-      background-image: linear-gradient(rgba(15, 15, 15, 0.42), rgba(15, 15, 15, 0.42)), 
-                        url('https://picsum.photos/id/1015/2000/1200');
-      background-size: cover;
-      background-position: center;
-    }
-  </style>
-</head>
-<body class="bg-[#FAF9F6] text-[#1F1F1F]">
-
-  <!-- Navigation -->
-  <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-[#1F1F1F]/10">
-    <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
-      <div class="text-2xl tracking-[0.25em] font-light serif">SCANDI JAPANDI</div>
+<!doctype html>
+<html lang="no" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScandiJapandi — Skandinavisk håndverk, ren nordisk ro</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper: '#FBFBFA',
+              ink: '#1A1A1A',
+              stone: '#706E6B',
+              oat: '#F1EFEA',
+              clay: '#A37B65',
+            }
+          }
+        }
+      }
+    </script>
+    
+    <style>
+      body { font-family: 'Jost', sans-serif; background-color: #FBFBFA; color: #1A1A1A; }
+      .font-serif { font-family: 'Fraunces', serif; }
       
-      <div class="flex items-center gap-10 text-sm uppercase tracking-widest">
-        <a href="#collection" class="hover:text-[#C5A05B] transition-colors">Kolleksjon</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Japandi</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Produsenter</a>
+      /* Elegante Japandi-animasjoner */
+      .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
+      .reveal.is-visible { opacity: 1; transform: translateY(0); }
+    </style>
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      addEventListener('DOMContentLoaded', () => {
+        const els = document.querySelectorAll('.reveal');
+        if (!('IntersectionObserver' in window)) {
+          els.forEach((e) => e.classList.add('is-visible'));
+          return;
+        }
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) { 
+              e.target.classList.add('is-visible'); 
+              io.unobserve(e.target); 
+            }
+          }
+        }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+        els.forEach((e) => io.observe(e));
+      });
+    </script>
+  </head>
+
+  <body class="overflow-x-hidden bg-paper text-ink antialiased">
+    
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md transition-all duration-300">
+      <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
+        <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
+        <nav class="flex items-center gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
+          <a href="#collection" class="transition-colors hover:text-ink">Kolleksjon</a>
+          <a href="#about" class="transition-colors hover:text-ink">Om oss</a>
+          <a href="#partner" class="transition-colors hover:text-ink">Bli Partner</a>
+        </nav>
+      </div>
+    </header>
+
+    <section id="top" class="relative flex min-h-screen items-center overflow-hidden bg-[#E2DFD9] pt-20">
+      <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
+      <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
+        <div class="max-w-2xl reveal">
+          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Etablert 2026</span>
+          <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink">
+            Nordisk ro kuratert for verden
+          </h1>
+          <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg">
+            En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer, forent i en minimalistisk estetikk verdsatt fra Norden til Japan.
+          </p>
+          <div class="mt-10">
+            <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay">
+              Utforsk kolleksjonen
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
+      <div class="mx-auto max-w-3xl text-center reveal">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Vår Filosofi</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Skandinavisk funksjonalitet møter global minimalisme. Vi feirer det ekte, det naturlige og det nordiske håndverket som er skapt for å vare i generasjoner.</h2>
+      </div>
+    </section>
+
+    <section id="collection" class="px-6 sm:px-12 py-32 mx-auto max-w-6xl">
+      <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-20 reveal">
+        <div>
+          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Kuratert utvalg</span>
+          <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
+        </div>
+        <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed">
+          Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
+        </p>
       </div>
 
-      <div class="flex gap-6 text-sm font-medium">
-        <a href="/" class="text-[#C5A05B]">NO</a>
-        <a href="/en" class="hover:text-[#C5A05B]">EN</a>
-        <a href="/ja" class="hover:text-[#C5A05B]">JA</a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Hero -->
-  <section class="hero h-screen flex items-center justify-center text-white">
-    <div class="max-w-5xl mx-auto text-center px-6">
-      <p class="uppercase tracking-[0.4em] text-sm mb-6 opacity-90">Quiet Luxury • Timeless Harmony</p>
-      <h1 class="serif text-6xl md:text-7xl leading-none font-light tracking-tight mb-10">
-        Skandinavisk sjel.<br>
-        Japansk ro.
-      </h1>
-      <p class="text-xl max-w-xl mx-auto mb-12 opacity-90">
-        Håndplukkede objekter fra de beste småskala produsentene i Norge og Skandinavia.
-      </p>
-      <a href="#collection" 
-         class="inline-block border border-white px-14 py-6 text-sm uppercase tracking-widest hover:bg-white hover:text-[#1F1F1F] transition-all duration-500">
-        Utforsk kolleksjonen
-      </a>
-    </div>
-  </section>
-
-  <!-- Collection -->
-  <section id="collection" class="max-w-7xl mx-auto px-8 py-28">
-    <h2 class="serif text-5xl font-light text-center mb-20">Kuratert med ro</h2>
-    <p class="text-center text-gray-600">Produkter vil dukke opp her når vi har koblet til admin.</p>
-  </section>
-
-  <footer class="bg-[#1F1F1F] text-white py-20">
-    <div class="max-w-7xl mx-auto px-8 text-center">
-      <p class="text-lg tracking-widest serif">SCANDI JAPANDI COLLECTION</p>
-      <p class="text-sm mt-6 opacity-60">© 2026 • Kuratert med ro og respekt for håndverk</p>
-    </div>
-  </footer>
-
-</body>
-</html>
+      <div class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((item) => (
+          <article class="reveal flex flex-col justify-between group">
+            <div>
+              <div class="relative aspect-[4/5] bg-oat overflow-hidden">
+                {item.src ? (
+                  <img src={item.src} srcset={item.srcset} alt={item.alt} class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                ) : (
+                  <div class="h-full w-full bg-stone/5 flex items-center justify-center text-stone/40 text-xs">Ingen bilde tilgjengelig</div>
+                )}
+                {item.lqip && (
+                  <div class="absolute inset-0 bg-cover bg-center transition-opacity duration-500 pointer-events-none opacity-0 group-hover:opacity-100" style={`background-image: url(${item.lqip}); filter: blur(10px);`}></div>
+                )}
+              </div>
+              
+              <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
+                <div>
+                  <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{item.title}</h3>
+                  <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{item.maker}</p>
+                </div>
+                <span class="text-base font-light text-ink">{typeof item.price === 'number' ? nok.format(item.price) : item.price}</span>
