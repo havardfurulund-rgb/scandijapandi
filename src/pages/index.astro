@@ -36,7 +36,7 @@ const sanityItems = docs.map((d) => ({
   title: d.title,
   maker: d.subtitle || 'ScandiJapandi Collection',
   price: d.price,
-  stripeLink: d.stripeLink ?? '#partner', // Fallback til partnerskjema hvis lenke mangler
+  stripeLink: d.stripeLink ?? '#partner',
   excerpt: d.excerpt ? d.excerpt.slice(0, 150) : '',
   alt: d.mainImage?.alt ?? d.title,
   ...(d.mainImage?.asset ? buildImage(d.mainImage) : { src: null, srcset: null, lqip: null }),
@@ -86,7 +86,6 @@ const nok = new Intl.NumberFormat('nb-NO', {
       body { font-family: 'Jost', sans-serif; background-color: #FBFBFA; color: #1A1A1A; }
       .font-serif { font-family: 'Fraunces', serif; }
       
-      /* Elegante Japandi-animasjoner */
       .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
       .reveal.is-visible { opacity: 1; transform: translateY(0); }
     </style>
@@ -114,7 +113,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
 
   <body class="overflow-x-hidden bg-paper text-ink antialiased">
     
-    <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md transition-all duration-300">
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
       <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
         <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
         <nav class="flex items-center gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
@@ -184,3 +183,71 @@ const nok = new Intl.NumberFormat('nb-NO', {
                   <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{item.maker}</p>
                 </div>
                 <span class="text-base font-light text-ink">{typeof item.price === 'number' ? nok.format(item.price) : item.price}</span>
+              </div>
+              <p class="mt-4 text-sm text-stone/90 font-light leading-relaxed">{item.excerpt}</p>
+            </div>
+            
+            <a 
+              href={item.stripeLink}
+              class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm"
+            >
+              Kjøp nå →
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
+      <div class="max-w-md mx-auto text-center reveal">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Samarbeid</span>
+        <h2 class="font-serif text-3xl text-ink">Bli en del av ScandiJapandi</h2>
+        <p class="mt-4 text-sm text-stone font-light leading-relaxed">
+          Søk om å bli sertifisert kurator eller partner for å bringe kolleksjonen ut til ditt internasjonale nettverk.
+        </p>
+        
+        <form name="collection-partner" method="POST" data-netlify="true" class="mt-12 text-left space-y-6">
+          <input type="hidden" name="form-name" value="collection-partner" />
+          <div>
+            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2">Ditt fulle navn</label>
+            <input type="text" name="name" required class="w-full p-4 bg-paper/50 border border-ink/10 focus:border-ink/30 outline-none text-sm font-light transition-colors" />
+          </div>
+          <div>
+            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2">E-postadresse</label>
+            <input type="email" name="email" required class="w-full p-4 bg-paper/50 border border-ink/10 focus:border-ink/30 outline-none text-sm font-light transition-colors" />
+          </div>
+          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay mt-4">
+            Send søknad
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <footer class="bg-ink text-paper/60 px-6 sm:px-12 py-12 text-center text-[10px] uppercase tracking-widest border-t border-paper/10">
+      <div class="mx-auto max-w-6xl flex flex-col sm:flex-row justify-between items-center gap-4">
+        <p class="text-paper/40">&copy; 2026 ScandiJapandi. Alle rettigheter reservert.</p>
+        <div class="flex gap-6">
+          <a href="#top" class="hover:text-paper transition-colors">Til toppen ↑</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const ref = urlParams.get('ref');
+        if (ref) {
+          const links = document.querySelectorAll('.checkout-btn');
+          links.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href && href.startsWith('http')) {
+              const separator = href.includes('?') ? '&' : '?';
+              link.setAttribute('href', `${href}${separator}client_reference_id=${encodeURIComponent(ref)}`);
+            }
+          });
+        }
+      });
+    </script>
+
+  </body>
+</html>
