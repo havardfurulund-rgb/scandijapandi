@@ -18,10 +18,16 @@ const title = "Scandi Japandi Collection";
       font-family: 'Cormorant Garamond', serif; 
     }
     .hero {
-      background-image: linear-gradient(rgba(18,18,18,0.42), rgba(18,18,18,0.42)), 
+      background-image: linear-gradient(rgba(15, 15, 15, 0.42), rgba(15, 15, 15, 0.42)), 
                         url('https://picsum.photos/id/1015/2000/1200');
       background-size: cover;
       background-position: center;
+    }
+    .nav-link { 
+      transition: all 0.4s ease; 
+    }
+    .nav-link:hover { 
+      color: #C5A05B; 
     }
   </style>
 </head>
@@ -31,15 +37,17 @@ const title = "Scandi Japandi Collection";
   <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-[#1F1F1F]/10">
     <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
       <div class="text-2xl tracking-[0.25em] font-light serif">SCANDI JAPANDI</div>
+      
       <div class="flex items-center gap-10 text-sm uppercase tracking-widest">
-        <a href="#collection" class="hover:text-[#C5A05B] transition-colors">Kolleksjon</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Japandi</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Produsenter</a>
+        <a href="#collection" class="nav-link">Kolleksjon</a>
+        <a href="#" class="nav-link">Japandi</a>
+        <a href="#" class="nav-link">Produsenter</a>
       </div>
+
       <div class="flex gap-6 text-sm font-medium">
         <a href="/" class="text-[#C5A05B]">NO</a>
-        <a href="/en" class="hover:text-[#C5A05B]">EN</a>
-        <a href="/ja" class="hover:text-[#C5A05B]">JA</a>
+        <a href="/en" class="nav-link">EN</a>
+        <a href="/ja" class="nav-link">JA</a>
       </div>
     </div>
   </nav>
@@ -53,7 +61,7 @@ const title = "Scandi Japandi Collection";
         Japansk ro.
       </h1>
       <p class="text-xl max-w-xl mx-auto mb-12 opacity-90">
-        Håndplukkede objekter fra de beste småskala produsentene i Norden.
+        Håndplukkede objekter fra de beste småskala produsentene i Norge og Skandinavia.
       </p>
       <a href="#collection" 
          class="inline-block border border-white px-14 py-6 text-sm uppercase tracking-widest hover:bg-white hover:text-[#1F1F1F] transition-all duration-500">
@@ -62,7 +70,7 @@ const title = "Scandi Japandi Collection";
     </div>
   </section>
 
-  <!-- Collection placeholder -->
+  <!-- Collection -->
   <section id="collection" class="max-w-7xl mx-auto px-8 py-28">
     <h2 class="serif text-5xl font-light text-center mb-20">Kuratert kolleksjon</h2>
     <p class="text-center text-gray-600">Produkter vil dukke opp her når vi har koblet til admin.</p>
