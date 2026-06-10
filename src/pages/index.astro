@@ -1,5 +1,7 @@
 ---
-const title = "Scandi Japandi Collection";
+import products from '../data/products.json';
+
+const currentRef = Astro.url.searchParams.get('ref') || '';
 ---
 
 <!DOCTYPE html>
@@ -13,12 +15,6 @@ const title = "Scandi Japandi Collection";
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
     .serif { font-family: 'Cormorant Garamond', serif; }
-    .hero {
-      background-image: linear-gradient(rgba(15, 15, 15, 0.42), rgba(15, 15, 15, 0.42)), 
-                        url('https://picsum.photos/id/1015/2000/1200');
-      background-size: cover;
-      background-position: center;
-    }
   </style>
 </head>
 <body class="bg-[#FAF9F6] text-[#1F1F1F]">
@@ -27,13 +23,11 @@ const title = "Scandi Japandi Collection";
   <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-[#1F1F1F]/10">
     <div class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
       <div class="text-2xl tracking-[0.25em] font-light serif">SCANDI JAPANDI</div>
-      
       <div class="flex items-center gap-10 text-sm uppercase tracking-widest">
-        <a href="#collection" class="hover:text-[#C5A05B] transition-colors">Kolleksjon</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Japandi</a>
-        <a href="#" class="hover:text-[#C5A05B] transition-colors">Produsenter</a>
+        <a href="#collection" class="hover:text-[#C5A05B]">Kolleksjon</a>
+        <a href="#" class="hover:text-[#C5A05B]">Japandi</a>
+        <a href="#" class="hover:text-[#C5A05B]">Produsenter</a>
       </div>
-
       <div class="flex gap-6 text-sm font-medium">
         <a href="/" class="text-[#C5A05B]">NO</a>
         <a href="/en" class="hover:text-[#C5A05B]">EN</a>
@@ -43,63 +37,56 @@ const title = "Scandi Japandi Collection";
   </nav>
 
   <!-- Hero -->
-  <section class="hero h-screen flex items-center justify-center text-white">
-    <div class="max-w-5xl mx-auto text-center px-6">
-      <p class="uppercase tracking-[0.4em] text-sm mb-6 opacity-90">Quiet Luxury • Timeless Harmony</p>
+  <section class="h-screen flex items-center justify-center bg-cover bg-center relative" 
+           style="background-image: linear-gradient(rgba(15,15,15,0.45), rgba(15,15,15,0.45)), url('https://picsum.photos/id/1015/2000/1200');">
+    <div class="max-w-5xl mx-auto text-center px-6 text-white z-10">
+      <p class="uppercase tracking-[0.4em] text-sm mb-6">Quiet Luxury • Timeless Harmony</p>
       <h1 class="serif text-6xl md:text-7xl leading-none font-light tracking-tight mb-10">
-        Skandinavisk sjel.<br>
-        Japansk ro.
+        Skandinavisk sjel.<br>Japansk ro.
       </h1>
-      <p class="text-xl md:text-2xl max-w-xl mx-auto mb-12 opacity-90">
-        Håndplukkede objekter fra de beste småskala produsentene i Norge og Skandinavia.
-      </p>
-      <a href="#collection" 
-         class="inline-block border border-white px-14 py-6 text-sm uppercase tracking-widest hover:bg-white hover:text-[#1F1F1F] transition-all duration-500">
-        Utforsk kolleksjonen
-      </a>
+      <p class="text-xl max-w-xl mx-auto mb-12">Håndplukkede objekter fra de beste småskala produsentene i Norden.</p>
+      <a href="#collection" class="inline-block border border-white px-14 py-6 text-sm uppercase tracking-widest hover:bg-white hover:text-[#1F1F1F] transition-all">Utforsk kolleksjonen</a>
     </div>
   </section>
 
-  <!-- Collection -->
+  <!-- Products -->
   <section id="collection" class="max-w-7xl mx-auto px-8 py-28">
-    <h2 class="serif text-5xl font-light text-center mb-20">Kuratert med ro</h2>
+    <h2 class="serif text-5xl font-light text-center mb-20">Kuratert kolleksjon</h2>
     
     <div class="grid md:grid-cols-3 gap-12">
-      <div class="group cursor-pointer">
-        <div class="aspect-square overflow-hidden mb-6 bg-[#F5F4F0]">
-          <img src="https://picsum.photos/id/1015/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Linndekke">
+      {products.map(product => (
+        <div class="group">
+          <div class="aspect-square overflow-hidden mb-6 bg-[#F5F4F0]">
+            <img src={product.image} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt={product.name}>
+          </div>
+          <h3 class="serif text-2xl font-light">{product.name}</h3>
+          <p class="text-[#555] mt-1">{product.producer}</p>
+          <p class="mt-4 text-lg">{product.price} kr</p>
+          
+          <a href={product.stripeLink + (currentRef ? `?client_reference_id=${currentRef}` : '')} 
+             class="mt-6 inline-block w-full text-center border border-[#C5A05B] text-[#C5A05B] py-4 text-sm uppercase tracking-widest hover:bg-[#C5A05B] hover:text-white transition-all">
+            Kjøp nå
+          </a>
         </div>
-        <h3 class="serif text-2xl font-light">Håndvevd Linndekke</h3>
-        <p class="text-[#555555] mt-1">Lofoten • Naturlig lin</p>
-        <p class="mt-4 text-lg">2 450 kr</p>
-      </div>
-
-      <div class="group cursor-pointer">
-        <div class="aspect-square overflow-hidden mb-6 bg-[#F5F4F0]">
-          <img src="https://picsum.photos/id/201/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Eikebolle">
-        </div>
-        <h3 class="serif text-2xl font-light">Eikebolle – Hardanger</h3>
-        <p class="text-[#555555] mt-1">Hånddreid eik</p>
-        <p class="mt-4 text-lg">980 kr</p>
-      </div>
-
-      <div class="group cursor-pointer">
-        <div class="aspect-square overflow-hidden mb-6 bg-[#F5F4F0]">
-          <img src="https://picsum.photos/id/870/800/800" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Keramikk">
-        </div>
-        <h3 class="serif text-2xl font-light">Kystkeramikkvase</h3>
-        <p class="text-[#555555] mt-1">Vestlandet • Steinvar</p>
-        <p class="mt-4 text-lg">1 650 kr</p>
-      </div>
+      ))}
     </div>
   </section>
 
-  <footer class="bg-[#1F1F1F] text-white py-20">
-    <div class="max-w-7xl mx-auto px-8 text-center">
-      <p class="text-lg tracking-widest serif">SCANDI JAPANDI COLLECTION</p>
-      <p class="text-sm mt-6 opacity-60">© 2026 • Kuratert med ro og respekt for håndverk</p>
+  <!-- Data capture / Private Circle -->
+  <section class="bg-[#1F1F1F] text-white py-20">
+    <div class="max-w-2xl mx-auto text-center px-6">
+      <h2 class="serif text-4xl font-light mb-6">Bli en del av kretsen</h2>
+      <p class="text-lg opacity-80 mb-10">For de som verdsetter eksklusiv innsikt, tidlige tilbud og muligheten til å møte våre designere.</p>
+      
+      <form name="private-circle" method="POST" data-netlify="true" class="space-y-6">
+        <input type="hidden" name="form-name" value="private-circle">
+        <input type="text" name="name" placeholder="Navn" required class="w-full bg-white/10 border border-white/30 p-4 rounded-none focus:outline-none focus:border-[#C5A05B]">
+        <input type="email" name="email" placeholder="E-post" required class="w-full bg-white/10 border border-white/30 p-4 rounded-none focus:outline-none focus:border-[#C5A05B]">
+        <textarea name="message" placeholder="Hvorfor ønsker du å bli med?" rows="3" class="w-full bg-white/10 border border-white/30 p-4 rounded-none focus:outline-none focus:border-[#C5A05B]"></textarea>
+        <button type="submit" class="w-full bg-[#C5A05B] text-[#1F1F1F] py-5 uppercase tracking-widest text-sm hover:bg-white transition-all">Bli med i den indre kretsen</button>
+      </form>
     </div>
-  </footer>
+  </section>
 
 </body>
 </html>
