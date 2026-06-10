@@ -1,20 +1,3 @@
 [build]
   command = "npm run build"
   publish = "dist"
-
-# SIKRER AT NETLIFY FINNER OG KJØRER LIVE SERVER-FUNKSJONER (FOR STRIPE API)
-[[redirects]]
-  from = "/api/*"
-  status = 200
-  to = "/.netlify/functions/entry"
-
-# SIKRER AT SANITY STUDIO PORTALEN FUNGERER
-[[redirects]]
-  from = "/studio"
-  status = 200
-  to = "/studio/index.html"
-
-[[redirects]]
-  from = "/studio/*"
-  status = 200
-  to = "/studio/index.html"
