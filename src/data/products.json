@@ -3,24 +3,16 @@
     "id": 1,
     "name": "Håndvevd Linndekke",
     "producer": "Lofoten Vev",
-    "price": "2450",
+    "price": 2450,
     "image": "https://picsum.photos/id/1015/800/800",
-    "stripeLink": "https://buy.stripe.com/test_xxx"
+    "stripeLink": "https://buy.stripe.com/LEGGE_INN_DIN_STRIPE_LINK_HER"
   },
   {
     "id": 2,
-    "name": "Eikebolle – Hardanger",
+    "name": "Eikebolle Hardanger",
     "producer": "Hardanger Treverk",
-    "price": "980",
+    "price": 980,
     "image": "https://picsum.photos/id/201/800/800",
-    "stripeLink": "https://buy.stripe.com/test_yyy"
-  },
-  {
-    "id": 3,
-    "name": "Kystkeramikkvase",
-    "producer": "Vestlands Keramikk",
-    "price": "1650",
-    "image": "https://picsum.photos/id/870/800/800",
-    "stripeLink": "https://buy.stripe.com/test_zzz"
+    "stripeLink": "https://buy.stripe.com/LEGGE_INN_DIN_STRIPE_LINK_HER"
   }
 ]
