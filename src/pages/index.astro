@@ -1,8 +1,11 @@
 ---
-import productsData from '../data/products.json';
+import products from '../data/products.json';
 
-const products = Array.isArray(productsData) ? productsData : [];
-const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+const nok = new Intl.NumberFormat('nb-NO', {
+  style: 'currency',
+  currency: 'NOK',
+  maximumFractionDigits: 0,
+});
 ---
 
 <!doctype html>
@@ -12,8 +15,8 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ScandiJapandi — Skandinavisk håndverk, ren nordisk ro</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    <script is:inline src="https://cdn.tailwindcss.com"></script>
+    <script is:inline>
       tailwind.config = {
         theme: {
           extend: {
@@ -39,8 +42,6 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
     </style>
   </head>
   <body class="overflow-x-hidden bg-paper text-ink antialiased">
-
-    <!-- Header (samme som før) -->
     <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
       <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
         <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
@@ -63,9 +64,17 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
       <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
         <div class="max-w-2xl reveal">
           <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="hero_eyebrow">Etablert 2026</span>
-          <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink" data-i18n="hero_title">Nordisk ro kuratert for verden</h1>
-          <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg" data-i18n="hero_body">En eksklusiv samling av tidløse skandinaviske objekter.</p>
-          <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay" data-i18n="hero_cta">Utforsk kolleksjonen</a>
+          <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink" data-i18n="hero_title">
+            Nordisk ro kuratert for verden
+          </h1>
+          <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg" data-i18n="hero_body">
+            En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer.
+          </p>
+          <div class="mt-10">
+            <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay" data-i18n="hero_cta">
+              Utforsk kolleksjonen
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -74,7 +83,9 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
     <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
       <div class="mx-auto max-w-3xl text-center reveal">
         <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="about_eyebrow">Vår Filosofi</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="about_title">Skandinavisk funksjonalitet møter global minimalisme.</h2>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="about_title">
+          Skandinavisk funksjonalitet møter global minimalisme.
+        </h2>
       </div>
     </section>
 
@@ -85,7 +96,9 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
           <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2" data-i18n="collection_eyebrow">Kuratert utvalg</span>
           <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
         </div>
-        <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed" data-i18n="collection_lead">Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.</p>
+        <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed" data-i18n="collection_lead">
+          Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
+        </p>
       </div>
 
       <div class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
@@ -93,7 +106,12 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
           <article class="reveal flex flex-col justify-between group">
             <div>
               <div class="relative aspect-[4/5] bg-oat overflow-hidden">
-                <img src={product.image} alt={product.name} loading="lazy" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  loading="lazy"
+                  class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                />
               </div>
               <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
                 <div>
@@ -103,7 +121,11 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
                 <span class="text-base font-light text-ink">{nok.format(product.price)}</span>
               </div>
             </div>
-            <a href={product.stripeLink} class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
+
+            <a
+              href={product.stripeLink}
+              class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm"
+            >
               Kjøp nå →
             </a>
           </article>
@@ -111,22 +133,51 @@ const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK',
       </div>
     </section>
 
-    <!-- Partner -->
+    <!-- Partner section (kort versjon) -->
     <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
       <div class="max-w-md mx-auto text-center reveal">
-        <h2 class="font-serif text-3xl text-ink mb-6">Bli en del av ScandiJapandi</h2>
-        <form name="collection-partner" method="POST" data-netlify="true" class="space-y-6">
+        <h2 class="font-serif text-3xl text-ink mb-4">Bli en del av ScandiJapandi</h2>
+        <form name="collection-partner" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="mt-8 space-y-6">
           <input type="hidden" name="form-name" value="collection-partner" />
-          <input type="text" name="name" placeholder="Ditt fulle navn" required class="w-full p-4 bg-paper border border-ink/10" />
-          <input type="email" name="email" placeholder="E-postadresse" required class="w-full p-4 bg-paper border border-ink/10" />
-          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-sm tracking-widest hover:bg-clay">Send søknad</button>
+          <p class="hidden">
+            <label>La denne stå tom: <input name="bot-field" /></label>
+          </p>
+          <input type="text" name="name" placeholder="Ditt navn" required class="w-full p-4 border border-ink/10" />
+          <input type="email" name="email" placeholder="E-post" required class="w-full p-4 border border-ink/10" />
+          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-sm tracking-widest">Send søknad</button>
         </form>
       </div>
     </section>
 
-    <footer class="bg-ink text-paper/60 px-6 sm:px-12 py-12 text-center text-[10px] uppercase tracking-widest">
+    <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
       <p>© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
     </footer>
 
+    <script>
+      // Reveal-animasjoner: vis elementer når de scrolles inn i viewporten.
+      const revealEls = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+      revealEls.forEach((el) => observer.observe(el));
+
+      // Affiliate-støtte: bær et ?ref= fra URL-en videre til Stripe som client_reference_id.
+      const ref = new URLSearchParams(window.location.search).get('ref');
+      if (ref) {
+        document.querySelectorAll('.checkout-btn').forEach((btn) => {
+          const url = new URL(btn.href);
+          url.searchParams.set('client_reference_id', ref);
+          btn.href = url.toString();
+        });
+      }
+    </script>
   </body>
 </html>
