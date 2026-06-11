@@ -1,26 +1,25 @@
-[
-  {
-    "id": 1,
-    "name": "Håndvevd Linndekke fra Lofoten",
-    "producer": "Lofoten Vev",
-    "price": 2450,
-    "image": "https://picsum.photos/id/1015/800/1000",
-    "stripeLink": "https://buy.stripe.com/test_28o3cP5example"   // midlertidig test-link
+{
+  "name": "scandijapandi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  {
-    "id": 2,
-    "name": "Eikebolle Hardanger",
-    "producer": "Hardanger Treverk",
-    "price": 980,
-    "image": "https://picsum.photos/id/201/800/1000",
-    "stripeLink": "https://buy.stripe.com/test_28o3cP5example"
+  "dependencies": {
+    "@astrojs/netlify": "^6.0.0",
+    "@astrojs/tailwind": "^5.1.0",
+    "astro": "^5.0.0"
   },
-  {
-    "id": 3,
-    "name": "Minimalistisk Keramikkvase",
-    "producer": "Sōen Keramikk",
-    "price": 1450,
-    "image": "https://picsum.photos/id/870/800/1000",
-    "stripeLink": "https://buy.stripe.com/test_28o3cP5example"
+  "devDependencies": {
+    "@astrojs/react": "^4.2.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^3.4.0"
   }
-]
+}
