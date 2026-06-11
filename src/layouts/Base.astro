@@ -1,0 +1,62 @@
+---
+// Shared brand shell for every page (storefront, admin, status pages) so the
+// whole site — including the admin and the forms — carries the same identity:
+// the ScandiJapandi palette (paper / ink / stone / oat / clay) and the
+// Fraunces + Jost type pairing. Tailwind is loaded via the Play CDN so utility
+// classes also work on markup injected at runtime (the dynamic product grid and
+// the admin table).
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = "ScandiJapandi — Skandinavisk håndverk, ren nordisk ro",
+  description = "En kuratert samling av tidløse skandinaviske objekter for det japanske markedet.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="no" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap"
+    />
+    <script is:inline src="https://cdn.tailwindcss.com"></script>
+    <script is:inline>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper: '#FBFBFA',
+              ink: '#1A1A1A',
+              stone: '#706E6B',
+              oat: '#F1EFEA',
+              clay: '#A37B65',
+            },
+            fontFamily: {
+              serif: ['Fraunces', 'serif'],
+              sans: ['Jost', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body { font-family: 'Jost', sans-serif; background-color: #FBFBFA; color: #1A1A1A; }
+      .font-serif { font-family: 'Fraunces', serif; }
+      .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
+      .reveal.is-visible { opacity: 1; transform: translateY(0); }
+      .lang-btn { opacity: 0.45; transition: opacity .2s ease; }
+      .lang-btn[aria-current="true"] { opacity: 1; }
+      .lang-btn:hover { opacity: 0.85; }
+    </style>
+  </head>
+  <body class="overflow-x-hidden bg-paper text-ink antialiased">
+    <slot />
+  </body>
+</html>

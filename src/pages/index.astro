@@ -1,13 +1,11 @@
 ---
+import Base from '../layouts/Base.astro';
 import productsData from '../data/products.json';
 
-// Vern mot uventet dataform: bygget skal aldri feile selv om JSON-en
-// ikke er et array (f.eks. hvis filen blir overskrevet ved en feil).
-const products = Array.isArray(productsData)
-  ? productsData
-  : Array.isArray(productsData?.products)
-    ? productsData.products
-    : [];
+// Embedded launch collection. Rendered immediately so the page is never empty,
+// then replaced at runtime with the live collection from /api/products (which
+// reflects whatever is published from the admin).
+const fallbackProducts = Array.isArray(productsData) ? productsData : [];
 
 const nok = new Intl.NumberFormat('nb-NO', {
   style: 'currency',
@@ -16,176 +14,285 @@ const nok = new Intl.NumberFormat('nb-NO', {
 });
 ---
 
-<!doctype html>
-<html lang="no" class="scroll-smooth">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ScandiJapandi — Skandinavisk håndverk, ren nordisk ro</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap" />
-    <script is:inline src="https://cdn.tailwindcss.com"></script>
-    <script is:inline>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              paper: '#FBFBFA',
-              ink: '#1A1A1A',
-              stone: '#706E6B',
-              oat: '#F1EFEA',
-              clay: '#A37B65',
-            }
-          }
-        }
-      }
-    </script>
-    <style>
-      body { font-family: 'Jost', sans-serif; background-color: #FBFBFA; color: #1A1A1A; }
-      .font-serif { font-family: 'Fraunces', serif; }
-      .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
-      .reveal.is-visible { opacity: 1; transform: translateY(0); }
-      .lang-btn { opacity: 0.45; transition: opacity .2s ease; }
-      .lang-btn[aria-current="true"] { opacity: 1; }
-      .lang-btn:hover { opacity: 0.85; }
-    </style>
-  </head>
-  <body class="overflow-x-hidden bg-paper text-ink antialiased">
-    <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
-      <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
-        <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
-        <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
-          <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
-          <a href="#about" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_about">Om oss</a>
-          <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_partner">Bli Partner</a>
-          <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
-            <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
-            <button type="button" class="lang-btn" data-lang="en">EN</button>
-            <button type="button" class="lang-btn" data-lang="jp">日本語</button>
-          </div>
-        </nav>
-      </div>
-    </header>
+<Base>
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
+    <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
+      <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
+      <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
+        <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink">Kolleksjon</a>
+        <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink">Bli med</a>
+        <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink">Bli Partner</a>
+        <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
+          <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="jp">日本語</button>
+        </div>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Hero -->
-    <section id="top" class="relative flex min-h-screen items-center overflow-hidden bg-[#E2DFD9] pt-20">
-      <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
-      <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
-        <div class="max-w-2xl reveal">
-          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="hero_eyebrow">Etablert 2026</span>
-          <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink" data-i18n="hero_title">
-            Nordisk ro kuratert for verden
-          </h1>
-          <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg" data-i18n="hero_body">
-            En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer.
-          </p>
-          <div class="mt-10">
-            <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay" data-i18n="hero_cta">
-              Utforsk kolleksjonen
-            </a>
-          </div>
+  <!-- Checkout status banner -->
+  <div id="checkout-banner" class="hidden fixed top-20 inset-x-0 z-40 px-6 sm:px-12"></div>
+
+  <!-- Hero -->
+  <section id="top" class="relative flex min-h-screen items-center overflow-hidden bg-[#E2DFD9] pt-20">
+    <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
+    <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
+      <div class="max-w-2xl reveal">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Etablert 2026</span>
+        <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink">
+          Nordisk ro kuratert for verden
+        </h1>
+        <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg">
+          En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-4">
+          <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay">
+            Utforsk kolleksjonen
+          </a>
+          <a href="#interesse" class="inline-block border border-ink/20 px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:border-ink">
+            Bli med i fellesskapet
+          </a>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- About -->
-    <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
-      <div class="mx-auto max-w-3xl text-center reveal">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="about_eyebrow">Vår Filosofi</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="about_title">
-          Skandinavisk funksjonalitet møter global minimalisme.
-        </h2>
+  <!-- About -->
+  <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
+    <div class="mx-auto max-w-3xl text-center reveal">
+      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Vår Filosofi</span>
+      <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">
+        Skandinavisk funksjonalitet møter global minimalisme.
+      </h2>
+    </div>
+  </section>
+
+  <!-- Collection -->
+  <section id="collection" class="px-6 sm:px-12 py-32 mx-auto max-w-6xl">
+    <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-20 reveal">
+      <div>
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Kuratert utvalg</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
       </div>
-    </section>
+      <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed">
+        Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
+      </p>
+    </div>
 
-    <!-- Collection -->
-    <section id="collection" class="px-6 sm:px-12 py-32 mx-auto max-w-6xl">
-      <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-20 reveal">
-        <div>
-          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2" data-i18n="collection_eyebrow">Kuratert utvalg</span>
-          <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
-        </div>
-        <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed" data-i18n="collection_lead">
-          Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
+    <div id="product-grid" class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
+      {fallbackProducts.map((product) => (
+        <article class="reveal flex flex-col justify-between group">
+          <div>
+            <div class="relative aspect-[4/5] bg-oat overflow-hidden">
+              <img src={product.image} alt={product.name} loading="lazy" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+            </div>
+            <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
+              <div>
+                <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{product.name}</h3>
+                <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{product.producer}</p>
+              </div>
+              <span class="text-base font-light text-ink">{nok.format(product.price)}</span>
+            </div>
+          </div>
+          <a href={`/api/checkout?slug=${product.slug}`} class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
+            Kjøp nå →
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <!-- Interest / community signup -->
+  <section id="interesse" class="bg-paper px-6 sm:px-12 py-32 border-t border-ink/5">
+    <div class="mx-auto max-w-2xl reveal">
+      <div class="text-center mb-12">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Fellesskapet</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Fortell oss hva du brenner for</h2>
+        <p class="mt-4 text-sm text-stone font-light leading-relaxed">
+          Vi bygger et fellesskap rundt nordisk design, mat og reiser. Legg igjen din interesse,
+          så holder vi deg oppdatert og kommuniserer det som faktisk angår deg.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <article class="reveal flex flex-col justify-between group">
-            <div>
-              <div class="relative aspect-[4/5] bg-oat overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  loading="lazy"
-                  class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                />
-              </div>
-              <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
-                <div>
-                  <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{product.name}</h3>
-                  <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{product.producer}</p>
-                </div>
-                <span class="text-base font-light text-ink">{nok.format(product.price)}</span>
-              </div>
+      <form name="interesse" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/takk" class="space-y-6 bg-oat/60 p-8 sm:p-10 border border-ink/5">
+        <input type="hidden" name="form-name" value="interesse" />
+        <p class="hidden"><label>La denne stå tom: <input name="bot-field" /></label></p>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Navn</span>
+            <input type="text" name="name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+            <input type="email" name="email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+        </div>
+
+        <fieldset>
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-3">Hva er du interessert i?</legend>
+          <div class="grid sm:grid-cols-3 gap-3">
+            <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
+              <input type="checkbox" name="interests" value="Design fra Skandinavia og Norden" class="accent-clay" />
+              <span class="text-sm">Design fra Norden</span>
+            </label>
+            <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
+              <input type="checkbox" name="interests" value="Mat og matkultur" class="accent-clay" />
+              <span class="text-sm">Mat & matkultur</span>
+            </label>
+            <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
+              <input type="checkbox" name="interests" value="Reiser til Skandinavia" class="accent-clay" />
+              <span class="text-sm">Reiser til Skandinavia</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Fortell oss mer (valgfritt)</span>
+          <textarea name="message" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+        </label>
+
+        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">
+          Send inn
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Producer / designer registration -->
+  <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
+    <div class="mx-auto max-w-2xl reveal">
+      <div class="text-center mb-12">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">For produsenter & designere</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Nå det japanske markedet</h2>
+        <p class="mt-4 text-sm text-stone font-light leading-relaxed">
+          Er du produsent eller designer fra Norden og ønsker kontakt med det japanske markedet?
+          Registrer deg, så tar vi kontakt om et mulig samarbeid.
+        </p>
+      </div>
+
+      <form name="partner-produsent" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/takk" class="space-y-6 bg-paper p-8 sm:p-10 border border-ink/5">
+        <input type="hidden" name="form-name" value="partner-produsent" />
+        <p class="hidden"><label>La denne stå tom: <input name="bot-field" /></label></p>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Navn</span>
+            <input type="text" name="name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Bedrift / merkevare</span>
+            <input type="text" name="company" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+            <input type="email" name="email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Nettside (valgfritt)</span>
+            <input type="url" name="website" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Jeg er</span>
+          <select name="persona" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+            <option value="Produsent">Produsent</option>
+            <option value="Designer">Designer</option>
+            <option value="Begge">Begge</option>
+          </select>
+        </label>
+
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Kort om hva du lager</span>
+          <textarea name="message" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+        </label>
+
+        <input type="hidden" name="market" value="Japan" />
+        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">
+          Registrer interesse
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
+    <p>© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
+    <p class="mt-2 text-[10px] uppercase tracking-widest text-paper/40">
+      <a href="/admin" class="hover:text-paper transition-colors">Admin</a>
+    </p>
+  </footer>
+
+  <script>
+    const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+    const ref = new URLSearchParams(window.location.search).get('ref');
+
+    function checkoutHref(slug) {
+      let href = `/api/checkout?slug=${encodeURIComponent(slug)}`;
+      if (ref) href += `&ref=${encodeURIComponent(ref)}`;
+      return href;
+    }
+
+    function renderProducts(products) {
+      const grid = document.getElementById('product-grid');
+      if (!grid || !products.length) return;
+      grid.innerHTML = products.map((p) => `
+        <article class="reveal is-visible flex flex-col justify-between group">
+          <div>
+            <div class="relative aspect-[4/5] bg-oat overflow-hidden">
+              <img src="${p.image || ''}" alt="${(p.name || '').replace(/"/g, '&quot;')}" loading="lazy" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
             </div>
+            <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
+              <div>
+                <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">${p.name || ''}</h3>
+                <p class="text-[10px] text-stone uppercase tracking-wider mt-1">${p.producer || ''}</p>
+              </div>
+              <span class="text-base font-light text-ink">${nokFmt.format(p.price || 0)}</span>
+            </div>
+          </div>
+          <a href="${checkoutHref(p.slug)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
+            Kjøp nå →
+          </a>
+        </article>`).join('');
+    }
 
-            <a
-              href={product.stripeLink}
-              class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm"
-            >
-              Kjøp nå →
-            </a>
-          </article>
-        ))}
-      </div>
-    </section>
+    // Carry an influencer ?ref= through the statically rendered fallback links too.
+    if (ref) {
+      document.querySelectorAll('.checkout-btn').forEach((btn) => {
+        const url = new URL(btn.href, window.location.origin);
+        if (!url.searchParams.get('ref')) url.searchParams.set('ref', ref);
+        btn.href = url.toString();
+      });
+    }
 
-    <!-- Partner section (kort versjon) -->
-    <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
-      <div class="max-w-md mx-auto text-center reveal">
-        <h2 class="font-serif text-3xl text-ink mb-4">Bli en del av ScandiJapandi</h2>
-        <form name="collection-partner" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="mt-8 space-y-6">
-          <input type="hidden" name="form-name" value="collection-partner" />
-          <p class="hidden">
-            <label>La denne stå tom: <input name="bot-field" /></label>
-          </p>
-          <input type="text" name="name" placeholder="Ditt navn" required class="w-full p-4 border border-ink/10" />
-          <input type="email" name="email" placeholder="E-post" required class="w-full p-4 border border-ink/10" />
-          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-sm tracking-widest">Send søknad</button>
-        </form>
-      </div>
-    </section>
+    // Replace the fallback grid with the live collection from the database.
+    fetch('/api/products')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data?.products?.length) renderProducts(data.products); })
+      .catch(() => { /* keep the embedded fallback */ });
 
-    <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
-      <p>© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
-    </footer>
+    // Checkout status banner driven by the ?checkout= query the function sets.
+    const status = new URLSearchParams(window.location.search).get('checkout');
+    if (status) {
+      const banner = document.getElementById('checkout-banner');
+      const messages = {
+        success: ['Takk for din bestilling! Vi sender en bekreftelse på e-post.', 'bg-ink text-paper'],
+        cancel: ['Betalingen ble avbrutt. Varene venter fortsatt på deg.', 'bg-oat text-ink border border-ink/10'],
+        error: ['Noe gikk galt med betalingen. Prøv igjen, eller kontakt oss.', 'bg-clay text-paper'],
+      };
+      const [msg, cls] = messages[status] || messages.error;
+      banner.className = `fixed top-20 inset-x-0 z-40 px-6 sm:px-12`;
+      banner.innerHTML = `<div class="mx-auto max-w-6xl"><div class="mt-4 ${cls} px-6 py-4 text-sm shadow-lg flex justify-between items-center"><span>${msg}</span><button type="button" aria-label="Lukk" class="ml-4 opacity-60 hover:opacity-100" onclick="this.closest('#checkout-banner').classList.add('hidden')">✕</button></div></div>`;
+      banner.classList.remove('hidden');
+    }
 
-    <script>
-      // Reveal-animasjoner: vis elementer når de scrolles inn i viewporten.
-      const revealEls = document.querySelectorAll('.reveal');
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.1 }
-      );
-      revealEls.forEach((el) => observer.observe(el));
-
-      // Affiliate-støtte: bær et ?ref= fra URL-en videre til Stripe som client_reference_id.
-      const ref = new URLSearchParams(window.location.search).get('ref');
-      if (ref) {
-        document.querySelectorAll('.checkout-btn').forEach((btn) => {
-          const url = new URL(btn.href);
-          url.searchParams.set('client_reference_id', ref);
-          btn.href = url.toString();
-        });
-      }
-    </script>
-  </body>
-</html>
+    // Reveal-animasjoner.
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
+</Base>
