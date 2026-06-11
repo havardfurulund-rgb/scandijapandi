@@ -5,9 +5,24 @@ export default {
   fields: [
     {
       name: 'title',
-      title: 'Produktnavn',
+      title: 'Produktnavn (Norsk)',
       type: 'string',
       validation: (Rule: any) => Rule.required(),
+    },
+    {
+      name: 'title_en',
+      title: 'Produktnavn (Engelsk)',
+      type: 'string',
+    },
+    {
+      name: 'title_jp',
+      title: 'Produktnavn (Japansk)',
+      type: 'string',
+    },
+    {
+      name: 'subtitle',
+      title: 'Produsent / Sted (f.eks. «Studio Bjørk · Bergen»)',
+      type: 'string',
     },
     {
       name: 'slug',
@@ -49,6 +64,11 @@ export default {
     {
       name: 'description',
       title: 'Beskrivelse (Norsk)',
+      type: 'text',
+    },
+    {
+      name: 'description_en',
+      title: 'Beskrivelse (Engelsk)',
       type: 'text',
     },
     {

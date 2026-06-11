@@ -13,6 +13,11 @@
 
 const SANITY_API_VERSION = "v2021-06-07";
 
+// Public Sanity project id. Kept in sync with `astro.config.mjs`, where the same
+// value is hardcoded for the build-time `sanity:client`. Falls back here so the
+// checkout endpoint keeps working even when no env var is configured.
+const DEFAULT_SANITY_PROJECT_ID = "v7f0k69w";
+
 function siteUrl(): string {
   return process.env.URL || "https://scandijapandi.no";
 }
@@ -22,9 +27,8 @@ function redirect(location: string): Response {
 }
 
 async function fetchProduct(slug: string): Promise<{ title?: string; price?: number } | null> {
-  const projectId = process.env.PUBLIC_SANITY_PROJECT_ID;
+  const projectId = process.env.PUBLIC_SANITY_PROJECT_ID || DEFAULT_SANITY_PROJECT_ID;
   const dataset = process.env.PUBLIC_SANITY_DATASET || "production";
-  if (!projectId) throw new Error("PUBLIC_SANITY_PROJECT_ID is not configured");
 
   const query = `*[_type == "product" && slug.current == $slug][0]{title, price}`;
   const url =

@@ -1,25 +1,84 @@
 ---
-// Vi dropper Sanity-importen akkurat nå for å garantere et feilfritt bygg
-const products = [
-  { 
-    title: 'Curved Birch Tray', 
-    maker: 'Studio Bjørk · Bergen', 
-    price: 895, 
-    stripeLink: 'https://stripe.com', // Bytt ut med din ekte Stripe Payment Link i Sanity senere
-    alt: 'Curved birch serving tray', 
-    src: '/images/products/wood-tray.jpg', 
-    excerpt: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.' 
+import { sanityClient } from 'sanity:client';
+import imageUrlBuilder from '@sanity/image-url';
+
+// Henter de ekte produktene fra Sanity (admin/Studio på /studio). Alt som
+// publiseres der dukker opp her – tittel og beskrivelse på tre språk, pris,
+// produsent og hovedbilde.
+const QUERY = `*[_type == "product" && defined(title)] | order(_createdAt asc){
+  _id,
+  title,
+  title_en,
+  title_jp,
+  subtitle,
+  price,
+  "slug": slug.current,
+  "desc_no": coalesce(description, pt::text(body), ""),
+  "desc_en": coalesce(description_en, ""),
+  "desc_jp": coalesce(description_jp, ""),
+  mainImage{ ..., asset->{ url, metadata{ lqip } } }
+}`;
+
+let docs = [];
+try {
+  docs = (await sanityClient.fetch(QUERY)) ?? [];
+} catch (e) {
+  docs = [];
+}
+
+const builder = imageUrlBuilder(sanityClient);
+const buildImage = (img) => {
+  const base = builder.image(img).auto('format').fit('crop').quality(80);
+  return {
+    src: base.width(800).height(1000).url(),
+    srcset: [400, 800, 1200]
+      .map((w) => `${base.width(w).height(Math.round(w * 1.25)).url()} ${w}w`)
+      .join(', '),
+    lqip: img?.asset?.metadata?.lqip ?? null,
+  };
+};
+
+const clip = (s) => (s ? String(s).slice(0, 160) : '');
+
+const sanityItems = docs.map((d) => ({
+  slug: d.slug ?? null,
+  titleNo: d.title,
+  titleEn: d.title_en || d.title,
+  titleJp: d.title_jp || d.title,
+  maker: d.subtitle || 'ScandiJapandi Collection',
+  price: d.price,
+  excerptNo: clip(d.desc_no),
+  excerptEn: clip(d.desc_en || d.desc_no),
+  excerptJp: clip(d.desc_jp || d.desc_no),
+  alt: d.mainImage?.alt ?? d.title,
+  ...(d.mainImage?.asset ? buildImage(d.mainImage) : { src: null, srcset: null, lqip: null }),
+}));
+
+// Estetiske fallback-produkter dersom Sanity-tilkoblingen skulle hikke under
+// bygget. Disse har ingen slug, så «Kjøp nå» leder til partner-skjemaet i stedet
+// for checkout-funksjonen.
+const fallback = [
+  {
+    slug: null,
+    titleNo: 'Buet bjørkefat', titleEn: 'Curved Birch Tray', titleJp: '曲げ白樺トレイ',
+    maker: 'Studio Bjørk · Bergen', price: 895,
+    excerptNo: 'Ett enkelt sveip av dampbøyd nordisk bjørk, oljet for hånd og latt være for å vise årringene.',
+    excerptEn: 'A single sweep of steam-bent Nordic birch, oiled by hand and left to show its grain.',
+    excerptJp: '蒸し曲げした北欧の白樺を一筆書きのように仕上げ、手で油を塗り、木目をそのまま生かしました。',
+    alt: 'Curved birch serving tray', src: '/images/products/wood-tray.jpg', srcset: null, lqip: null,
   },
-  { 
-    title: 'Matte Stoneware Vase', 
-    maker: 'Sōen Keramikk · Oslo', 
-    price: 1450, 
-    stripeLink: 'https://stripe.com', // Bytt ut med din ekte Stripe Payment Link i Sanity senere
-    alt: 'Matte stoneware vase', 
-    src: '/images/products/ceramic-vase.jpg', 
-    excerpt: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.' 
+  {
+    slug: null,
+    titleNo: 'Matt steintøysvase', titleEn: 'Matte Stoneware Vase', titleJp: 'マットな炻器の花瓶',
+    maker: 'Sōen Keramikk · Oslo', price: 1450,
+    excerptNo: 'Dreid i en krittgrå leire og brent lavt, slik at overflaten forblir myk å ta på.',
+    excerptEn: 'Thrown in a chalk-grey clay and fired low, so the surface stays soft to the touch.',
+    excerptJp: 'チョークグレーの粘土で成形し低温で焼成、表面は柔らかな手触りのままです。',
+    alt: 'Matte stoneware vase', src: '/images/products/ceramic-vase.jpg', srcset: null, lqip: null,
   },
 ];
+
+const products = sanityItems.length > 0 ? sanityItems : fallback;
 
 const nok = new Intl.NumberFormat('nb-NO', {
   style: 'currency',
@@ -35,7 +94,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ScandiJapandi — Skandinavisk håndverk, ren nordisk ro</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap" />
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -52,13 +111,17 @@ const nok = new Intl.NumberFormat('nb-NO', {
         }
       }
     </script>
-    
+
     <style>
       body { font-family: 'Jost', sans-serif; background-color: #FBFBFA; color: #1A1A1A; }
       .font-serif { font-family: 'Fraunces', serif; }
-      
+
       .reveal { opacity: 0; transform: translateY(20px); transition: opacity 1s ease, transform 1s ease; }
       .reveal.is-visible { opacity: 1; transform: translateY(0); }
+
+      .lang-btn { opacity: 0.45; transition: opacity .2s ease; }
+      .lang-btn[aria-current="true"] { opacity: 1; }
+      .lang-btn:hover { opacity: 0.85; }
     </style>
 
     <script is:inline>
@@ -71,9 +134,9 @@ const nok = new Intl.NumberFormat('nb-NO', {
         }
         const io = new IntersectionObserver((entries) => {
           for (const e of entries) {
-            if (e.isIntersecting) { 
-              e.target.classList.add('is-visible'); 
-              io.unobserve(e.target); 
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible');
+              io.unobserve(e.target);
             }
           }
         }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
@@ -83,14 +146,19 @@ const nok = new Intl.NumberFormat('nb-NO', {
   </head>
 
   <body class="overflow-x-hidden bg-paper text-ink antialiased">
-    
+
     <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
       <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
         <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
-        <nav class="flex items-center gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
-          <a href="#collection" class="transition-colors hover:text-ink">Kolleksjon</a>
-          <a href="#about" class="transition-colors hover:text-ink">Om oss</a>
-          <a href="#partner" class="transition-colors hover:text-ink">Bli Partner</a>
+        <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
+          <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
+          <a href="#about" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_about">Om oss</a>
+          <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_partner">Bli Partner</a>
+          <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
+            <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
+            <button type="button" class="lang-btn" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="jp">日本語</button>
+          </div>
         </nav>
       </div>
     </header>
@@ -99,15 +167,15 @@ const nok = new Intl.NumberFormat('nb-NO', {
       <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
       <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
         <div class="max-w-2xl reveal">
-          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Etablert 2026</span>
-          <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink">
+          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="hero_eyebrow">Etablert 2026</span>
+          <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink" data-i18n="hero_title">
             Nordisk ro kuratert for verden
           </h1>
-          <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg">
+          <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg" data-i18n="hero_body">
             En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer, forent i en minimalistisk estetikk verdsatt fra Norden til Japan.
           </p>
           <div class="mt-10">
-            <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay">
+            <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay" data-i18n="hero_cta">
               Utforsk kolleksjonen
             </a>
           </div>
@@ -117,18 +185,18 @@ const nok = new Intl.NumberFormat('nb-NO', {
 
     <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
       <div class="mx-auto max-w-3xl text-center reveal">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Vår Filosofi</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Skandinavisk funksjonalitet møter global minimalisme. Vi feirer det ekte, det naturlige og det nordiske håndverket som er skapt for å vare i generasjoner.</h2>
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="about_eyebrow">Vår Filosofi</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="about_title">Skandinavisk funksjonalitet møter global minimalisme. Vi feirer det ekte, det naturlige og det nordiske håndverket som er skapt for å vare i generasjoner.</h2>
       </div>
     </section>
 
     <section id="collection" class="px-6 sm:px-12 py-32 mx-auto max-w-6xl">
       <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-20 reveal">
         <div>
-          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Kuratert utvalg</span>
+          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2" data-i18n="collection_eyebrow">Kuratert utvalg</span>
           <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
         </div>
-        <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed">
+        <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed" data-i18n="collection_lead">
           Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
         </p>
       </div>
@@ -139,25 +207,26 @@ const nok = new Intl.NumberFormat('nb-NO', {
             <div>
               <div class="relative aspect-[4/5] bg-oat overflow-hidden">
                 {item.src ? (
-                  <img src={item.src} alt={item.alt} class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+                  <img src={item.src} srcset={item.srcset} sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" alt={item.alt} loading="lazy" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
                 ) : (
-                  <div class="h-full w-full bg-stone/5 flex items-center justify-center text-stone/40 text-xs">Ingen bilde tilgjengelig</div>
+                  <div class="h-full w-full bg-stone/5 flex items-center justify-center text-stone/40 text-xs" data-i18n="product_noimage">Ingen bilde tilgjengelig</div>
                 )}
               </div>
-              
+
               <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
                 <div>
-                  <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{item.title}</h3>
+                  <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay" data-no={item.titleNo} data-en={item.titleEn} data-jp={item.titleJp}>{item.titleNo}</h3>
                   <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{item.maker}</p>
                 </div>
                 <span class="text-base font-light text-ink">{typeof item.price === 'number' ? nok.format(item.price) : item.price}</span>
               </div>
-              <p class="mt-4 text-sm text-stone/90 font-light leading-relaxed">{item.excerpt}</p>
+              <p class="mt-4 text-sm text-stone/90 font-light leading-relaxed" data-no={item.excerptNo} data-en={item.excerptEn} data-jp={item.excerptJp}>{item.excerptNo}</p>
             </div>
-            
-            <a 
-              href={item.stripeLink}
+
+            <a
+              href={item.slug ? `/api/checkout?slug=${item.slug}` : '#partner'}
               class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm"
+              data-i18n="product_buy"
             >
               Kjøp nå →
             </a>
@@ -168,23 +237,23 @@ const nok = new Intl.NumberFormat('nb-NO', {
 
     <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
       <div class="max-w-md mx-auto text-center reveal">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Samarbeid</span>
-        <h2 class="font-serif text-3xl text-ink">Bli en del av ScandiJapandi</h2>
-        <p class="mt-4 text-sm text-stone font-light leading-relaxed">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="partner_eyebrow">Samarbeid</span>
+        <h2 class="font-serif text-3xl text-ink" data-i18n="partner_title">Bli en del av ScandiJapandi</h2>
+        <p class="mt-4 text-sm text-stone font-light leading-relaxed" data-i18n="partner_body">
           Søk om å bli sertifisert kurator eller partner for å bringe kolleksjonen ut til ditt internasjonale nettverk.
         </p>
-        
+
         <form name="collection-partner" method="POST" data-netlify="true" class="mt-12 text-left space-y-6">
           <input type="hidden" name="form-name" value="collection-partner" />
           <div>
-            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2">Ditt fulle navn</label>
+            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2" data-i18n="partner_name_label">Ditt fulle navn</label>
             <input type="text" name="name" required class="w-full p-4 bg-paper/50 border border-ink/10 focus:border-ink/30 outline-none text-sm font-light transition-colors" />
           </div>
           <div>
-            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2">E-postadresse</label>
+            <label class="block text-[9px] font-medium uppercase tracking-widest text-stone mb-2" data-i18n="partner_email_label">E-postadresse</label>
             <input type="email" name="email" required class="w-full p-4 bg-paper/50 border border-ink/10 focus:border-ink/30 outline-none text-sm font-light transition-colors" />
           </div>
-          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay mt-4">
+          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay mt-4" data-i18n="partner_submit">
             Send søknad
           </button>
         </form>
@@ -193,27 +262,131 @@ const nok = new Intl.NumberFormat('nb-NO', {
 
     <footer class="bg-ink text-paper/60 px-6 sm:px-12 py-12 text-center text-[10px] uppercase tracking-widest border-t border-paper/10">
       <div class="mx-auto max-w-6xl flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p class="text-paper/40">&copy; 2026 ScandiJapandi. Alle rettigheter reservert.</p>
+        <p class="text-paper/40" data-i18n="footer_rights">&copy; 2026 ScandiJapandi. Alle rettigheter reservert.</p>
         <div class="flex gap-6">
-          <a href="#top" class="hover:text-paper transition-colors">Til toppen ↑</a>
+          <a href="#top" class="hover:text-paper transition-colors" data-i18n="footer_top">Til toppen ↑</a>
         </div>
       </div>
     </footer>
 
-    <script>
+    <script is:inline>
+      // ---- Flerspråklig støtte: Norsk / Engelsk / Japansk ----
+      const I18N = {
+        no: {
+          nav_collection: 'Kolleksjon', nav_about: 'Om oss', nav_partner: 'Bli Partner',
+          hero_eyebrow: 'Etablert 2026',
+          hero_title: 'Nordisk ro kuratert for verden',
+          hero_body: 'En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer, forent i en minimalistisk estetikk verdsatt fra Norden til Japan.',
+          hero_cta: 'Utforsk kolleksjonen',
+          about_eyebrow: 'Vår Filosofi',
+          about_title: 'Skandinavisk funksjonalitet møter global minimalisme. Vi feirer det ekte, det naturlige og det nordiske håndverket som er skapt for å vare i generasjoner.',
+          collection_eyebrow: 'Kuratert utvalg',
+          collection_lead: 'Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.',
+          partner_eyebrow: 'Samarbeid',
+          partner_title: 'Bli en del av ScandiJapandi',
+          partner_body: 'Søk om å bli sertifisert kurator eller partner for å bringe kolleksjonen ut til ditt internasjonale nettverk.',
+          partner_name_label: 'Ditt fulle navn',
+          partner_email_label: 'E-postadresse',
+          partner_submit: 'Send søknad',
+          product_buy: 'Kjøp nå →',
+          product_noimage: 'Ingen bilde tilgjengelig',
+          footer_rights: '© 2026 ScandiJapandi. Alle rettigheter reservert.',
+          footer_top: 'Til toppen ↑',
+        },
+        en: {
+          nav_collection: 'Collection', nav_about: 'About', nav_partner: 'Become a Partner',
+          hero_eyebrow: 'Established 2026',
+          hero_title: 'Nordic calm, curated for the world',
+          hero_body: 'An exclusive collection of timeless Scandinavian objects. Clean lines, uncompromising Nordic craftsmanship and sustainable natural materials, united in a minimalist aesthetic treasured from the Nordics to Japan.',
+          hero_cta: 'Explore the collection',
+          about_eyebrow: 'Our Philosophy',
+          about_title: 'Scandinavian functionality meets global minimalism. We celebrate the genuine, the natural and the Nordic craft made to last for generations.',
+          collection_eyebrow: 'Curated selection',
+          collection_lead: 'Unique objects from independent Scandinavian artists and time-honoured Nordic workshops.',
+          partner_eyebrow: 'Partnership',
+          partner_title: 'Become part of ScandiJapandi',
+          partner_body: 'Apply to become a certified curator or partner and bring the collection to your international network.',
+          partner_name_label: 'Your full name',
+          partner_email_label: 'Email address',
+          partner_submit: 'Submit application',
+          product_buy: 'Buy now →',
+          product_noimage: 'No image available',
+          footer_rights: '© 2026 ScandiJapandi. All rights reserved.',
+          footer_top: 'Back to top ↑',
+        },
+        jp: {
+          nav_collection: 'コレクション', nav_about: '私たちについて', nav_partner: 'パートナー募集',
+          hero_eyebrow: '2026年設立',
+          hero_title: '世界へ届ける、北欧の静けさ',
+          hero_body: '時代を超えるスカンジナビアの逸品を集めた特別なコレクション。澄んだ線、妥協のない北欧の職人技、そして持続可能な天然素材が、北欧から日本まで愛されるミニマルな美学のもとに調和します。',
+          hero_cta: 'コレクションを見る',
+          about_eyebrow: '私たちの哲学',
+          about_title: 'スカンジナビアの機能美と世界のミニマリズムの融合。本物であること、自然であること、そして何世代にもわたって受け継がれる北欧の職人技を称えます。',
+          collection_eyebrow: '厳選されたセレクション',
+          collection_lead: '独立したスカンジナビアの作家と、伝統ある北欧の工房による唯一無二の作品。',
+          partner_eyebrow: '提携',
+          partner_title: 'ScandiJapandi の一員になる',
+          partner_body: '認定キュレーターまたはパートナーとして、このコレクションをあなたの国際的なネットワークへ届けませんか。',
+          partner_name_label: 'お名前（フルネーム）',
+          partner_email_label: 'メールアドレス',
+          partner_submit: '応募する',
+          product_buy: '購入する →',
+          product_noimage: '画像がありません',
+          footer_rights: '© 2026 ScandiJapandi. 無断複製禁止。',
+          footer_top: 'トップへ ↑',
+        },
+      };
+
+      const LANGS = ['no', 'en', 'jp'];
+      const HTML_LANG = { no: 'no', en: 'en', jp: 'ja' };
+
+      function applyLang(lang) {
+        if (!LANGS.includes(lang)) lang = 'no';
+        const dict = I18N[lang];
+
+        // Statiske UI-tekster
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+          const key = el.getAttribute('data-i18n');
+          if (dict[key] != null) el.textContent = dict[key];
+        });
+
+        // Produkttittel + beskrivelse (data-no / data-en / data-jp)
+        document.querySelectorAll('[data-no][data-en][data-jp]').forEach((el) => {
+          const val = el.getAttribute('data-' + lang);
+          if (val != null) el.textContent = val;
+        });
+
+        document.documentElement.setAttribute('lang', HTML_LANG[lang]);
+        document.querySelectorAll('.lang-btn').forEach((b) => {
+          b.setAttribute('aria-current', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+        });
+        try { localStorage.setItem('sj-lang', lang); } catch (e) {}
+      }
+
       document.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const ref = urlParams.get('ref');
-        if (ref) {
-          const links = document.querySelectorAll('.checkout-btn');
-          links.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.startsWith('http')) {
-              const separator = href.includes('?') ? '&' : '?';
-              link.setAttribute('href', `${href}${separator}client_reference_id=${encodeURIComponent(ref)}`);
-            }
-          });
-        }
+        let initial = 'no';
+        try { initial = localStorage.getItem('sj-lang') || 'no'; } catch (e) {}
+        applyLang(initial);
+
+        document.querySelectorAll('.lang-btn').forEach((btn) => {
+          btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+        });
+      });
+    </script>
+
+    <script is:inline>
+      // Bærer kurator-referansen (?ref=) videre inn i Stripe-checkouten, slik at
+      // salget kan tilskrives riktig kurator i ordrehåndteringen.
+      document.addEventListener('DOMContentLoaded', () => {
+        const ref = new URLSearchParams(window.location.search).get('ref');
+        if (!ref) return;
+        document.querySelectorAll('.checkout-btn').forEach((link) => {
+          const href = link.getAttribute('href') || '';
+          if (href.startsWith('/api/checkout')) {
+            const sep = href.includes('?') ? '&' : '?';
+            link.setAttribute('href', `${href}${sep}ref=${encodeURIComponent(ref)}`);
+          }
+        });
       });
     </script>
 
