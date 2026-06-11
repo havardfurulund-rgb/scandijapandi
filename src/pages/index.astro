@@ -1,5 +1,13 @@
 ---
-import products from '../data/products.json';
+import productsData from '../data/products.json';
+
+// Vern mot uventet dataform: bygget skal aldri feile selv om JSON-en
+// ikke er et array (f.eks. hvis filen blir overskrevet ved en feil).
+const products = Array.isArray(productsData)
+  ? productsData
+  : Array.isArray(productsData?.products)
+    ? productsData.products
+    : [];
 
 const nok = new Intl.NumberFormat('nb-NO', {
   style: 'currency',
