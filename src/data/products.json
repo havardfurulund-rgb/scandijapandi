@@ -1,26 +1,23 @@
 [
   {
-    "id": 1,
+    "slug": "handvevd-linndekke-lofoten",
     "name": "Håndvevd Linndekke fra Lofoten",
     "producer": "Lofoten Vev",
     "price": 2450,
-    "image": "https://picsum.photos/id/1015/800/1000",
-    "stripeLink": "https://buy.stripe.com/test_28o3cP5example"
+    "image": "https://picsum.photos/id/1015/800/1000"
   },
   {
-    "id": 2,
+    "slug": "eikebolle-hardanger",
     "name": "Eikebolle Hardanger",
     "producer": "Hardanger Treverk",
     "price": 980,
-    "image": "https://picsum.photos/id/201/800/1000",
-    "stripeLink": "https://buy.stripe.com/test_28o3cP5example"
+    "image": "https://picsum.photos/id/201/800/1000"
   },
   {
-    "id": 3,
+    "slug": "minimalistisk-keramikkvase",
     "name": "Minimalistisk Keramikkvase",
     "producer": "Sōen Keramikk",
     "price": 1450,
-    "image": "https://picsum.photos/id/870/800/1000",
-    "stripeLink": "https://buy.stripe.com/test_28o3cP5example"
+    "image": "https://picsum.photos/id/870/800/1000"
   }
 ]

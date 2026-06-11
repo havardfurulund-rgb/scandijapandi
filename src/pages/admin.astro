@@ -1,0 +1,250 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Admin — ScandiJapandi">
+  <header class="border-b border-ink/10 bg-paper">
+    <div class="mx-auto flex h-20 max-w-5xl items-center justify-between px-6">
+      <a href="/" class="font-serif text-xl tracking-tight">ScandiJapandi</a>
+      <div class="flex items-center gap-6 text-[10px] font-medium uppercase tracking-widest text-stone">
+        <span>Admin</span>
+        <span id="admin-email" class="text-ink"></span>
+        <button id="logout-btn" type="button" class="hidden hover:text-ink transition-colors">Logg ut</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-5xl px-6 py-16">
+    <!-- Login -->
+    <section id="login-view" class="hidden max-w-md mx-auto">
+      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Tilgang</span>
+      <h1 class="font-serif text-3xl text-ink">Logg inn på admin</h1>
+      <p class="mt-3 text-sm text-stone font-light">Administrer produkter, priser og influenser-lenker.</p>
+      <form id="login-form" class="mt-8 space-y-5 bg-oat/60 p-8 border border-ink/5">
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+          <input type="email" id="login-email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Passord</span>
+          <input type="password" id="login-password" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Logg inn</button>
+        <p id="login-error" class="hidden text-sm text-clay"></p>
+      </form>
+    </section>
+
+    <!-- No access -->
+    <section id="noaccess-view" class="hidden max-w-md mx-auto text-center">
+      <h1 class="font-serif text-3xl text-ink">Ingen admin-tilgang</h1>
+      <p class="mt-3 text-sm text-stone font-light">
+        Kontoen din mangler <code class="bg-oat px-1">admin</code>-rollen. En administrator må tildele rollen
+        i Netlify Identity før du får tilgang.
+      </p>
+    </section>
+
+    <!-- Admin dashboard -->
+    <section id="admin-view" class="hidden">
+      <div class="flex items-baseline justify-between mb-10">
+        <div>
+          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Katalog</span>
+          <h1 class="font-serif text-3xl text-ink">Produkter</h1>
+        </div>
+      </div>
+
+      <!-- Add / edit product -->
+      <form id="product-form" class="bg-oat/60 p-8 border border-ink/5 mb-12 space-y-5">
+        <h2 id="form-title" class="font-serif text-xl text-ink">Nytt produkt</h2>
+        <input type="hidden" id="edit-slug" value="" />
+        <div class="grid sm:grid-cols-2 gap-5">
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Navn *</span>
+            <input type="text" id="p-name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Produsent</span>
+            <input type="text" id="p-producer" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Pris (NOK) *</span>
+            <input type="number" id="p-price" min="0" step="1" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Bilde-URL</span>
+            <input type="url" id="p-image" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          </label>
+        </div>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse</span>
+          <textarea id="p-description" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+        </label>
+        <label class="flex items-center gap-3 text-sm">
+          <input type="checkbox" id="p-active" checked class="accent-clay" /> Aktiv (vises i butikken)
+        </label>
+        <div class="flex gap-4">
+          <button type="submit" class="bg-ink text-paper px-8 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Lagre produkt</button>
+          <button type="button" id="cancel-edit" class="hidden border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Avbryt</button>
+        </div>
+        <p id="product-msg" class="hidden text-sm"></p>
+      </form>
+
+      <div id="product-list" class="space-y-3"></div>
+
+      <!-- Influencer links -->
+      <div class="mt-16 bg-ink text-paper p-8">
+        <h2 class="font-serif text-xl">Influenser-lenker</h2>
+        <p class="mt-2 text-sm text-paper/70 font-light">
+          Lag en delbar lenke til en influenser. Salg via lenken merkes med deres navn (curator) i Stripe.
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <input type="text" id="ref-name" placeholder="influenser-navn" class="flex-1 bg-paper/10 border border-paper/20 p-4 text-paper placeholder:text-paper/40 outline-none focus:border-paper" />
+          <button type="button" id="ref-make" class="bg-paper text-ink px-8 py-4 uppercase text-[10px] font-medium tracking-widest hover:bg-clay hover:text-paper transition-colors">Lag lenke</button>
+        </div>
+        <div id="ref-result" class="hidden mt-4 flex items-center gap-3 bg-paper/10 p-4">
+          <code id="ref-link" class="flex-1 break-all text-sm text-paper/90"></code>
+          <button type="button" id="ref-copy" class="text-[10px] uppercase tracking-widest text-paper/70 hover:text-paper">Kopier</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    import { login, logout, getUser } from '@netlify/identity';
+
+    const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+    const $ = (id) => document.getElementById(id);
+    const show = (id) => $(id).classList.remove('hidden');
+    const hide = (id) => $(id).classList.add('hidden');
+
+    function escapeHtml(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    async function api(path, options = {}) {
+      const res = await fetch(path, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}) } });
+      return res;
+    }
+
+    function renderList(products) {
+      const list = $('product-list');
+      if (!products.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen produkter ennå.</p>'; return; }
+      list.innerHTML = products.map((p) => `
+        <div class="flex items-center gap-4 bg-paper border border-ink/10 p-4">
+          <img src="${escapeHtml(p.image_url)}" alt="" class="h-16 w-16 object-cover bg-oat" />
+          <div class="flex-1 min-w-0">
+            <p class="font-serif text-lg text-ink truncate">${escapeHtml(p.name)} ${p.active ? '' : '<span class="text-[10px] uppercase tracking-widest text-clay">(skjult)</span>'}</p>
+            <p class="text-[10px] uppercase tracking-wider text-stone">${escapeHtml(p.producer || '')} · ${nok.format(Number(p.price_nok))} · /${escapeHtml(p.slug)}</p>
+          </div>
+          <button type="button" data-edit="${escapeHtml(p.slug)}" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink">Rediger</button>
+          <button type="button" data-del="${escapeHtml(p.slug)}" class="text-[10px] uppercase tracking-widest text-clay hover:opacity-70">Slett</button>
+        </div>`).join('');
+
+      list.querySelectorAll('[data-edit]').forEach((b) => b.addEventListener('click', () => startEdit(products.find((x) => x.slug === b.dataset.edit))));
+      list.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => del(b.dataset.del)));
+    }
+
+    let cache = [];
+    async function loadProducts() {
+      const res = await api('/api/admin/products');
+      if (!res.ok) return;
+      const data = await res.json();
+      cache = data.products || [];
+      renderList(cache);
+    }
+
+    function startEdit(p) {
+      if (!p) return;
+      $('form-title').textContent = 'Rediger produkt';
+      $('edit-slug').value = p.slug;
+      $('p-name').value = p.name || '';
+      $('p-producer').value = p.producer || '';
+      $('p-price').value = p.price_nok ?? '';
+      $('p-image').value = p.image_url || '';
+      $('p-description').value = p.description || '';
+      $('p-active').checked = !!p.active;
+      show('cancel-edit');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetForm() {
+      $('form-title').textContent = 'Nytt produkt';
+      $('product-form').reset();
+      $('edit-slug').value = '';
+      $('p-active').checked = true;
+      hide('cancel-edit');
+    }
+
+    function msg(text, ok) {
+      const el = $('product-msg');
+      el.textContent = text;
+      el.className = `text-sm ${ok ? 'text-ink' : 'text-clay'}`;
+      show('product-msg');
+      setTimeout(() => hide('product-msg'), 4000);
+    }
+
+    async function del(slug) {
+      if (!confirm('Slette dette produktet?')) return;
+      const res = await api(`/api/admin/products/${encodeURIComponent(slug)}`, { method: 'DELETE' });
+      if (res.ok) { await loadProducts(); msg('Produkt slettet.', true); } else { msg('Kunne ikke slette.', false); }
+    }
+
+    $('product-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const slug = $('edit-slug').value;
+      const payload = {
+        name: $('p-name').value.trim(),
+        producer: $('p-producer').value.trim(),
+        price_nok: Number($('p-price').value),
+        image_url: $('p-image').value.trim(),
+        description: $('p-description').value.trim(),
+        active: $('p-active').checked,
+      };
+      const res = slug
+        ? await api(`/api/admin/products/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(payload) })
+        : await api('/api/admin/products', { method: 'POST', body: JSON.stringify(payload) });
+      if (res.ok) { resetForm(); await loadProducts(); msg('Lagret.', true); } else { msg('Kunne ikke lagre.', false); }
+    });
+
+    $('cancel-edit').addEventListener('click', resetForm);
+
+    // Influencer link generator
+    $('ref-make').addEventListener('click', () => {
+      const name = $('ref-name').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      if (!name) return;
+      const link = `${window.location.origin}/?ref=${encodeURIComponent(name)}`;
+      $('ref-link').textContent = link;
+      show('ref-result');
+    });
+    $('ref-copy').addEventListener('click', () => navigator.clipboard?.writeText($('ref-link').textContent || ''));
+
+    // Auth
+    $('logout-btn').addEventListener('click', async () => { await logout(); location.reload(); });
+
+    $('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hide('login-error');
+      try {
+        await login($('login-email').value, $('login-password').value);
+        await boot();
+      } catch (err) {
+        const el = $('login-error');
+        el.textContent = err?.status === 401 ? 'Feil e-post eller passord.' : (err?.message || 'Innlogging feilet.');
+        show('login-error');
+      }
+    });
+
+    async function boot() {
+      const user = await getUser();
+      if (!user) { hide('admin-view'); hide('noaccess-view'); show('login-view'); hide('logout-btn'); $('admin-email').textContent = ''; return; }
+      $('admin-email').textContent = user.email || '';
+      show('logout-btn');
+      hide('login-view');
+      if (!user.roles?.includes('admin')) { hide('admin-view'); show('noaccess-view'); return; }
+      hide('noaccess-view');
+      show('admin-view');
+      await loadProducts();
+    }
+
+    boot();
+  </script>
+</Base>

@@ -1,45 +1,37 @@
 // Netlify Function backing the storefront's "Kjøp nå" button.
 //
 // The button performs a plain GET navigation to `/api/checkout?slug=…&ref=…`.
-// Because the storefront is a *static* Astro build (no SSR adapter, see
-// astro.config.mjs), there is no server runtime for an Astro API route. A
-// Netlify Function is the platform-native way to add this endpoint without
-// converting the whole site to server rendering.
+// Earlier the storefront linked each product straight to a hard-coded
+// `buy.stripe.com/test_…` URL. Those placeholder links no longer resolve to a
+// real payment page — the request lands on Stripe's object storage and returns
+// an "AccessDenied" XML document, which is the error shoppers were seeing.
 //
-// Flow: look up the product in Sanity by slug to get its name + price, create a
-// Stripe Checkout Session for it, then 303-redirect the visitor to Stripe's
-// hosted checkout page. The curator referral (`ref`) is carried into the
-// session metadata so downstream order handling can attribute the sale.
-
-const SANITY_API_VERSION = "v2021-06-07";
-
-// Public Sanity project id. Kept in sync with `astro.config.mjs`, where the same
-// value is hardcoded for the build-time `sanity:client`. Falls back here so the
-// checkout endpoint keeps working even when no env var is configured.
-const DEFAULT_SANITY_PROJECT_ID = "v7f0k69w";
+// The fix routes every purchase through this endpoint instead: it looks the
+// product up in the Netlify Database (the same source of truth the admin and
+// storefront use), creates a real Stripe Checkout Session priced in NOK, then
+// 303-redirects the visitor to Stripe's hosted checkout. The influencer
+// referral (`ref`) is carried into the session metadata so a sale can be
+// attributed to the curator who drove it.
+import type { Config } from "@netlify/functions";
+import { db } from "../lib/db.mts";
 
 function siteUrl(): string {
-  return process.env.URL || "https://scandijapandi.no";
+  return Netlify.env.get("URL") || "https://scandijapandi.no";
 }
 
 function redirect(location: string): Response {
   return new Response(null, { status: 303, headers: { Location: location } });
 }
 
-async function fetchProduct(slug: string): Promise<{ title?: string; price?: number } | null> {
-  const projectId = process.env.PUBLIC_SANITY_PROJECT_ID || DEFAULT_SANITY_PROJECT_ID;
-  const dataset = process.env.PUBLIC_SANITY_DATASET || "production";
-
-  const query = `*[_type == "product" && slug.current == $slug][0]{title, price}`;
-  const url =
-    `https://${projectId}.apicdn.sanity.io/${SANITY_API_VERSION}/data/query/${dataset}` +
-    `?query=${encodeURIComponent(query)}` +
-    `&$slug=${encodeURIComponent(JSON.stringify(slug))}`;
-
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Sanity query failed: ${res.status}`);
-  const json = await res.json();
-  return json.result ?? null;
+async function fetchProduct(
+  slug: string,
+): Promise<{ name?: string; price_nok?: number } | null> {
+  const rows = await db.sql`
+    SELECT name, price_nok FROM products
+    WHERE slug = ${slug} AND active = TRUE
+    LIMIT 1
+  `;
+  return rows[0] ?? null;
 }
 
 async function createCheckoutSession(opts: {
@@ -48,7 +40,7 @@ async function createCheckoutSession(opts: {
   curator: string;
   slug: string;
 }): Promise<string> {
-  const key = process.env.STRIPE_SECRET_KEY;
+  const key = Netlify.env.get("STRIPE_SECRET_KEY");
   if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
 
   const form = new URLSearchParams();
@@ -60,6 +52,7 @@ async function createCheckoutSession(opts: {
   for (const country of ["NO", "SE", "DK", "FI", "JP"]) {
     form.append("shipping_address_collection[allowed_countries][]", country);
   }
+  if (opts.curator) form.set("client_reference_id", opts.curator);
   form.set("metadata[curator]", opts.curator);
   form.set("metadata[slug]", opts.slug);
   form.set("success_url", `${siteUrl()}/?checkout=success`);
@@ -84,7 +77,7 @@ async function createCheckoutSession(opts: {
 export default async (req: Request) => {
   const url = new URL(req.url);
   const slug = url.searchParams.get("slug") || "";
-  const curator = url.searchParams.get("ref") || "";
+  const curator = url.searchParams.get("ref") || url.searchParams.get("client_reference_id") || "";
 
   if (!slug || slug === "undefined") {
     return redirect(`${siteUrl()}/?checkout=error&reason=missing-slug`);
@@ -92,13 +85,13 @@ export default async (req: Request) => {
 
   try {
     const product = await fetchProduct(slug);
-    if (!product || typeof product.price !== "number") {
+    if (!product || typeof product.price_nok !== "number") {
       return redirect(`${siteUrl()}/?checkout=error&reason=not-found`);
     }
 
     const checkoutUrl = await createCheckoutSession({
-      name: product.title || "Scandi Japandi",
-      amountMinor: Math.round(product.price * 100),
+      name: product.name || "ScandiJapandi",
+      amountMinor: Math.round(Number(product.price_nok) * 100),
       curator,
       slug,
     });
@@ -110,6 +103,6 @@ export default async (req: Request) => {
   }
 };
 
-export const config = {
+export const config: Config = {
   path: "/api/checkout",
 };
