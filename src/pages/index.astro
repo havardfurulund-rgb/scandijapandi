@@ -58,6 +58,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
       </div>
     </header>
 
+    <!-- Hero -->
     <section id="top" class="relative flex min-h-screen items-center overflow-hidden bg-[#E2DFD9] pt-20">
       <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
       <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
@@ -78,6 +79,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
       </div>
     </section>
 
+    <!-- About -->
     <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
       <div class="mx-auto max-w-3xl text-center reveal">
         <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="about_eyebrow">Vår Filosofi</span>
@@ -87,6 +89,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
       </div>
     </section>
 
+    <!-- Collection -->
     <section id="collection" class="px-6 sm:px-12 py-32 mx-auto max-w-6xl">
       <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-20 reveal">
         <div>
@@ -98,7 +101,6 @@ const nok = new Intl.NumberFormat('nb-NO', {
         </p>
       </div>
 
-      <!-- REN PRODUKTGRID -->
       <div class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
           <article class="reveal flex flex-col justify-between group" key={product.id}>
@@ -121,7 +123,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
             </div>
             
             <a 
-              href={product.stripeLink}
+              href={product.stripeLink + (Astro.url.searchParams.get('ref') ? `?client_reference_id=${Astro.url.searchParams.get('ref')}` : '')}
               class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm"
             >
               Kjøp nå →
@@ -131,19 +133,22 @@ const nok = new Intl.NumberFormat('nb-NO', {
       </div>
     </section>
 
-    <!-- Partner og footer beholdes fra din tidligere versjon -->
-    <!-- ... lim inn din partner-seksjon og footer her hvis du vil ... -->
-
-    <footer class="bg-ink text-paper/60 px-6 sm:px-12 py-12 text-center text-[10px] uppercase tracking-widest border-t border-paper/10">
-      <div class="mx-auto max-w-6xl flex flex-col sm:flex-row justify-between items-center gap-4">
-        <p class="text-paper/40">© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
+    <!-- Partner section (kort versjon) -->
+    <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
+      <div class="max-w-md mx-auto text-center reveal">
+        <h2 class="font-serif text-3xl text-ink mb-4">Bli en del av ScandiJapandi</h2>
+        <form name="collection-partner" method="POST" data-netlify="true" class="mt-8 space-y-6">
+          <input type="hidden" name="form-name" value="collection-partner" />
+          <input type="text" name="name" placeholder="Ditt navn" required class="w-full p-4 border border-ink/10" />
+          <input type="email" name="email" placeholder="E-post" required class="w-full p-4 border border-ink/10" />
+          <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-sm tracking-widest">Send søknad</button>
+        </form>
       </div>
+    </section>
+
+    <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
+      <p>© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
     </footer>
 
-    <!-- Språkscript (forenklet versjon) -->
-    <script is:inline>
-      // Enkel språkstøtte kan utvides senere
-      console.log("ScandiJapandi loaded");
-    </script>
   </body>
 </html>
