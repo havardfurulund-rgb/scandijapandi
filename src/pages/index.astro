@@ -202,16 +202,36 @@ const nok = new Intl.NumberFormat('nb-NO', {
         </p>
       </div>
 
-      <div class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
-  {products.map((item) => (
+     <div class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
+  {products.map((product) => (
     <article class="reveal flex flex-col justify-between group">
       <div>
         <div class="relative aspect-[4/5] bg-oat overflow-hidden">
-          <img src={item.image} 
-               alt={item.name} 
-               loading="lazy" 
-               class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            loading="lazy" 
+            class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
+          />
         </div>
+        <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
+          <div>
+            <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{product.name}</h3>
+            <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{product.producer}</p>
+          </div>
+          <span class="text-base font-light text-ink">{product.price} kr</span>
+        </div>
+      </div>
+      
+      <a 
+        href={product.stripeLink + (Astro.url.searchParams.get('ref') ? `?client_reference_id=${Astro.url.searchParams.get('ref')}` : '')}
+        class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm"
+      >
+        Kjøp nå →
+      </a>
+    </article>
+  ))}
+</div>
         <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
           <div>
             <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{item.name}</h3>
