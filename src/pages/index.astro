@@ -30,8 +30,10 @@ const checkoutHref = (product) =>
         <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink">Kolleksjon</a>
         <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink">Bli med</a>
         <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink">Bli Partner</a>
-        <!-- Diskret Admin-lenke: skjult som standard, vises kun for innloggede Netlify Identity-brukere. -->
-        <a id="admin-link" href="/admin" class="hidden transition-colors hover:text-ink">Admin</a>
+        <!-- Admin-lenke: skjult som standard, vises tydelig kun for innloggede Netlify Identity-brukere. -->
+        <a id="admin-link" href="/admin" class="hidden inline-flex items-center gap-1.5 text-clay transition-colors hover:text-ink">
+          <span class="inline-block h-1.5 w-1.5 rounded-full bg-clay"></span>Admin
+        </a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
