@@ -23,14 +23,54 @@ import Base from '../layouts/Base.astro';
       <form id="login-form" class="mt-8 space-y-5 bg-oat/60 p-8 border border-ink/5">
         <label class="block">
           <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
-          <input type="email" id="login-email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          <input type="email" id="login-email" autocomplete="username" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
         </label>
         <label class="block">
           <span class="text-[10px] uppercase tracking-widest text-stone">Passord</span>
-          <input type="password" id="login-password" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+          <input type="password" id="login-password" autocomplete="current-password" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
         </label>
         <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Logg inn</button>
         <p id="login-error" class="hidden text-sm text-clay"></p>
+        <button type="button" id="forgot-link" class="block w-full text-center text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
+          Glemt passordet?
+        </button>
+      </form>
+    </section>
+
+    <!-- Forgot password -->
+    <section id="forgot-view" class="hidden max-w-md mx-auto">
+      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Tilbakestilling</span>
+      <h1 class="font-serif text-3xl text-ink">Glemt passordet?</h1>
+      <p class="mt-3 text-sm text-stone font-light">Skriv inn e-posten din, så sender vi deg en lenke for å sette et nytt passord.</p>
+      <form id="forgot-form" class="mt-8 space-y-5 bg-oat/60 p-8 border border-ink/5">
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+          <input type="email" id="forgot-email" autocomplete="username" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Send tilbakestillingslenke</button>
+        <p id="forgot-msg" class="hidden text-sm"></p>
+        <button type="button" id="back-to-login" class="block w-full text-center text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
+          ← Tilbake til innlogging
+        </button>
+      </form>
+    </section>
+
+    <!-- Set new password (recovery + invite) -->
+    <section id="reset-view" class="hidden max-w-md mx-auto">
+      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Sikkerhet</span>
+      <h1 id="reset-title" class="font-serif text-3xl text-ink">Sett nytt passord</h1>
+      <p id="reset-sub" class="mt-3 text-sm text-stone font-light">Velg et nytt passord for kontoen din.</p>
+      <form id="reset-form" class="mt-8 space-y-5 bg-oat/60 p-8 border border-ink/5">
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Nytt passord</span>
+          <input type="password" id="reset-password" autocomplete="new-password" minlength="8" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Bekreft passord</span>
+          <input type="password" id="reset-password2" autocomplete="new-password" minlength="8" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Lagre passord</button>
+        <p id="reset-error" class="hidden text-sm text-clay"></p>
       </form>
     </section>
 
@@ -41,6 +81,7 @@ import Base from '../layouts/Base.astro';
         Kontoen din mangler <code class="bg-oat px-1">admin</code>-rollen. En administrator må tildele rollen
         i Netlify Identity før du får tilgang.
       </p>
+      <button type="button" id="noaccess-logout" class="mt-8 text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">Logg ut</button>
     </section>
 
     <!-- Admin dashboard -->
@@ -109,12 +150,33 @@ import Base from '../layouts/Base.astro';
   </main>
 
   <script>
-    import { login, logout, getUser } from '@netlify/identity';
+    import {
+      login, logout, getUser,
+      requestPasswordRecovery, handleAuthCallback, updateUser, acceptInvite,
+      AuthError, MissingIdentityError,
+    } from '@netlify/identity';
 
     const nok = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
     const $ = (id) => document.getElementById(id);
     const show = (id) => $(id).classList.remove('hidden');
     const hide = (id) => $(id).classList.add('hidden');
+
+    // The mutually-exclusive top-level views. Only one is ever visible.
+    const VIEWS = ['login-view', 'forgot-view', 'reset-view', 'noaccess-view', 'admin-view'];
+    function showOnly(view) { VIEWS.forEach((v) => (v === view ? show(v) : hide(v))); }
+
+    // Turn an identity error into a human message without leaking which field was wrong.
+    function authMessage(err) {
+      if (err instanceof MissingIdentityError) return 'Identity er ikke aktivert. Kjør «netlify dev» eller aktiver Identity i prosjektet.';
+      if (err instanceof AuthError) {
+        if (err.status === 401) return 'Feil e-post eller passord.';
+        if (err.status === 403) return 'Handlingen er ikke tillatt for denne kontoen.';
+        if (err.status === 422) return 'Ugyldig inndata. Sjekk e-post og passord (minst 8 tegn).';
+        if (err.status === 404) return 'Fant ingen konto for denne e-posten.';
+        return err.message || 'Noe gikk galt. Prøv igjen.';
+      }
+      return err?.message || 'Noe gikk galt. Prøv igjen.';
+    }
 
     function escapeHtml(s) {
       return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -217,9 +279,14 @@ import Base from '../layouts/Base.astro';
     });
     $('ref-copy').addEventListener('click', () => navigator.clipboard?.writeText($('ref-link').textContent || ''));
 
-    // Auth
-    $('logout-btn').addEventListener('click', async () => { await logout(); location.reload(); });
+    // ---- Auth ----
 
+    // Logout from both the dashboard and the "no access" screen.
+    async function doLogout() { try { await logout(); } finally { location.assign('/admin'); } }
+    $('logout-btn').addEventListener('click', doLogout);
+    $('noaccess-logout').addEventListener('click', doLogout);
+
+    // Login
     $('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       hide('login-error');
@@ -228,23 +295,122 @@ import Base from '../layouts/Base.astro';
         await boot();
       } catch (err) {
         const el = $('login-error');
-        el.textContent = err?.status === 401 ? 'Feil e-post eller passord.' : (err?.message || 'Innlogging feilet.');
+        el.textContent = authMessage(err);
         show('login-error');
       }
     });
 
+    // Switch between login and "forgot password".
+    $('forgot-link').addEventListener('click', () => {
+      hide('login-error');
+      $('forgot-email').value = $('login-email').value;
+      hide('forgot-msg');
+      showOnly('forgot-view');
+    });
+    $('back-to-login').addEventListener('click', () => showOnly('login-view'));
+
+    // Request a recovery email.
+    $('forgot-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const el = $('forgot-msg');
+      try {
+        await requestPasswordRecovery($('forgot-email').value.trim());
+        el.textContent = 'Sjekk e-posten din for en lenke til å sette nytt passord.';
+        el.className = 'text-sm text-ink';
+        show('forgot-msg');
+      } catch (err) {
+        el.textContent = authMessage(err);
+        el.className = 'text-sm text-clay';
+        show('forgot-msg');
+      }
+    });
+
+    // Set a new password — used for both recovery and invite acceptance.
+    // resetMode is 'recovery' (user already logged in via the callback) or
+    // 'invite' (we hold a token and must redeem it together with the password).
+    let resetMode = 'recovery';
+    let inviteToken = null;
+
+    function showResetView(mode, { email, title, sub } = {}) {
+      resetMode = mode;
+      $('reset-title').textContent = title || 'Sett nytt passord';
+      $('reset-sub').textContent = sub || (email ? `Velg et nytt passord for ${email}.` : 'Velg et nytt passord for kontoen din.');
+      hide('reset-error');
+      $('reset-form').reset();
+      showOnly('reset-view');
+    }
+
+    $('reset-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hide('reset-error');
+      const pw = $('reset-password').value;
+      const pw2 = $('reset-password2').value;
+      const el = $('reset-error');
+      if (pw.length < 8) { el.textContent = 'Passordet må være minst 8 tegn.'; show('reset-error'); return; }
+      if (pw !== pw2) { el.textContent = 'Passordene er ikke like.'; show('reset-error'); return; }
+      try {
+        if (resetMode === 'invite') {
+          await acceptInvite(inviteToken, pw);
+        } else {
+          await updateUser({ password: pw });
+        }
+        inviteToken = null;
+        await boot();
+      } catch (err) {
+        el.textContent = authMessage(err);
+        show('reset-error');
+      }
+    });
+
+    // Route an authenticated user to the dashboard, the "no access" screen, or
+    // the login form — the single source of truth for what the page shows.
     async function boot() {
       const user = await getUser();
-      if (!user) { hide('admin-view'); hide('noaccess-view'); show('login-view'); hide('logout-btn'); $('admin-email').textContent = ''; return; }
+      if (!user) {
+        showOnly('login-view');
+        hide('logout-btn');
+        $('admin-email').textContent = '';
+        return;
+      }
       $('admin-email').textContent = user.email || '';
       show('logout-btn');
-      hide('login-view');
-      if (!user.roles?.includes('admin')) { hide('admin-view'); show('noaccess-view'); return; }
-      hide('noaccess-view');
-      show('admin-view');
+      if (!user.roles?.includes('admin')) { showOnly('noaccess-view'); return; }
+      showOnly('admin-view');
       await loadProducts();
     }
 
-    boot();
+    // On page load, redeem any token in the URL hash (recovery, invite,
+    // confirmation, email change) BEFORE deciding which view to show. This is
+    // what makes the emailed recovery and invite links actually work.
+    async function init() {
+      let routed = false;
+      try {
+        const result = await handleAuthCallback();
+        if (result?.type === 'recovery') {
+          showResetView('recovery', { email: result.user?.email });
+          routed = true;
+        } else if (result?.type === 'invite') {
+          inviteToken = result.token;
+          showResetView('invite', { title: 'Velkommen', sub: 'Velg et passord for å fullføre kontoen din.' });
+          routed = true;
+        }
+        // 'confirmation' / 'email_change' / 'oauth' log the user in; boot() handles them.
+      } catch (err) {
+        // A spent or invalid token lands the user on the login form with context.
+        showOnly('login-view');
+        $('login-error').textContent = authMessage(err);
+        show('login-error');
+        routed = true;
+      }
+
+      // Strip the hash so a refresh can't try to reuse a one-time token.
+      if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+
+      if (!routed) await boot();
+    }
+
+    init();
   </script>
 </Base>
