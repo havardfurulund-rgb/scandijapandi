@@ -22,6 +22,8 @@ const nok = new Intl.NumberFormat('nb-NO', {
         <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink">Kolleksjon</a>
         <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink">Bli med</a>
         <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink">Bli Partner</a>
+        <!-- Diskret Admin-lenke: skjult som standard, vises kun for innloggede Netlify Identity-brukere. -->
+        <a id="admin-link" href="/admin" class="hidden transition-colors hover:text-ink">Admin</a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -236,7 +238,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
 
     function renderProducts(products) {
       const grid = document.getElementById('product-grid');
-      if (!grid || !products.length) return;
+      if (!grid || !Array.isArray(products) || !products.length) return;
       grid.innerHTML = products.map((p) => `
         <article class="reveal is-visible flex flex-col justify-between group">
           <div>
@@ -269,7 +271,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
     // Replace the fallback grid with the live collection from the database.
     fetch('/api/products')
       .then((r) => (r.ok ? r.json() : null))
-      .then((data) => { if (data?.products?.length) renderProducts(data.products); })
+      .then((data) => { if (Array.isArray(data?.products) && data.products.length) renderProducts(data.products); })
       .catch(() => { /* keep the embedded fallback */ });
 
     // Checkout status banner driven by the ?checkout= query the function sets.
@@ -294,5 +296,22 @@ const nok = new Intl.NumberFormat('nb-NO', {
       });
     }, { threshold: 0.1 });
     document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+  </script>
+
+  <script>
+    // Reveal the discreet Admin link only when a Netlify Identity session exists.
+    // getUser() never throws and returns null when signed out, so the link stays
+    // hidden for anonymous visitors and the storefront is otherwise untouched.
+    import { getUser, onAuthChange } from '@netlify/identity';
+
+    const adminLink = document.getElementById('admin-link');
+
+    function syncAdminLink(user) {
+      if (!adminLink) return;
+      adminLink.classList.toggle('hidden', !user);
+    }
+
+    getUser().then(syncAdminLink).catch(() => syncAdminLink(null));
+    onAuthChange((_event, user) => syncAdminLink(user));
   </script>
 </Base>
