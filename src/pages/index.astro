@@ -5,13 +5,21 @@ import productsData from '../data/products.json';
 // Embedded launch collection. Rendered immediately so the page is never empty,
 // then replaced at runtime with the live collection from /api/products (which
 // reflects whatever is published from the admin).
-const fallbackProducts = Array.isArray(productsData) ? productsData : [];
+// Guarantee `products` is ALWAYS an array so `.map` can never throw.
+const products = Array.isArray(productsData) ? productsData : [];
 
 const nok = new Intl.NumberFormat('nb-NO', {
   style: 'currency',
   currency: 'NOK',
   maximumFractionDigits: 0,
 });
+
+// Prefer a product's own Stripe payment link when present; otherwise fall back
+// to the server-side checkout flow that builds a Stripe session from the slug.
+// (?ref= for influencer attribution is appended client-side, where the query
+// string is available.)
+const checkoutHref = (product) =>
+  product.stripeLink ? product.stripeLink : `/api/checkout?slug=${product.slug}`;
 ---
 
 <Base>
@@ -83,7 +91,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
     </div>
 
     <div id="product-grid" class="grid grid-cols-1 gap-x-12 gap-y-24 sm:grid-cols-2 lg:grid-cols-3">
-      {fallbackProducts.map((product) => (
+      {products.map((product) => (
         <article class="reveal flex flex-col justify-between group">
           <div>
             <div class="relative aspect-[4/5] bg-oat overflow-hidden">
@@ -97,7 +105,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
               <span class="text-base font-light text-ink">{nok.format(product.price)}</span>
             </div>
           </div>
-          <a href={`/api/checkout?slug=${product.slug}`} class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
+          <a href={checkoutHref(product)} class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
             Kjøp nå →
           </a>
         </article>
@@ -230,9 +238,9 @@ const nok = new Intl.NumberFormat('nb-NO', {
     const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
     const ref = new URLSearchParams(window.location.search).get('ref');
 
-    function checkoutHref(slug) {
-      let href = `/api/checkout?slug=${encodeURIComponent(slug)}`;
-      if (ref) href += `&ref=${encodeURIComponent(ref)}`;
+    function checkoutHref(product) {
+      let href = product.stripeLink || `/api/checkout?slug=${encodeURIComponent(product.slug)}`;
+      if (ref) href += `${href.includes('?') ? '&' : '?'}ref=${encodeURIComponent(ref)}`;
       return href;
     }
 
@@ -253,7 +261,7 @@ const nok = new Intl.NumberFormat('nb-NO', {
               <span class="text-base font-light text-ink">${nokFmt.format(p.price || 0)}</span>
             </div>
           </div>
-          <a href="${checkoutHref(p.slug)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
+          <a href="${checkoutHref(p)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
             Kjøp nå →
           </a>
         </article>`).join('');
