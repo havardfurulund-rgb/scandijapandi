@@ -27,12 +27,12 @@ const checkoutHref = (product) =>
     <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
       <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
       <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
-        <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink">Kolleksjon</a>
-        <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink">Bli med</a>
-        <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink">Bli Partner</a>
+        <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
+        <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_join">Bli med</a>
+        <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_partner">Bli Partner</a>
         <!-- Admin-lenke: skjult som standard, vises tydelig kun for innloggede Netlify Identity-brukere. -->
         <a id="admin-link" href="/admin" class="hidden inline-flex items-center gap-1.5 text-clay transition-colors hover:text-ink">
-          <span class="inline-block h-1.5 w-1.5 rounded-full bg-clay"></span>Admin
+          <span class="inline-block h-1.5 w-1.5 rounded-full bg-clay"></span><span data-i18n="nav_admin">Admin</span>
         </a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
@@ -51,18 +51,18 @@ const checkoutHref = (product) =>
     <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
     <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
       <div class="max-w-2xl reveal">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Etablert 2026</span>
-        <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="hero_eyebrow">Etablert 2026</span>
+        <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink" data-i18n="hero_title">
           Nordisk ro kuratert for verden
         </h1>
-        <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg">
+        <p class="mt-8 text-base sm:text-lg text-stone font-light leading-relaxed max-w-lg" data-i18n="hero_body">
           En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer.
         </p>
         <div class="mt-10 flex flex-wrap gap-4">
-          <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay">
+          <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay" data-i18n="hero_cta">
             Utforsk kolleksjonen
           </a>
-          <a href="#interesse" class="inline-block border border-ink/20 px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:border-ink">
+          <a href="#interesse" class="inline-block border border-ink/20 px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:border-ink" data-i18n="hero_cta2">
             Bli med i fellesskapet
           </a>
         </div>
@@ -73,8 +73,8 @@ const checkoutHref = (product) =>
   <!-- About -->
   <section id="about" class="px-6 sm:px-12 py-32 bg-paper border-b border-ink/5">
     <div class="mx-auto max-w-3xl text-center reveal">
-      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4">Vår Filosofi</span>
-      <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">
+      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="about_eyebrow">Vår Filosofi</span>
+      <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="about_title">
         Skandinavisk funksjonalitet møter global minimalisme.
       </h2>
     </div>
@@ -84,10 +84,10 @@ const checkoutHref = (product) =>
   <section id="collection" class="px-6 sm:px-12 py-32 mx-auto max-w-6xl">
     <div class="flex flex-col md:flex-row md:items-baseline justify-between mb-20 reveal">
       <div>
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Kuratert utvalg</span>
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2" data-i18n="collection_eyebrow">Kuratert utvalg</span>
         <h2 class="font-serif text-3xl sm:text-4xl text-ink">ScandiJapandi Collection</h2>
       </div>
-      <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed">
+      <p class="text-sm text-stone font-light max-w-xs mt-4 md:mt-0 leading-relaxed" data-i18n="collection_lead">
         Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.
       </p>
     </div>
@@ -107,7 +107,7 @@ const checkoutHref = (product) =>
               <span class="text-base font-light text-ink">{nok.format(product.price)}</span>
             </div>
           </div>
-          <a href={checkoutHref(product)} class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
+          <a href={checkoutHref(product)} class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm" data-i18n="product_buy">
             Kjøp nå →
           </a>
         </article>
@@ -119,9 +119,9 @@ const checkoutHref = (product) =>
   <section id="interesse" class="bg-paper px-6 sm:px-12 py-32 border-t border-ink/5">
     <div class="mx-auto max-w-2xl reveal">
       <div class="text-center mb-12">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Fellesskapet</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Fortell oss hva du brenner for</h2>
-        <p class="mt-4 text-sm text-stone font-light leading-relaxed">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3" data-i18n="join_eyebrow">Fellesskapet</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="join_title">Fortell oss hva du brenner for</h2>
+        <p class="mt-4 text-sm text-stone font-light leading-relaxed" data-i18n="join_body">
           Vi bygger et fellesskap rundt nordisk design, mat og reiser. Legg igjen din interesse,
           så holder vi deg oppdatert og kommuniserer det som faktisk angår deg.
         </p>
@@ -133,39 +133,39 @@ const checkoutHref = (product) =>
 
         <div class="grid sm:grid-cols-2 gap-6">
           <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Navn</span>
+            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_name">Navn</span>
             <input type="text" name="name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
           </label>
           <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_email">E-post</span>
             <input type="email" name="email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
           </label>
         </div>
 
         <fieldset>
-          <legend class="text-[10px] uppercase tracking-widest text-stone mb-3">Hva er du interessert i?</legend>
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-3" data-i18n="join_interests_legend">Hva er du interessert i?</legend>
           <div class="grid sm:grid-cols-3 gap-3">
             <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
               <input type="checkbox" name="interests" value="Design fra Skandinavia og Norden" class="accent-clay" />
-              <span class="text-sm">Design fra Norden</span>
+              <span class="text-sm" data-i18n="join_opt_design">Design fra Norden</span>
             </label>
             <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
               <input type="checkbox" name="interests" value="Mat og matkultur" class="accent-clay" />
-              <span class="text-sm">Mat & matkultur</span>
+              <span class="text-sm" data-i18n="join_opt_food">Mat & matkultur</span>
             </label>
             <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
               <input type="checkbox" name="interests" value="Reiser til Skandinavia" class="accent-clay" />
-              <span class="text-sm">Reiser til Skandinavia</span>
+              <span class="text-sm" data-i18n="join_opt_travel">Reiser til Skandinavia</span>
             </label>
           </div>
         </fieldset>
 
         <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone">Fortell oss mer (valgfritt)</span>
+          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="join_message">Fortell oss mer (valgfritt)</span>
           <textarea name="message" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
         </label>
 
-        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">
+        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay" data-i18n="join_submit">
           Send inn
         </button>
       </form>
@@ -176,9 +176,9 @@ const checkoutHref = (product) =>
   <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
     <div class="mx-auto max-w-2xl reveal">
       <div class="text-center mb-12">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">For produsenter & designere</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug">Nå det japanske markedet</h2>
-        <p class="mt-4 text-sm text-stone font-light leading-relaxed">
+        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3" data-i18n="partner_eyebrow">For produsenter & designere</span>
+        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="partner_title">Nå det japanske markedet</h2>
+        <p class="mt-4 text-sm text-stone font-light leading-relaxed" data-i18n="partner_body">
           Er du produsent eller designer fra Norden og ønsker kontakt med det japanske markedet?
           Registrer deg, så tar vi kontakt om et mulig samarbeid.
         </p>
@@ -190,39 +190,39 @@ const checkoutHref = (product) =>
 
         <div class="grid sm:grid-cols-2 gap-6">
           <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Navn</span>
+            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_name">Navn</span>
             <input type="text" name="name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
           </label>
           <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Bedrift / merkevare</span>
+            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_company">Bedrift / merkevare</span>
             <input type="text" name="company" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
           </label>
           <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_email">E-post</span>
             <input type="email" name="email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
           </label>
           <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Nettside (valgfritt)</span>
+            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_website">Nettside (valgfritt)</span>
             <input type="url" name="website" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
           </label>
         </div>
 
         <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone">Jeg er</span>
+          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_persona_label">Jeg er</span>
           <select name="persona" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
-            <option value="Produsent">Produsent</option>
-            <option value="Designer">Designer</option>
-            <option value="Begge">Begge</option>
+            <option value="Produsent" data-i18n="partner_persona_producer">Produsent</option>
+            <option value="Designer" data-i18n="partner_persona_designer">Designer</option>
+            <option value="Begge" data-i18n="partner_persona_both">Begge</option>
           </select>
         </label>
 
         <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone">Kort om hva du lager</span>
+          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_message">Kort om hva du lager</span>
           <textarea name="message" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
         </label>
 
         <input type="hidden" name="market" value="Japan" />
-        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">
+        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay" data-i18n="partner_submit">
           Registrer interesse
         </button>
       </form>
@@ -230,11 +230,163 @@ const checkoutHref = (product) =>
   </section>
 
   <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
-    <p>© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
+    <p data-i18n="footer_rights">© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
     <p class="mt-2 text-[10px] uppercase tracking-widest text-paper/40">
-      <a href="/admin" class="hover:text-paper transition-colors">Admin</a>
+      <a href="/admin" class="hover:text-paper transition-colors" data-i18n="footer_admin">Admin</a>
     </p>
   </footer>
+
+  <script is:inline>
+    // ---- Flerspråklig støtte: Norsk / Engelsk / Japansk ----
+    // Statiske grensesnittstekster bytter via data-i18n; valget huskes i
+    // localStorage. applyLang er eksponert på window slik at det dynamiske
+    // produktgridet kan oversettes på nytt etter at det rendres.
+    const I18N = {
+      no: {
+        nav_collection: 'Kolleksjon', nav_join: 'Bli med', nav_partner: 'Bli Partner', nav_admin: 'Admin',
+        hero_eyebrow: 'Etablert 2026',
+        hero_title: 'Nordisk ro kuratert for verden',
+        hero_body: 'En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer.',
+        hero_cta: 'Utforsk kolleksjonen',
+        hero_cta2: 'Bli med i fellesskapet',
+        about_eyebrow: 'Vår Filosofi',
+        about_title: 'Skandinavisk funksjonalitet møter global minimalisme.',
+        collection_eyebrow: 'Kuratert utvalg',
+        collection_lead: 'Unike objekter fra uavhengige skandinaviske kunstnere og tradisjonsrike nordiske verksteder.',
+        join_eyebrow: 'Fellesskapet',
+        join_title: 'Fortell oss hva du brenner for',
+        join_body: 'Vi bygger et fellesskap rundt nordisk design, mat og reiser. Legg igjen din interesse, så holder vi deg oppdatert og kommuniserer det som faktisk angår deg.',
+        form_name: 'Navn',
+        form_email: 'E-post',
+        join_interests_legend: 'Hva er du interessert i?',
+        join_opt_design: 'Design fra Norden',
+        join_opt_food: 'Mat & matkultur',
+        join_opt_travel: 'Reiser til Skandinavia',
+        join_message: 'Fortell oss mer (valgfritt)',
+        join_submit: 'Send inn',
+        partner_eyebrow: 'For produsenter & designere',
+        partner_title: 'Nå det japanske markedet',
+        partner_body: 'Er du produsent eller designer fra Norden og ønsker kontakt med det japanske markedet? Registrer deg, så tar vi kontakt om et mulig samarbeid.',
+        partner_company: 'Bedrift / merkevare',
+        partner_website: 'Nettside (valgfritt)',
+        partner_persona_label: 'Jeg er',
+        partner_persona_producer: 'Produsent',
+        partner_persona_designer: 'Designer',
+        partner_persona_both: 'Begge',
+        partner_message: 'Kort om hva du lager',
+        partner_submit: 'Registrer interesse',
+        footer_rights: '© 2026 ScandiJapandi. Alle rettigheter reservert.',
+        footer_admin: 'Admin',
+        product_buy: 'Kjøp nå →',
+      },
+      en: {
+        nav_collection: 'Collection', nav_join: 'Join', nav_partner: 'Become a Partner', nav_admin: 'Admin',
+        hero_eyebrow: 'Established 2026',
+        hero_title: 'Nordic calm, curated for the world',
+        hero_body: 'An exclusive collection of timeless Scandinavian objects. Clean lines, uncompromising Nordic craftsmanship and sustainable natural materials.',
+        hero_cta: 'Explore the collection',
+        hero_cta2: 'Join the community',
+        about_eyebrow: 'Our Philosophy',
+        about_title: 'Scandinavian functionality meets global minimalism.',
+        collection_eyebrow: 'Curated selection',
+        collection_lead: 'Unique objects from independent Scandinavian artists and time-honoured Nordic workshops.',
+        join_eyebrow: 'The Community',
+        join_title: 'Tell us what you care about',
+        join_body: 'We are building a community around Nordic design, food and travel. Leave your interest and we will keep you updated on what actually matters to you.',
+        form_name: 'Name',
+        form_email: 'Email',
+        join_interests_legend: 'What are you interested in?',
+        join_opt_design: 'Design from the Nordics',
+        join_opt_food: 'Food & food culture',
+        join_opt_travel: 'Travel to Scandinavia',
+        join_message: 'Tell us more (optional)',
+        join_submit: 'Submit',
+        partner_eyebrow: 'For makers & designers',
+        partner_title: 'Reach the Japanese market',
+        partner_body: 'Are you a maker or designer from the Nordics looking to connect with the Japanese market? Register and we will reach out about a possible collaboration.',
+        partner_company: 'Company / brand',
+        partner_website: 'Website (optional)',
+        partner_persona_label: 'I am a',
+        partner_persona_producer: 'Maker',
+        partner_persona_designer: 'Designer',
+        partner_persona_both: 'Both',
+        partner_message: 'Briefly, what do you make?',
+        partner_submit: 'Register interest',
+        footer_rights: '© 2026 ScandiJapandi. All rights reserved.',
+        footer_admin: 'Admin',
+        product_buy: 'Buy now →',
+      },
+      jp: {
+        nav_collection: 'コレクション', nav_join: '参加する', nav_partner: 'パートナー募集', nav_admin: '管理',
+        hero_eyebrow: '2026年設立',
+        hero_title: '世界へ届ける、北欧の静けさ',
+        hero_body: '時代を超えるスカンジナビアの逸品を集めた特別なコレクション。澄んだ線、妥協のない北欧の職人技、そして持続可能な天然素材。',
+        hero_cta: 'コレクションを見る',
+        hero_cta2: 'コミュニティに参加する',
+        about_eyebrow: '私たちの哲学',
+        about_title: 'スカンジナビアの機能美と世界のミニマリズムの融合。',
+        collection_eyebrow: '厳選されたセレクション',
+        collection_lead: '独立したスカンジナビアの作家と、伝統ある北欧の工房による唯一無二の作品。',
+        join_eyebrow: 'コミュニティ',
+        join_title: 'あなたの情熱を聞かせてください',
+        join_body: '私たちは北欧のデザイン、食、旅をめぐるコミュニティを育てています。ご関心をお寄せいただければ、本当に大切な情報だけをお届けします。',
+        form_name: 'お名前',
+        form_email: 'メールアドレス',
+        join_interests_legend: '何にご興味がありますか？',
+        join_opt_design: '北欧のデザイン',
+        join_opt_food: '食と食文化',
+        join_opt_travel: 'スカンジナビアへの旅',
+        join_message: 'もっと教えてください（任意）',
+        join_submit: '送信する',
+        partner_eyebrow: 'メーカー・デザイナーの方へ',
+        partner_title: '日本市場へ届ける',
+        partner_body: '北欧のメーカーやデザイナーで、日本市場とのつながりをお探しですか？ご登録いただければ、協業の可能性についてご連絡します。',
+        partner_company: '会社名 / ブランド',
+        partner_website: 'ウェブサイト（任意）',
+        partner_persona_label: '私は',
+        partner_persona_producer: 'メーカー',
+        partner_persona_designer: 'デザイナー',
+        partner_persona_both: '両方',
+        partner_message: '制作されているものを簡単に',
+        partner_submit: '登録する',
+        footer_rights: '© 2026 ScandiJapandi. 無断複製禁止。',
+        footer_admin: '管理',
+        product_buy: '購入する →',
+      },
+    };
+
+    const LANGS = ['no', 'en', 'jp'];
+    const HTML_LANG = { no: 'no', en: 'en', jp: 'ja' };
+
+    function applyLang(lang) {
+      if (!LANGS.includes(lang)) lang = 'no';
+      const dict = I18N[lang];
+
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key] != null) el.textContent = dict[key];
+      });
+
+      document.documentElement.setAttribute('lang', HTML_LANG[lang]);
+      document.querySelectorAll('.lang-btn').forEach((b) => {
+        b.setAttribute('aria-current', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+      });
+
+      window.__sjLang = lang;
+      try { localStorage.setItem('sj-lang', lang); } catch (e) {}
+    }
+
+    // Eksponert slik at det dynamisk rendrede produktgridet kan re-oversettes.
+    window.__sjApplyLang = applyLang;
+    try { window.__sjLang = localStorage.getItem('sj-lang') || 'no'; } catch (e) { window.__sjLang = 'no'; }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyLang(window.__sjLang || 'no');
+      document.querySelectorAll('.lang-btn').forEach((btn) => {
+        btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+      });
+    });
+  </script>
 
   <script>
     const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
@@ -263,10 +415,13 @@ const checkoutHref = (product) =>
               <span class="text-base font-light text-ink">${nokFmt.format(p.price || 0)}</span>
             </div>
           </div>
-          <a href="${checkoutHref(p)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm">
+          <a href="${checkoutHref(p)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm" data-i18n="product_buy">
             Kjøp nå →
           </a>
         </article>`).join('');
+
+      // Oversett de nyrendrede «Kjøp nå»-knappene til gjeldende språk.
+      if (window.__sjApplyLang) window.__sjApplyLang(window.__sjLang || 'no');
     }
 
     // Carry an influencer ?ref= through the statically rendered fallback links too.
