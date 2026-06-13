@@ -30,7 +30,8 @@ const checkoutHref = (product) =>
         <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
         <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_join">Bli med</a>
         <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_partner">Bli Partner</a>
-        <!-- Admin-lenke: skjult som standard, vises tydelig kun for innloggede Netlify Identity-brukere. -->
+        <!-- Admin-lenke: skjult som standard, vises tydelig når man er innlogget
+             (midlertidig hardkodet login eller Netlify Identity). -->
         <a id="admin-link" href="/admin" class="hidden inline-flex items-center gap-1.5 text-clay transition-colors hover:text-ink">
           <span class="inline-block h-1.5 w-1.5 rounded-full bg-clay"></span><span data-i18n="nav_admin">Admin</span>
         </a>
@@ -464,19 +465,34 @@ const checkoutHref = (product) =>
   </script>
 
   <script>
-    // Reveal the discreet Admin link only when a Netlify Identity session exists.
-    // getUser() never throws and returns null when signed out, so the link stays
-    // hidden for anonymous visitors and the storefront is otherwise untouched.
+    // Reveal the discreet Admin link in the header whenever an admin session is
+    // active — either the temporary hardcoded login (a server-set httpOnly
+    // cookie, checked via /api/admin/session) or a real Netlify Identity user.
+    // The link stays hidden for anonymous visitors; the storefront is untouched.
     import { getUser, onAuthChange } from '@netlify/identity';
 
     const adminLink = document.getElementById('admin-link');
+    let identityUser = null;
+    let tempAdmin = false;
 
-    function syncAdminLink(user) {
-      if (!adminLink) return;
-      adminLink.classList.toggle('hidden', !user);
+    function syncAdminLink() {
+      if (adminLink) adminLink.classList.toggle('hidden', !(identityUser || tempAdmin));
     }
 
-    getUser().then(syncAdminLink).catch(() => syncAdminLink(null));
-    onAuthChange((_event, user) => syncAdminLink(user));
+    // Midlertidig hurtig-admin: spør serveren om øktcookien er gyldig.
+    async function checkTempAdmin() {
+      try {
+        const res = await fetch('/api/admin/session');
+        if (!res.ok) return false;
+        const data = await res.json();
+        return !!data.authenticated;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    checkTempAdmin().then((ok) => { tempAdmin = ok; syncAdminLink(); });
+    getUser().then((u) => { identityUser = u; syncAdminLink(); }).catch(() => { identityUser = null; syncAdminLink(); });
+    onAuthChange((_event, user) => { identityUser = user; syncAdminLink(); });
   </script>
 </Base>

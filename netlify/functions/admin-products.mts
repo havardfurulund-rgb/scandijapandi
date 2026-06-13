@@ -7,6 +7,7 @@
 import type { Config, Context } from "@netlify/functions";
 import { getUser } from "@netlify/identity";
 import { db } from "../lib/db.mts";
+import { hasTempAdmin } from "../lib/temp-admin.mts";
 
 function slugify(input: string): string {
   return input
@@ -19,7 +20,11 @@ function slugify(input: string): string {
     .slice(0, 80);
 }
 
-async function requireAdmin(): Promise<Response | null> {
+async function requireAdmin(req: Request): Promise<Response | null> {
+  // Midlertidig hurtig-admin: en gyldig hardkodet-innloggingscookie gir tilgang
+  // uten Netlify Identity. Fjern denne linjen når Identity tas i bruk igjen.
+  if (hasTempAdmin(req)) return null;
+
   const user = await getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
   if (!user.roles?.includes("admin")) {
@@ -29,7 +34,7 @@ async function requireAdmin(): Promise<Response | null> {
 }
 
 export default async (req: Request, context: Context) => {
-  const denied = await requireAdmin();
+  const denied = await requireAdmin(req);
   if (denied) return denied;
 
   const slugParam = context.params.slug;
