@@ -30,11 +30,6 @@ const checkoutHref = (product) =>
         <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
         <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_join">Bli med</a>
         <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_partner">Bli Partner</a>
-        <!-- Admin-lenke: skjult som standard, vises tydelig når man er innlogget
-             (midlertidig hardkodet login eller Netlify Identity). -->
-        <a id="admin-link" href="/admin" class="hidden inline-flex items-center gap-1.5 text-clay transition-colors hover:text-ink">
-          <span class="inline-block h-1.5 w-1.5 rounded-full bg-clay"></span><span data-i18n="nav_admin">Admin</span>
-        </a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -232,8 +227,11 @@ const checkoutHref = (product) =>
 
   <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
     <p data-i18n="footer_rights">© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
-    <p class="mt-2 text-[10px] uppercase tracking-widest text-paper/40">
-      <a href="/admin" class="hover:text-paper transition-colors" data-i18n="footer_admin">Admin</a>
+    <!-- Diskret admin-inngang: skjult for vanlige besøkende. Vises kun som en
+         liten, nedtonet lenke nederst i footeren når en admin-økt er aktiv
+         (midlertidig hardkodet login eller Netlify Identity). -->
+    <p id="admin-link" class="hidden mt-2 text-[10px] uppercase tracking-widest text-paper/25">
+      <a href="/admin" class="transition-colors hover:text-paper/80" data-i18n="footer_admin">Admin</a>
     </p>
   </footer>
 
@@ -465,7 +463,7 @@ const checkoutHref = (product) =>
   </script>
 
   <script>
-    // Reveal the discreet Admin link in the header whenever an admin session is
+    // Reveal the discreet Admin link in the footer whenever an admin session is
     // active — either the temporary hardcoded login (a server-set httpOnly
     // cookie, checked via /api/admin/session) or a real Netlify Identity user.
     // The link stays hidden for anonymous visitors; the storefront is untouched.
