@@ -131,11 +131,28 @@ import Base from '../layouts/Base.astro';
             <span class="text-[10px] uppercase tracking-widest text-stone">Pris (NOK) *</span>
             <input type="number" id="p-price" min="0" step="1" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
           </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Bilde-URL</span>
-            <input type="url" id="p-image" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
         </div>
+
+        <!-- Produktbilde: opplasting med forhåndsvisning -->
+        <div class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Produktbilde</span>
+          <!-- Skjult felt som holder den endelige bilde-URL-en (sendes til API-et). -->
+          <input type="hidden" id="p-image" value="" />
+          <input type="file" id="p-image-file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml" class="hidden" />
+          <div id="p-image-drop" class="mt-2 flex items-center gap-5 border border-dashed border-ink/15 bg-paper/60 p-4 transition-colors">
+            <div id="p-image-preview-wrap" class="hidden relative shrink-0">
+              <img id="p-image-preview" src="" alt="Forhåndsvisning" class="h-24 w-24 object-cover bg-oat border border-ink/10" />
+              <button type="button" id="p-image-remove" title="Fjern bilde" aria-label="Fjern bilde" class="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-paper text-sm leading-none transition-colors hover:bg-clay">×</button>
+            </div>
+            <div id="p-image-placeholder" class="flex h-24 w-24 shrink-0 items-center justify-center bg-oat/60 text-center text-[10px] uppercase tracking-widest text-stone">Ingen<br />bilde</div>
+            <div class="flex-1 min-w-0">
+              <button type="button" id="p-image-upload" class="border border-ink/20 px-6 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:border-ink">Last opp bilde</button>
+              <p class="mt-2 text-[11px] text-stone font-light">Dra og slipp, eller velg en fil. JPG, PNG, WebP, GIF, AVIF eller SVG — maks 5 MB.</p>
+              <p id="p-image-status" class="hidden mt-1 text-[11px]"></p>
+            </div>
+          </div>
+        </div>
+
         <label class="block">
           <span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse</span>
           <textarea id="p-description" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
@@ -242,7 +259,7 @@ import Base from '../layouts/Base.astro';
       $('p-name').value = p.name || '';
       $('p-producer').value = p.producer || '';
       $('p-price').value = p.price_nok ?? '';
-      $('p-image').value = p.image_url || '';
+      setImage(p.image_url || '');
       $('p-description').value = p.description || '';
       $('p-active').checked = !!p.active;
       show('cancel-edit');
@@ -254,6 +271,7 @@ import Base from '../layouts/Base.astro';
       $('product-form').reset();
       $('edit-slug').value = '';
       $('p-active').checked = true;
+      setImage('');
       hide('cancel-edit');
     }
 
@@ -289,6 +307,66 @@ import Base from '../layouts/Base.astro';
     });
 
     $('cancel-edit').addEventListener('click', resetForm);
+
+    // ---- Bilde-opplasting (Netlify Blobs via /api/admin/upload) ----
+
+    // Synk forhåndsvisningen med det skjulte image_url-feltet.
+    function setImage(url) {
+      $('p-image').value = url || '';
+      if (url) {
+        $('p-image-preview').src = url;
+        show('p-image-preview-wrap');
+        hide('p-image-placeholder');
+      } else {
+        $('p-image-preview').removeAttribute('src');
+        hide('p-image-preview-wrap');
+        show('p-image-placeholder');
+      }
+    }
+
+    function imageStatus(text, ok) {
+      const el = $('p-image-status');
+      if (!text) { hide('p-image-status'); el.textContent = ''; return; }
+      el.textContent = text;
+      el.className = `mt-1 text-[11px] ${ok === false ? 'text-clay' : 'text-stone'}`;
+      show('p-image-status');
+    }
+
+    async function uploadFile(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { imageStatus('Velg en bildefil.', false); return; }
+      if (file.size > 5 * 1024 * 1024) { imageStatus('Bildet er for stort (maks 5 MB).', false); return; }
+
+      const uploadBtn = $('p-image-upload');
+      uploadBtn.disabled = true;
+      imageStatus('Laster opp …');
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Opplasting feilet.');
+        setImage(data.url);
+        imageStatus('Bilde lastet opp.', true);
+      } catch (err) {
+        imageStatus(err.message || 'Opplasting feilet.', false);
+      } finally {
+        uploadBtn.disabled = false;
+        $('p-image-file').value = '';
+      }
+    }
+
+    $('p-image-upload').addEventListener('click', () => $('p-image-file').click());
+    $('p-image-file').addEventListener('change', (e) => uploadFile(e.target.files?.[0]));
+    $('p-image-remove').addEventListener('click', () => { setImage(''); imageStatus(''); });
+
+    // Dra-og-slipp på opplastingsfeltet.
+    const drop = $('p-image-drop');
+    ['dragenter', 'dragover'].forEach((evt) =>
+      drop.addEventListener(evt, (e) => { e.preventDefault(); drop.classList.add('border-ink', 'bg-oat/60'); }));
+    ['dragleave', 'drop'].forEach((evt) =>
+      drop.addEventListener(evt, (e) => { e.preventDefault(); drop.classList.remove('border-ink', 'bg-oat/60'); }));
+    drop.addEventListener('drop', (e) => uploadFile(e.dataTransfer?.files?.[0]));
 
     // Influencer link generator
     $('ref-make').addEventListener('click', () => {
