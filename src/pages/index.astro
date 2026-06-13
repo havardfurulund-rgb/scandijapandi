@@ -46,6 +46,49 @@ const checkoutHref = (product) =>
   <!-- Checkout status banner -->
   <div id="checkout-banner" class="hidden fixed top-20 inset-x-0 z-40 px-6 sm:px-12"></div>
 
+  <!--
+    Netlify Identity passord-overlay.
+    Vises automatisk når brukeren kommer tilbake via en invitasjons-, gjenopprettings-
+    eller bekreftelseslenke (#invite_token / #recovery_token / #confirmation_token).
+    Skjult som standard og ligger over hele siden slik at man aldri lander på en tom side.
+  -->
+  <div id="identity-overlay" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-ink/40 backdrop-blur-sm px-6">
+    <div class="w-full max-w-md bg-paper border border-ink/10 shadow-2xl p-8 sm:p-10">
+      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Netlify Identity</span>
+      <h2 id="identity-title" class="font-serif text-2xl sm:text-3xl text-ink leading-snug"></h2>
+      <p id="identity-subtitle" class="mt-3 text-sm text-stone font-light leading-relaxed"></p>
+
+      <form id="identity-form" class="mt-8 space-y-5">
+        <label class="block">
+          <span id="identity-password-label" class="text-[10px] uppercase tracking-widest text-stone">Nytt passord</span>
+          <input id="identity-password" type="password" required minlength="8" autocomplete="new-password"
+                 class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <p id="identity-message" class="hidden text-sm"></p>
+        <button id="identity-submit" type="submit"
+                class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay disabled:opacity-50">
+          Sett passord
+        </button>
+        <button id="identity-dismiss" type="button"
+                class="w-full text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
+          Avbryt
+        </button>
+      </form>
+
+      <!-- Vises for bekreftelse / fullført passordsetting (ingen passordfelt nødvendig). -->
+      <div id="identity-actions" class="hidden mt-8 space-y-4">
+        <a id="identity-continue" href="/admin"
+           class="block w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest text-center transition-colors hover:bg-clay">
+          Gå til Admin
+        </a>
+        <button id="identity-close" type="button"
+                class="w-full text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
+          Lukk
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Hero -->
   <section id="top" class="relative flex min-h-screen items-center overflow-hidden bg-[#E2DFD9] pt-20">
     <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
@@ -464,19 +507,208 @@ const checkoutHref = (product) =>
   </script>
 
   <script>
-    // Reveal the discreet Admin link only when a Netlify Identity session exists.
-    // getUser() never throws and returns null when signed out, so the link stays
-    // hidden for anonymous visitors and the storefront is otherwise untouched.
-    import { getUser, onAuthChange } from '@netlify/identity';
+    // ---- Netlify Identity ----
+    // Bruker @netlify/identity (den moderne, headless-erstatningen for det
+    // utdaterte netlify-identity-widget). Astro bunter denne modulen og legger
+    // den i <head>, så Identity er lastet riktig før resten av siden kjører.
+    import {
+      getUser,
+      onAuthChange,
+      handleAuthCallback,
+      acceptInvite,
+      updateUser,
+      AuthError,
+    } from '@netlify/identity';
 
+    // ---------- Diskret Admin-lenke ----------
+    // Vises kun når det finnes en innlogget Identity-sesjon. getUser() kaster
+    // aldri og returnerer null når man er logget ut, så lenken forblir skjult
+    // for anonyme besøkende.
     const adminLink = document.getElementById('admin-link');
-
     function syncAdminLink(user) {
-      if (!adminLink) return;
-      adminLink.classList.toggle('hidden', !user);
+      if (adminLink) adminLink.classList.toggle('hidden', !user);
     }
-
     getUser().then(syncAdminLink).catch(() => syncAdminLink(null));
     onAuthChange((_event, user) => syncAdminLink(user));
+
+    // ---------- Tekster for passord-overlay (følger valgt språk) ----------
+    const T = {
+      no: {
+        invite_title: 'Velkommen — sett passordet ditt',
+        invite_sub: 'Du er invitert. Velg et passord for å aktivere kontoen din.',
+        recovery_title: 'Velg et nytt passord',
+        recovery_sub: 'Skriv inn et nytt passord for å fullføre gjenopprettingen.',
+        confirm_title: 'E-posten din er bekreftet',
+        confirm_sub: 'Kontoen din er klar, og du er nå logget inn.',
+        login_title: 'Du er logget inn',
+        login_sub: 'Velkommen tilbake.',
+        pw_label: 'Nytt passord',
+        submit: 'Sett passord',
+        dismiss: 'Avbryt',
+        saving: 'Lagrer …',
+        success_title: 'Passordet er satt',
+        success_sub: 'Du er nå logget inn.',
+        err_short: 'Passordet må være minst 8 tegn.',
+        err_generic: 'Noe gikk galt. Prøv igjen.',
+      },
+      en: {
+        invite_title: 'Welcome — set your password',
+        invite_sub: 'You have been invited. Choose a password to activate your account.',
+        recovery_title: 'Choose a new password',
+        recovery_sub: 'Enter a new password to finish recovering your account.',
+        confirm_title: 'Your email is confirmed',
+        confirm_sub: 'Your account is ready and you are now logged in.',
+        login_title: 'You are logged in',
+        login_sub: 'Welcome back.',
+        pw_label: 'New password',
+        submit: 'Set password',
+        dismiss: 'Cancel',
+        saving: 'Saving …',
+        success_title: 'Password set',
+        success_sub: 'You are now logged in.',
+        err_short: 'Password must be at least 8 characters.',
+        err_generic: 'Something went wrong. Please try again.',
+      },
+      jp: {
+        invite_title: 'ようこそ — パスワードを設定してください',
+        invite_sub: '招待されています。アカウントを有効にするパスワードを選んでください。',
+        recovery_title: '新しいパスワードを設定',
+        recovery_sub: 'アカウントの復旧を完了するために新しいパスワードを入力してください。',
+        confirm_title: 'メールアドレスが確認されました',
+        confirm_sub: 'アカウントの準備が整い、ログインしました。',
+        login_title: 'ログインしました',
+        login_sub: 'おかえりなさい。',
+        pw_label: '新しいパスワード',
+        submit: 'パスワードを設定',
+        dismiss: 'キャンセル',
+        saving: '保存中 …',
+        success_title: 'パスワードを設定しました',
+        success_sub: 'ログインしました。',
+        err_short: 'パスワードは8文字以上で入力してください。',
+        err_generic: '問題が発生しました。もう一度お試しください。',
+      },
+    };
+    const t = T[(window.__sjLang && T[window.__sjLang]) ? window.__sjLang : 'no'];
+
+    // ---------- Overlay-elementer ----------
+    const overlay = document.getElementById('identity-overlay');
+    const titleEl = document.getElementById('identity-title');
+    const subEl = document.getElementById('identity-subtitle');
+    const form = document.getElementById('identity-form');
+    const pwLabel = document.getElementById('identity-password-label');
+    const pwInput = document.getElementById('identity-password');
+    const msgEl = document.getElementById('identity-message');
+    const submitBtn = document.getElementById('identity-submit');
+    const dismissBtn = document.getElementById('identity-dismiss');
+    const actions = document.getElementById('identity-actions');
+    const closeBtn = document.getElementById('identity-close');
+
+    let mode = null;            // 'invite' | 'recovery'
+    let inviteToken = null;
+
+    function openOverlay() {
+      overlay.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeOverlay() {
+      overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+      // Fjern callback-hashen slik at skjemaet ikke dukker opp igjen ved reload.
+      if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    }
+    function showMessage(text, isError) {
+      msgEl.textContent = text;
+      msgEl.classList.remove('hidden', 'text-clay', 'text-stone');
+      msgEl.classList.add(isError ? 'text-clay' : 'text-stone');
+    }
+
+    // Passordskjema for invitasjon eller gjenoppretting.
+    function showPasswordForm(kind) {
+      mode = kind;
+      titleEl.textContent = kind === 'invite' ? t.invite_title : t.recovery_title;
+      subEl.textContent = kind === 'invite' ? t.invite_sub : t.recovery_sub;
+      pwLabel.textContent = t.pw_label;
+      submitBtn.textContent = t.submit;
+      dismissBtn.textContent = t.dismiss;
+      msgEl.classList.add('hidden');
+      pwInput.value = '';
+      form.classList.remove('hidden');
+      actions.classList.add('hidden');
+      openOverlay();
+      setTimeout(() => pwInput.focus(), 60);
+    }
+
+    // Bekreftelses-/suksesstilstand uten passordfelt.
+    function showSuccess(title, sub) {
+      titleEl.textContent = title;
+      subEl.textContent = sub;
+      form.classList.add('hidden');
+      actions.classList.remove('hidden');
+      openOverlay();
+    }
+
+    // ---------- Lagre passord ----------
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pw = pwInput.value;
+      if (!pw || pw.length < 8) { showMessage(t.err_short, true); return; }
+      submitBtn.disabled = true;
+      const label = submitBtn.textContent;
+      submitBtn.textContent = t.saving;
+      try {
+        if (mode === 'invite') {
+          await acceptInvite(inviteToken, pw);   // godtar invitasjonen og logger inn
+        } else {
+          await updateUser({ password: pw });     // setter nytt passord etter recovery
+        }
+        showSuccess(t.success_title, t.success_sub);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = label;
+        showMessage((err instanceof AuthError && err.message) ? err.message : t.err_generic, true);
+      }
+    });
+
+    dismissBtn.addEventListener('click', closeOverlay);
+    closeBtn.addEventListener('click', closeOverlay);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeOverlay(); });
+
+    // ---------- Behandle callback-token i URL-hashen ved sidelast ----------
+    // handleAuthCallback() leser #invite_token / #recovery_token /
+    // #confirmation_token (samt OAuth- og e-postendrings-tokens) og returnerer
+    // hva slags flyt det er. Returnerer null ved en vanlig sidelast uten hash.
+    async function processIdentityCallback() {
+      if (!window.location.hash || !/(?:invite_token|recovery_token|confirmation_token|access_token|email_change_token|error_description)=/.test(window.location.hash)) {
+        return;
+      }
+      try {
+        const result = await handleAuthCallback();
+        if (!result) return;
+        switch (result.type) {
+          case 'invite':
+            inviteToken = result.token;
+            showPasswordForm('invite');
+            break;
+          case 'recovery':
+            showPasswordForm('recovery');
+            break;
+          case 'confirmation':
+            showSuccess(t.confirm_title, t.confirm_sub);
+            break;
+          case 'email_change':
+          case 'oauth':
+            showSuccess(t.login_title, t.login_sub);
+            break;
+        }
+      } catch (err) {
+        // Selv ved feil viser vi et tydelig vindu i stedet for en tom side.
+        showSuccess(t.recovery_title, (err instanceof AuthError && err.message) ? err.message : t.err_generic);
+        form.classList.add('hidden');
+      }
+    }
+
+    processIdentityCallback();
   </script>
 </Base>
