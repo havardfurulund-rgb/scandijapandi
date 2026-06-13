@@ -15,12 +15,16 @@ import Base from '../layouts/Base.astro';
   </header>
 
   <main class="mx-auto max-w-5xl px-6 py-16">
-    <!-- Midlertidig hurtig-innlogging (hardkodet passord) -->
+    <!-- Primær admin-innlogging (kodebasert: brukernavn + passord) -->
     <section id="temp-login-view" class="hidden max-w-md mx-auto">
-      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Midlertidig tilgang</span>
+      <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3">Tilgang</span>
       <h1 class="font-serif text-3xl text-ink">Logg inn på admin</h1>
-      <p class="mt-3 text-sm text-stone font-light">Skriv inn admin-passordet for å komme raskt inn.</p>
+      <p class="mt-3 text-sm text-stone font-light">Skriv inn brukernavn og passord for å administrere butikken.</p>
       <form id="temp-login-form" class="mt-8 space-y-5 bg-oat/60 p-8 border border-ink/5">
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Brukernavn</span>
+          <input type="text" id="temp-username" autocomplete="username" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
         <label class="block">
           <span class="text-[10px] uppercase tracking-widest text-stone">Passord</span>
           <input type="password" id="temp-password" autocomplete="current-password" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
@@ -380,11 +384,12 @@ import Base from '../layouts/Base.astro';
 
     // ---- Auth ----
 
-    // ---- Midlertidig hurtig-admin (hardkodet passord) ----
-    // En enkel innlogging som snakker med /api/admin/* og setter en httpOnly
-    // øktcookie på serveren. Passordet ligger i netlify/lib/temp-admin.mts.
+    // ---- Kodebasert admin-innlogging (hovedløsning: brukernavn + passord) ----
+    // En enkel, pålitelig innlogging som snakker med /api/admin/* og setter en
+    // httpOnly øktcookie på serveren. Brukernavn/passord ligger i
+    // netlify/lib/temp-admin.mts. Fungerer uavhengig av Netlify Identity.
 
-    // Sjekk om en gyldig midlertidig admin-cookie allerede finnes.
+    // Sjekk om en gyldig admin-cookie allerede finnes.
     async function isTempAdmin() {
       try {
         const res = await fetch('/api/admin/session');
@@ -404,7 +409,7 @@ import Base from '../layouts/Base.astro';
       await loadProducts();
     }
 
-    // Logg inn med hardkodet passord.
+    // Logg inn med kodebasert brukernavn + passord.
     $('temp-login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       hide('temp-login-error');
@@ -412,13 +417,13 @@ import Base from '../layouts/Base.astro';
         const res = await fetch('/api/admin/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: $('temp-password').value }),
+          body: JSON.stringify({ username: $('temp-username').value, password: $('temp-password').value }),
         });
-        if (!res.ok) throw new Error('bad password');
+        if (!res.ok) throw new Error('bad credentials');
         $('temp-password').value = '';
-        await enterDashboard('Midlertidig admin');
+        await enterDashboard($('temp-username').value || 'Admin');
       } catch (err) {
-        $('temp-login-error').textContent = 'Feil passord. Prøv igjen.';
+        $('temp-login-error').textContent = 'Feil brukernavn eller passord. Prøv igjen.';
         show('temp-login-error');
       }
     });
@@ -538,9 +543,9 @@ import Base from '../layouts/Base.astro';
     // confirmation, email change) BEFORE deciding which view to show. This is
     // what makes the emailed recovery and invite links actually work.
     async function init() {
-      // Midlertidig hurtig-admin: er øktcookien allerede gyldig? Gå rett inn.
+      // Kodebasert admin: er øktcookien allerede gyldig? Gå rett inn.
       if (await isTempAdmin()) {
-        await enterDashboard('Midlertidig admin');
+        await enterDashboard('Admin');
         return;
       }
 

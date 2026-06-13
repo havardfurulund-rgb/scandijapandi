@@ -1,14 +1,16 @@
-// Midlertidig hardkodet admin-innlogging.
+// Pålitelig, kodebasert admin-innlogging (hovedløsning).
 //
-// Tre endepunkter som lar /admin slippe deg inn med ett enkelt passord, uten
-// Netlify Identity. Passordet sjekkes her på serveren og lekker aldri til
+// Tre endepunkter som lar /admin slippe deg inn med brukernavn + passord, uten
+// Netlify Identity. Begge deler sjekkes her på serveren og lekker aldri til
 // nettleseren; ved suksess settes en httpOnly øktcookie som /api/admin/products
-// også godtar. Erstatt hele dette med Netlify Identity når dere er klare.
+// også godtar. Netlify Identity er beholdt som valgfri backup.
 //
-// 👉 Passordet endres i ../lib/temp-admin.mts (ADMIN_PASSWORD).
+// 👉 Brukernavn og passord endres i ../lib/temp-admin.mts
+//    (ADMIN_USERNAME / ADMIN_PASSWORD).
 import type { Config, Context } from "@netlify/functions";
 import {
   ADMIN_PASSWORD,
+  ADMIN_USERNAME,
   hasTempAdmin,
   isSecure,
   loginCookie,
@@ -32,19 +34,21 @@ export default async (req: Request, _context: Context) => {
     });
   }
 
-  // POST /api/admin/login — sjekk passord og sett øktcookie.
+  // POST /api/admin/login — sjekk brukernavn + passord og sett øktcookie.
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
+  let username = "";
   let password = "";
   try {
     const body = await req.json();
+    username = String(body?.username ?? "");
     password = String(body?.password ?? "");
   } catch {
     return Response.json({ error: "invalid body" }, { status: 400 });
   }
 
-  if (password !== ADMIN_PASSWORD) {
-    return Response.json({ error: "Feil passord." }, { status: 401 });
+  if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+    return Response.json({ error: "Feil brukernavn eller passord." }, { status: 401 });
   }
 
   return new Response(JSON.stringify({ ok: true }), {
