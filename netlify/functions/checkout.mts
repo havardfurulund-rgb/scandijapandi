@@ -52,6 +52,8 @@ async function createCheckoutSession(opts: {
   for (const country of ["NO", "SE", "DK", "FI", "JP"]) {
     form.append("shipping_address_collection[allowed_countries][]", country);
   }
+  // Collect a phone number so the producer-notification email can include it.
+  form.set("phone_number_collection[enabled]", "true");
   if (opts.curator) form.set("client_reference_id", opts.curator);
   form.set("metadata[curator]", opts.curator);
   form.set("metadata[slug]", opts.slug);
