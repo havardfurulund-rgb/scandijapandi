@@ -19,6 +19,12 @@ function slugify(input: string): string {
     .slice(0, 80);
 }
 
+// Lightweight email shape check — enough to reject obvious mistakes in the
+// admin form without pretending to fully validate deliverability.
+function isValidEmail(email: string | null): boolean {
+  return !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export default async (req: Request, context: Context) => {
   const denied = await requireAdmin(req);
   if (denied) return denied;
@@ -28,7 +34,7 @@ export default async (req: Request, context: Context) => {
   try {
     if (req.method === "GET") {
       const rows = await db.sql`
-        SELECT id, slug, name, producer, description, price_nok, image_url, active, created_at
+        SELECT id, slug, name, producer, producer_email, description, price_nok, image_url, active, created_at
         FROM products ORDER BY created_at DESC, id DESC
       `;
       return Response.json({ products: rows });
@@ -38,14 +44,19 @@ export default async (req: Request, context: Context) => {
       const body = await req.json();
       const name = String(body.name || "").trim();
       const price = Number(body.price_nok ?? body.price);
+      const producerEmail = String(body.producer_email || "").trim().toLowerCase();
       if (!name || !Number.isFinite(price)) {
         return Response.json({ error: "name and price are required" }, { status: 400 });
       }
+      if (!isValidEmail(producerEmail)) {
+        return Response.json({ error: "a valid producer_email is required" }, { status: 400 });
+      }
       const slug = slugify(body.slug || name) || `produkt-${Date.now()}`;
       const [row] = await db.sql`
-        INSERT INTO products (slug, name, producer, description, price_nok, image_url, active)
+        INSERT INTO products (slug, name, producer, producer_email, description, price_nok, image_url, active)
         VALUES (
-          ${slug}, ${name}, ${body.producer || null}, ${body.description || null},
+          ${slug}, ${name}, ${body.producer || null}, ${producerEmail},
+          ${body.description || null},
           ${Math.round(price)}, ${body.image_url || body.image || null},
           ${body.active === false ? false : true}
         )
@@ -58,10 +69,19 @@ export default async (req: Request, context: Context) => {
       if (!slugParam) return Response.json({ error: "slug required" }, { status: 400 });
       const body = await req.json();
       const price = Number(body.price_nok ?? body.price);
+      // producer_email is required on the product. Only validate/update it when
+      // the client sends a value; an omitted field leaves the stored address
+      // untouched (COALESCE), so partial updates never blank it out.
+      const hasEmail = body.producer_email !== undefined && body.producer_email !== null;
+      const producerEmail = hasEmail ? String(body.producer_email).trim().toLowerCase() : null;
+      if (hasEmail && !isValidEmail(producerEmail)) {
+        return Response.json({ error: "a valid producer_email is required" }, { status: 400 });
+      }
       const [row] = await db.sql`
         UPDATE products SET
           name = COALESCE(${body.name ?? null}, name),
           producer = ${body.producer ?? null},
+          producer_email = COALESCE(${producerEmail}, producer_email),
           description = ${body.description ?? null},
           price_nok = COALESCE(${Number.isFinite(price) ? Math.round(price) : null}, price_nok),
           image_url = ${body.image_url ?? body.image ?? null},
