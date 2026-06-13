@@ -1,16 +1,24 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  MIDLERTIDIG HARDKODET ADMIN-INNLOGGING
+//  PÅLITELIG, KODEBASERT ADMIN-INNLOGGING (hovedløsning)
 //
-//  Dette er en enkel, midlertidig løsning for raskt å komme inn på /admin mens
-//  Netlify Identity settes opp. Den eksisterende Identity-flyten er beholdt og
-//  kan tas i bruk igjen senere – denne filen legger bare til en snarvei.
+//  En enkel og robust innlogging for /admin som IKKE er avhengig av Netlify
+//  Identity. Brukernavn og passord sjekkes her på serveren og lekker aldri til
+//  nettleseren; ved suksess settes en httpOnly øktcookie. Fungerer selv om
+//  Identity skulle feile. Netlify Identity er beholdt som valgfri backup.
 //
-//  👉 SLIK ENDRER DU PASSORDET:
-//     Bytt verdien på ADMIN_PASSWORD under, ELLER (anbefalt) sett miljøvariabelen
-//     ADMIN_PASSWORD i Netlify (Site settings → Environment variables) for å
-//     overstyre uten å endre koden. Standardpassordet er "scandi2026".
+//  👉 SLIK ENDRER DU BRUKERNAVN / PASSORD:
+//     Bytt verdiene på ADMIN_USERNAME og ADMIN_PASSWORD rett under. Du kan også
+//     (anbefalt i produksjon) overstyre dem uten å endre koden ved å sette
+//     miljøvariablene ADMIN_USERNAME / ADMIN_PASSWORD i Netlify
+//     (Site settings → Environment variables).
 // ─────────────────────────────────────────────────────────────────────────────
-export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "scandi2026";
+
+// 👇 ENDRE BRUKERNAVNET HER (eller via miljøvariabelen ADMIN_USERNAME).
+export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+
+// 👇 ENDRE PASSORDET HER (eller via miljøvariabelen ADMIN_PASSWORD).
+//    Bruk gjerne et sterkt passord. Standard er "ScandiAdmin2026!".
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "ScandiAdmin2026!";
 
 // Navnet på øktcookien som settes ved vellykket innlogging.
 export const ADMIN_COOKIE = "sj_admin";
