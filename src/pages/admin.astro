@@ -192,6 +192,65 @@ import Base from '../layouts/Base.astro';
           <button type="button" id="ref-copy" class="text-[10px] uppercase tracking-widest text-paper/70 hover:text-paper">Kopier</button>
         </div>
       </div>
+
+      <!-- === TEST E-POST KNAPP - IKKE FJERN NOE OVER ELLER UNDER === -->
+      <div class="admin-test-email mt-10 p-6 border border-stone/30 rounded-2xl bg-oat/30">
+        <h3 class="font-serif text-xl mb-4 text-ink">Send Test E-post</h3>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <input
+            type="email"
+            id="test-email-input"
+            placeholder="mottaker@example.com"
+            class="flex-1 px-5 py-3 border border-stone/30 rounded-xl focus:outline-none focus:border-clay text-sm"
+          />
+          <button
+            id="send-test-email-btn"
+            class="px-8 py-3 bg-ink hover:bg-clay text-paper rounded-xl font-medium transition-colors whitespace-nowrap"
+          >
+            Send test
+          </button>
+        </div>
+        <p id="test-email-status" class="mt-3 text-sm min-h-[20px]"></p>
+      </div>
+
+      <script>
+        const btn = document.getElementById('send-test-email-btn');
+        const input = document.getElementById('test-email-input');
+        const status = document.getElementById('test-email-status');
+
+        btn.addEventListener('click', async () => {
+          const email = input.value.trim();
+          if (!email) {
+            status.textContent = 'Skriv inn en e-postadresse';
+            status.style.color = 'red';
+            return;
+          }
+
+          status.textContent = 'Sender...';
+          status.style.color = '#666';
+
+          try {
+            const res = await fetch('/.netlify/functions/send-test-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ recipientEmail: email })
+            });
+
+            if (res.ok) {
+              status.textContent = '✅ Test-e-post sendt!';
+              status.style.color = 'green';
+              input.value = '';
+            } else {
+              status.textContent = 'Feil ved sending';
+              status.style.color = 'red';
+            }
+          } catch (err) {
+            status.textContent = 'Nettverksfeil – prøv igjen';
+            status.style.color = 'red';
+          }
+        });
+      </script>
+      <!-- === SLUTT PÅ TEST E-POST KNAPP === -->
     </section>
   </main>
 
