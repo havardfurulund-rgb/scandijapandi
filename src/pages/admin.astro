@@ -196,6 +196,7 @@ import Base from '../layouts/Base.astro';
       <!-- === TEST E-POST KNAPP - IKKE FJERN NOE OVER ELLER UNDER === -->
       <div class="admin-test-email mt-10 p-6 border border-stone/30 rounded-2xl bg-oat/30">
         <h3 class="font-serif text-xl mb-4 text-ink">Send Test E-post</h3>
+        <p id="email-config-status" class="mb-4 text-xs text-stone">Sjekker konfigurasjon …</p>
         <div class="flex flex-col sm:flex-row gap-3">
           <input
             type="email"
@@ -217,6 +218,24 @@ import Base from '../layouts/Base.astro';
         const btn = document.getElementById('send-test-email-btn');
         const input = document.getElementById('test-email-input');
         const status = document.getElementById('test-email-status');
+        const configStatus = document.getElementById('email-config-status');
+
+        // Show whether the required keys are configured on the server. We only
+        // ever receive booleans back — never the secret values themselves.
+        (async () => {
+          try {
+            const res = await fetch('/.netlify/functions/send-test-email');
+            const cfg = await res.json();
+            const ok = cfg.resendApiKey && cfg.orderFromEmail;
+            const mark = (v) => (v ? '✅' : '❌');
+            configStatus.innerHTML =
+              `${mark(cfg.resendApiKey)} RESEND_API_KEY &nbsp;&nbsp; ${mark(cfg.orderFromEmail)} ORDER_FROM_EMAIL`;
+            configStatus.style.color = ok ? 'green' : '#b45309';
+          } catch (err) {
+            configStatus.textContent = 'Kunne ikke hente konfigurasjonsstatus.';
+            configStatus.style.color = '#b45309';
+          }
+        })();
 
         btn.addEventListener('click', async () => {
           const email = input.value.trim();
@@ -236,12 +255,16 @@ import Base from '../layouts/Base.astro';
               body: JSON.stringify({ recipientEmail: email })
             });
 
-            if (res.ok) {
+            const data = await res.json().catch(() => ({}));
+
+            if (res.ok && data.ok) {
               status.textContent = '✅ Test-e-post sendt!';
               status.style.color = 'green';
               input.value = '';
             } else {
-              status.textContent = 'Feil ved sending';
+              // Surface the precise reason from the server (missing key, invalid
+              // sender, Resend error, …) instead of a generic failure message.
+              status.textContent = data.error || 'Feil ved sending';
               status.style.color = 'red';
             }
           } catch (err) {
