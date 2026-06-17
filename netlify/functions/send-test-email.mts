@@ -53,49 +53,62 @@ export default async (req: Request, _context: Context) => {
     return new Response("Method not allowed", { status: 405 });
   }
 
-  // Fail fast with a clear message when the key is missing, rather than letting
-  // sendEmail() silently "skip" — for a diagnostic endpoint a missing key is the
-  // single most common cause and the admin needs to see it spelled out.
-  if (!Netlify.env.get("RESEND_API_KEY")) {
-    return Response.json(
-      { ok: false, error: "Mangler API-nøkkel – RESEND_API_KEY er ikke satt i Netlify Environment Variables." },
-      { status: 400 },
-    );
-  }
-
-  // The recipient is optional — fall back to Resend's reserved test inbox so the
-  // endpoint is callable with an empty body.
-  let recipientEmail = "delivered@resend.dev";
+  // Wrap the whole POST flow so any unexpected throw still returns structured
+  // JSON ({ ok, error }) instead of a 500 HTML page. A non-JSON response would
+  // leave the admin panel with an empty error field and the generic
+  // "Feil ved sending" message — exactly what we want to avoid.
   try {
-    const body = await req.json().catch(() => ({}));
-    if (body?.recipientEmail) recipientEmail = String(body.recipientEmail);
-  } catch {
-    // Empty/invalid body is fine; keep the default recipient.
-  }
+    // Fail fast with a clear message when the key is missing, rather than letting
+    // sendEmail() silently "skip" — for a diagnostic endpoint a missing key is the
+    // single most common cause and the admin needs to see it spelled out.
+    if (!Netlify.env.get("RESEND_API_KEY")) {
+      return Response.json(
+        { ok: false, error: "Mangler API-nøkkel – RESEND_API_KEY er ikke satt i Netlify Environment Variables." },
+        { status: 400 },
+      );
+    }
 
-  const result = await sendEmail({
-    to: recipientEmail,
-    subject: "Test Email from Resend",
-    html: `<h1>This is a test email!</h1><p>If you can read this, your Resend integration is working.</p>`,
-    text: "This is a test email! If you can read this, your Resend integration is working.",
-  });
+    // The recipient is optional — fall back to Resend's reserved test inbox so the
+    // endpoint is callable with an empty body.
+    let recipientEmail = "delivered@resend.dev";
+    try {
+      const body = await req.json().catch(() => ({}));
+      if (body?.recipientEmail) recipientEmail = String(body.recipientEmail);
+    } catch {
+      // Empty/invalid body is fine; keep the default recipient.
+    }
 
-  if (result.status === "error") {
-    console.error("[send-test-email]", result.reason);
-    return Response.json({ ok: false, error: describeError(result.reason) }, { status: 502 });
-  }
+    const result = await sendEmail({
+      to: recipientEmail,
+      subject: "Test Email from Resend",
+      html: `<h1>This is a test email!</h1><p>If you can read this, your Resend integration is working.</p>`,
+      text: "This is a test email! If you can read this, your Resend integration is working.",
+    });
 
-  // "skipped" should not happen here (we checked the key above), but guard anyway
-  // so the admin never sees a false "sent" when nothing actually went out.
-  if (result.status === "skipped") {
+    if (result.status === "error") {
+      console.error("[send-test-email]", result.reason);
+      return Response.json({ ok: false, error: describeError(result.reason) }, { status: 502 });
+    }
+
+    // "skipped" should not happen here (we checked the key above), but guard anyway
+    // so the admin never sees a false "sent" when nothing actually went out.
+    if (result.status === "skipped") {
+      return Response.json(
+        { ok: false, error: "Mangler API-nøkkel – e-posten ble ikke sendt." },
+        { status: 400 },
+      );
+    }
+
+    console.log(`[send-test-email] sent → ${recipientEmail}`);
+    return Response.json({ ok: true, message: "Test-e-post sendt!", recipient: recipientEmail });
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    console.error("[send-test-email] uventet feil", reason);
     return Response.json(
-      { ok: false, error: "Mangler API-nøkkel – e-posten ble ikke sendt." },
-      { status: 400 },
+      { ok: false, error: `Uventet feil ved sending: ${reason}` },
+      { status: 500 },
     );
   }
-
-  console.log(`[send-test-email] sent → ${recipientEmail}`);
-  return Response.json({ ok: true, message: "Test-e-post sendt!", recipient: recipientEmail });
 };
 
 export const config: Config = {

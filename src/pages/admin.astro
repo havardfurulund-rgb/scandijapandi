@@ -224,7 +224,11 @@ import Base from '../layouts/Base.astro';
         // ever receive booleans back — never the secret values themselves.
         (async () => {
           try {
-            const res = await fetch('/.netlify/functions/send-test-email');
+            // The function is mounted at its custom path (/api/send-test-email).
+            // Netlify disables the default /.netlify/functions/<name> route once a
+            // custom path is set, so calling that route returns a 404 HTML page and
+            // the UI would fall back to a generic "Feil ved sending".
+            const res = await fetch('/api/send-test-email');
             const cfg = await res.json();
             const ok = cfg.resendApiKey && cfg.orderFromEmail;
             const mark = (v) => (v ? '✅' : '❌');
@@ -249,7 +253,7 @@ import Base from '../layouts/Base.astro';
           status.style.color = '#666';
 
           try {
-            const res = await fetch('/.netlify/functions/send-test-email', {
+            const res = await fetch('/api/send-test-email', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ recipientEmail: email })
@@ -264,7 +268,9 @@ import Base from '../layouts/Base.astro';
             } else {
               // Surface the precise reason from the server (missing key, invalid
               // sender, Resend error, …) instead of a generic failure message.
-              status.textContent = data.error || 'Feil ved sending';
+              // If the body had no error field (e.g. an unexpected non-JSON
+              // response) include the HTTP status so the cause is still visible.
+              status.textContent = data.error || `Feil ved sending (HTTP ${res.status})`;
               status.style.color = 'red';
             }
           } catch (err) {
