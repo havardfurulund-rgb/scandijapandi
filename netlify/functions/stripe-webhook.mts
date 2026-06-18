@@ -20,6 +20,9 @@ import {
   orderEmailHtml,
   orderEmailSubject,
   orderEmailText,
+  customerEmailHtml,
+  customerEmailSubject,
+  customerEmailText,
   type OrderEmailData,
 } from "../lib/order-email.mts";
 
@@ -195,6 +198,31 @@ export default async (req: Request) => {
     if (!inserted.length) {
       // Already processed — acknowledge without sending a duplicate email.
       return new Response("Already processed", { status: 200 });
+    }
+
+    // Basic customer confirmation. Best-effort: a failure here must never block
+    // order handling, so we only log it. Sent for every paid order, regardless
+    // of whether a producer email is configured.
+    if (customer.email) {
+      const confirm: OrderEmailData = {
+        productName: product?.name || slug || "Produkt",
+        productSlug: slug,
+        producerName: product?.producer,
+        quantity: 1,
+        amountFormatted: formatNok(session.amount_total, session.currency || "nok"),
+        orderRef: sessionId,
+        customerName: customer.name,
+        customerEmail: customer.email,
+      };
+      const confirmResult = await sendEmail({
+        to: customer.email,
+        subject: customerEmailSubject(confirm),
+        html: customerEmailHtml(confirm),
+        text: customerEmailText(confirm),
+      });
+      if (confirmResult.status !== "sent") {
+        console.error(`[stripe-webhook] customer confirmation ${confirmResult.status}: ${confirmResult.reason}`);
+      }
     }
 
     if (!product?.producer_email) {

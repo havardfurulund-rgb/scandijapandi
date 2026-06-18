@@ -230,10 +230,10 @@ import Base from '../layouts/Base.astro';
             // the UI would fall back to a generic "Feil ved sending".
             const res = await fetch('/api/send-test-email');
             const cfg = await res.json();
-            const ok = cfg.resendApiKey && cfg.orderFromEmail;
+            const ok = cfg.gmailUser && cfg.gmailAppPassword;
             const mark = (v) => (v ? '✅' : '❌');
             configStatus.innerHTML =
-              `${mark(cfg.resendApiKey)} RESEND_API_KEY &nbsp;&nbsp; ${mark(cfg.orderFromEmail)} ORDER_FROM_EMAIL`;
+              `${mark(cfg.gmailUser)} GMAIL_USER &nbsp;&nbsp; ${mark(cfg.gmailAppPassword)} GMAIL_APP_PASSWORD`;
             configStatus.style.color = ok ? 'green' : '#b45309';
           } catch (err) {
             configStatus.textContent = 'Kunne ikke hente konfigurasjonsstatus.';
