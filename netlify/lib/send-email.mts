@@ -1,18 +1,27 @@
-// Thin wrapper around the Resend email API (https://resend.com). Resend is the
-// simplest provider to drive from a Netlify Function: a single authenticated
-// HTTPS POST, no SDK required.
+// Simple email sender using Gmail SMTP via nodemailer.
 //
-// Configuration (set in the Netlify UI → Site settings → Environment variables):
-//   RESEND_API_KEY   — required for email to actually be sent.
-//   ORDER_FROM_EMAIL — the verified "from" address (e.g. "ScandiJapandi
-//                      <ordre@scandijapandi.no>"). Falls back to Resend's
-//                      onboarding sender so the integration works before a
-//                      domain is verified.
+// We dropped Resend temporarily to get email working quickly. This helper sends
+// mail straight through a normal Gmail account using a Google "App Password" —
+// no domain verification, no API dashboard, nothing to wait for.
 //
-// When RESEND_API_KEY is absent the function does NOT throw: it returns a
-// "skipped" result and logs a notice, so a missing key never breaks checkout or
-// the webhook — the order is still persisted and can be re-sent once the key is
-// configured.
+// Configuration (Netlify UI → Site settings → Environment variables):
+//   GMAIL_USER         — the full Gmail address that sends the mail
+//                        (e.g. "minbutikk@gmail.com").
+//   GMAIL_APP_PASSWORD — a Google App Password (16 characters, NOT your normal
+//                        Google password). Create one at
+//                        https://myaccount.google.com/apppasswords
+//                        (requires 2-Step Verification on the account).
+//   ORDER_FROM_EMAIL   — optional display "from" (e.g.
+//                        "ScandiJapandi <minbutikk@gmail.com>"). Gmail requires
+//                        the address itself to match GMAIL_USER, so this is
+//                        mainly useful for adding a sender name.
+//
+// When the credentials are absent sendEmail() does NOT throw: it returns a
+// "skipped" result and logs a notice, so a missing config never breaks checkout
+// or the webhook — the order is still persisted and mail can be re-sent once the
+// variables are configured.
+
+import nodemailer from "nodemailer";
 
 export interface SendEmailInput {
   to: string;
@@ -28,37 +37,30 @@ export type SendEmailResult =
   | { status: "error"; reason: string };
 
 export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult> {
-  const apiKey = Netlify.env.get("RESEND_API_KEY");
-  if (!apiKey) {
-    return { status: "skipped", reason: "RESEND_API_KEY is not configured" };
+  const user = Netlify.env.get("GMAIL_USER");
+  const pass = Netlify.env.get("GMAIL_APP_PASSWORD");
+  if (!user || !pass) {
+    return { status: "skipped", reason: "GMAIL_USER / GMAIL_APP_PASSWORD is not configured" };
   }
 
-  const from = Netlify.env.get("ORDER_FROM_EMAIL") || "ScandiJapandi <onboarding@resend.dev>";
+  const from = Netlify.env.get("ORDER_FROM_EMAIL") || user;
 
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from,
-        to: [input.to],
-        subject: input.subject,
-        html: input.html,
-        ...(input.text ? { text: input.text } : {}),
-        ...(input.replyTo ? { reply_to: input.replyTo } : {}),
-      }),
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user, pass },
     });
 
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      return { status: "error", reason: `Resend responded ${res.status}: ${detail.slice(0, 200)}` };
-    }
+    const info = await transporter.sendMail({
+      from,
+      to: input.to,
+      subject: input.subject,
+      html: input.html,
+      ...(input.text ? { text: input.text } : {}),
+      ...(input.replyTo ? { replyTo: input.replyTo } : {}),
+    });
 
-    const data = await res.json().catch(() => ({}));
-    return { status: "sent", id: data?.id };
+    return { status: "sent", id: info?.messageId };
   } catch (err) {
     return { status: "error", reason: err instanceof Error ? err.message : String(err) };
   }
