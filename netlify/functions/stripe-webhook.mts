@@ -8,23 +8,16 @@
 //      producer's email address (added in the products admin).
 //   3. Records the order in the `orders` table — idempotently, keyed on the
 //      Stripe session id, so Stripe's automatic retries never double-send.
-//   4. Emails the producer a professional "ny bestilling er mottatt" notice
-//      with the product, customer (name, address, phone) and order reference.
+//   4. Sends a basic order confirmation via Netlify Forms — the simplest
+//      built-in email option. Netlify emails the configured notification
+//      address with the product, customer and order details. No API keys,
+//      SMTP or external email service required.
 //
 // Configure the endpoint in the Stripe dashboard to POST to
 // `/api/stripe/webhook` and copy its signing secret into STRIPE_WEBHOOK_SECRET.
 import type { Config } from "@netlify/functions";
 import { db } from "../lib/db.mts";
-import { sendEmail } from "../lib/send-email.mts";
-import {
-  orderEmailHtml,
-  orderEmailSubject,
-  orderEmailText,
-  customerEmailHtml,
-  customerEmailSubject,
-  customerEmailText,
-  type OrderEmailData,
-} from "../lib/order-email.mts";
+import { submitNetlifyForm } from "../lib/notify-form.mts";
 
 // ---- Stripe signature verification (Web Crypto, no SDK) -------------------
 
@@ -200,65 +193,39 @@ export default async (req: Request) => {
       return new Response("Already processed", { status: 200 });
     }
 
-    // Basic customer confirmation. Best-effort: a failure here must never block
-    // order handling, so we only log it. Sent for every paid order, regardless
-    // of whether a producer email is configured.
-    if (customer.email) {
-      const confirm: OrderEmailData = {
-        productName: product?.name || slug || "Produkt",
-        productSlug: slug,
-        producerName: product?.producer,
-        quantity: 1,
-        amountFormatted: formatNok(session.amount_total, session.currency || "nok"),
-        orderRef: sessionId,
-        customerName: customer.name,
-        customerEmail: customer.email,
-      };
-      const confirmResult = await sendEmail({
-        to: customer.email,
-        subject: customerEmailSubject(confirm),
-        html: customerEmailHtml(confirm),
-        text: customerEmailText(confirm),
-      });
-      if (confirmResult.status !== "sent") {
-        console.error(`[stripe-webhook] customer confirmation ${confirmResult.status}: ${confirmResult.reason}`);
-      }
-    }
+    // Basic order confirmation via Netlify Forms (the simplest built-in email
+    // option). Netlify emails the configured notification address with the
+    // order details. Best-effort: a failure here must never block order
+    // handling, so we only log it and record the outcome on the order.
+    const productName = product?.name || slug || "Produkt";
+    const amountFormatted = formatNok(session.amount_total, session.currency || "nok");
+    const melding = [
+      `Ny bestilling: ${productName}`,
+      `Ordrenummer: ${sessionId}`,
+      `Beløp: ${amountFormatted}`,
+      `Kunde: ${customer.name || "—"} (${customer.email || "—"})`,
+      customer.phone ? `Telefon: ${customer.phone}` : null,
+      shippingAddress ? `Leveringsadresse:\n${shippingAddress}` : null,
+      product?.producer_email ? `Produsent-e-post: ${product.producer_email}` : null,
+      curator ? `Henvist av: ${curator}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
 
-    if (!product?.producer_email) {
-      console.error(
-        `[stripe-webhook] no producer_email for slug "${slug}" (session ${sessionId}); order stored, email skipped`,
-      );
-      await db.sql`UPDATE orders SET routing_status = ${"no-producer-email"}, updated_at = NOW() WHERE stripe_session_id = ${sessionId}`;
-      return new Response("Stored without producer email", { status: 200 });
-    }
-
-    const emailData: OrderEmailData = {
-      productName: product.name || slug || "Produkt",
-      productSlug: slug,
-      producerName: product.producer,
-      quantity: 1,
-      amountFormatted: formatNok(session.amount_total, session.currency || "nok"),
-      orderRef: sessionId,
-      customerName: customer.name,
-      customerEmail: customer.email,
-      customerPhone: customer.phone,
-      shippingAddress,
-      curator,
-    };
-
-    const result = await sendEmail({
-      to: product.producer_email,
-      subject: orderEmailSubject(emailData),
-      html: orderEmailHtml(emailData),
-      text: orderEmailText(emailData),
-      replyTo: customer.email || undefined,
+    const notify = await submitNetlifyForm("ordrebekreftelse", {
+      subject: `Ny bestilling – ${productName} (${sessionId})`,
+      ordrenummer: sessionId,
+      produkt: productName,
+      belop: amountFormatted,
+      kunde_navn: customer.name || "",
+      // Netlify bruker e-postadressen som svar-til (reply-to) på varselet.
+      email: customer.email || "",
+      melding,
     });
 
-    const status =
-      result.status === "sent" ? "emailed" : result.status === "skipped" ? "email-skipped" : "email-failed";
-    if (result.status !== "sent") {
-      console.error(`[stripe-webhook] producer email ${result.status}: ${result.reason}`);
+    const status = notify.ok ? "emailed" : "email-failed";
+    if (!notify.ok) {
+      console.error(`[stripe-webhook] ordrebekreftelse (Netlify Forms) feilet: ${notify.reason}`);
     }
     await db.sql`UPDATE orders SET routing_status = ${status}, updated_at = NOW() WHERE stripe_session_id = ${sessionId}`;
 
