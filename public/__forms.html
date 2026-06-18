@@ -1,0 +1,36 @@
+<!doctype html>
+<!--
+  Statisk skjema-skjelett som lar Netlify oppdage skjemaene under bygg.
+  Denne siden vises aldri i UI – den finnes kun for at Netlify Forms skal
+  registrere feltene. E-postvarsling skrus på i Netlify UI under
+  Project configuration → Notifications → Emails and webhooks.
+-->
+<html lang="nb">
+  <head>
+    <meta charset="utf-8" />
+    <title>Netlify Forms</title>
+  </head>
+  <body>
+    <!-- Test-e-post sendt fra admin-panelet -->
+    <form name="test-epost" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="test-epost" />
+      <input type="text" name="subject" />
+      <input type="email" name="email" />
+      <textarea name="melding"></textarea>
+      <input name="bot-field" />
+    </form>
+
+    <!-- Ordrebekreftelse / varsel ved Stripe-kjøp -->
+    <form name="ordrebekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="ordrebekreftelse" />
+      <input type="text" name="subject" />
+      <input type="text" name="ordrenummer" />
+      <input type="text" name="produkt" />
+      <input type="text" name="belop" />
+      <input type="text" name="kunde_navn" />
+      <input type="email" name="email" />
+      <textarea name="melding"></textarea>
+      <input name="bot-field" />
+    </form>
+  </body>
+</html>

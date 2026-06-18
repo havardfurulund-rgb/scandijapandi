@@ -220,26 +220,11 @@ import Base from '../layouts/Base.astro';
         const status = document.getElementById('test-email-status');
         const configStatus = document.getElementById('email-config-status');
 
-        // Show whether the required keys are configured on the server. We only
-        // ever receive booleans back — never the secret values themselves.
-        (async () => {
-          try {
-            // The function is mounted at its custom path (/api/send-test-email).
-            // Netlify disables the default /.netlify/functions/<name> route once a
-            // custom path is set, so calling that route returns a 404 HTML page and
-            // the UI would fall back to a generic "Feil ved sending".
-            const res = await fetch('/api/send-test-email');
-            const cfg = await res.json();
-            const ok = cfg.gmailUser && cfg.gmailAppPassword;
-            const mark = (v) => (v ? '✅' : '❌');
-            configStatus.innerHTML =
-              `${mark(cfg.gmailUser)} GMAIL_USER &nbsp;&nbsp; ${mark(cfg.gmailAppPassword)} GMAIL_APP_PASSWORD`;
-            configStatus.style.color = ok ? 'green' : '#b45309';
-          } catch (err) {
-            configStatus.textContent = 'Kunne ikke hente konfigurasjonsstatus.';
-            configStatus.style.color = '#b45309';
-          }
-        })();
+        // E-post sendes nå via Netlify Forms – innebygd i plattformen. Ingen
+        // API-nøkler, SMTP eller eksterne tjenester. Varslingsadressen settes i
+        // Netlify UI under Notifications → Emails and webhooks.
+        configStatus.textContent = 'E-post sendes via Netlify Forms – ingen API-nøkler nødvendig.';
+        configStatus.style.color = '#3f6212';
 
         btn.addEventListener('click', async () => {
           const email = input.value.trim();
@@ -253,24 +238,27 @@ import Base from '../layouts/Base.astro';
           status.style.color = '#666';
 
           try {
-            const res = await fetch('/api/send-test-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ recipientEmail: email })
+            const body = new URLSearchParams({
+              'form-name': 'test-epost',
+              subject: 'Test-e-post fra ScandiJapandi-admin',
+              email,
+              melding: `Dette er en test-e-post sendt fra admin-panelet (oppgitt mottaker: ${email}).`,
             });
 
-            const data = await res.json().catch(() => ({}));
+            // Send til det statiske skjema-skjelettet (/__forms.html), ikke '/',
+            // slik at Netlify Forms fanger opp innsendingen og sender varselet.
+            const res = await fetch('/__forms.html', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: body.toString(),
+            });
 
-            if (res.ok && data.ok) {
-              status.textContent = '✅ Test-e-post sendt!';
+            if (res.ok) {
+              status.textContent = '✅ Test-e-post sendt via Netlify Forms!';
               status.style.color = 'green';
               input.value = '';
             } else {
-              // Surface the precise reason from the server (missing key, invalid
-              // sender, Resend error, …) instead of a generic failure message.
-              // If the body had no error field (e.g. an unexpected non-JSON
-              // response) include the HTTP status so the cause is still visible.
-              status.textContent = data.error || `Feil ved sending (HTTP ${res.status})`;
+              status.textContent = `Feil ved sending (HTTP ${res.status})`;
               status.style.color = 'red';
             }
           } catch (err) {
