@@ -20,9 +20,24 @@
       <input name="bot-field" />
     </form>
 
-    <!-- Ordrebekreftelse / varsel ved Stripe-kjøp -->
+    <!-- Ordrebekreftelse / varsel til butikken ved Stripe-kjøp -->
     <form name="ordrebekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
       <input type="hidden" name="form-name" value="ordrebekreftelse" />
+      <input type="text" name="subject" />
+      <input type="text" name="ordrenummer" />
+      <input type="text" name="produkt" />
+      <input type="text" name="belop" />
+      <input type="text" name="kunde_navn" />
+      <input type="email" name="email" />
+      <textarea name="melding"></textarea>
+      <input name="bot-field" />
+    </form>
+
+    <!-- Kunde-bekreftelse: kvittering til kunden etter Stripe-kjøp.
+         Kundens e-post legges i `email`-feltet, som Netlify bruker som
+         svar-til (reply-to) på varselet. -->
+    <form name="kunde-bekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="kunde-bekreftelse" />
       <input type="text" name="subject" />
       <input type="text" name="ordrenummer" />
       <input type="text" name="produkt" />
