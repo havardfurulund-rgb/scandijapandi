@@ -17,7 +17,7 @@
 // `/api/stripe/webhook` and copy its signing secret into STRIPE_WEBHOOK_SECRET.
 import type { Config } from "@netlify/functions";
 import { db } from "../lib/db.mts";
-import { submitNetlifyForm } from "../lib/notify-form.mts";
+import { submitNetlifyForm, type NotifyResult } from "../lib/notify-form.mts";
 
 // ---- Stripe signature verification (Web Crypto, no SDK) -------------------
 
@@ -212,6 +212,8 @@ export default async (req: Request) => {
       .filter(Boolean)
       .join("\n");
 
+    // 1) Varsel til butikken (admin) med alle ordredetaljer.
+    console.log(`[stripe-webhook] sender ordrebekreftelse for ${sessionId} (${productName})`);
     const notify = await submitNetlifyForm("ordrebekreftelse", {
       subject: `Ny bestilling – ${productName} (${sessionId})`,
       ordrenummer: sessionId,
@@ -222,11 +224,53 @@ export default async (req: Request) => {
       email: customer.email || "",
       melding,
     });
-
-    const status = notify.ok ? "emailed" : "email-failed";
-    if (!notify.ok) {
-      console.error(`[stripe-webhook] ordrebekreftelse (Netlify Forms) feilet: ${notify.reason}`);
+    if (notify.ok) {
+      console.log(`[stripe-webhook] ordrebekreftelse sendt for ${sessionId}`);
+    } else {
+      console.error(`[stripe-webhook] ordrebekreftelse (Netlify Forms) feilet for ${sessionId}: ${notify.reason}`);
     }
+
+    // 2) Kvittering til kunden. Egen innsending slik at butikken kan sette opp
+    //    et eget e-postvarsel for `kunde-bekreftelse` i Netlify UI. Sendes bare
+    //    når vi faktisk har en kunde-e-post, og blokkerer aldri ordrehåndteringen.
+    let customerNotify: NotifyResult = { ok: false, reason: "ingen kunde-e-post" };
+    if (customer.email) {
+      const kundeMelding = [
+        `Hei ${customer.name || ""}`.trim() + ",",
+        ``,
+        `Takk for bestillingen din hos ScandiJapandi!`,
+        `Produkt: ${productName}`,
+        `Beløp: ${amountFormatted}`,
+        `Ordrenummer: ${sessionId}`,
+        shippingAddress ? `\nLeveres til:\n${shippingAddress}` : null,
+        ``,
+        `Vi gir beskjed når varen sendes.`,
+      ]
+        .filter((l) => l !== null)
+        .join("\n");
+
+      console.log(`[stripe-webhook] sender kunde-bekreftelse for ${sessionId} (svar-til: ${customer.email})`);
+      customerNotify = await submitNetlifyForm("kunde-bekreftelse", {
+        subject: `Ordrebekreftelse – ${productName} (${sessionId})`,
+        ordrenummer: sessionId,
+        produkt: productName,
+        belop: amountFormatted,
+        kunde_navn: customer.name || "",
+        email: customer.email,
+        melding: kundeMelding,
+      });
+      if (customerNotify.ok) {
+        console.log(`[stripe-webhook] kunde-bekreftelse sendt for ${sessionId}`);
+      } else {
+        console.error(`[stripe-webhook] kunde-bekreftelse (Netlify Forms) feilet for ${sessionId}: ${customerNotify.reason}`);
+      }
+    } else {
+      console.warn(`[stripe-webhook] hopper over kunde-bekreftelse for ${sessionId}: ingen kunde-e-post`);
+    }
+
+    // Statusen gjenspeiler butikkvarselet (system of record for ordrehåndtering),
+    // mens kunde-bekreftelsen logges separat ovenfor.
+    const status = notify.ok ? "emailed" : "email-failed";
     await db.sql`UPDATE orders SET routing_status = ${status}, updated_at = NOW() WHERE stripe_session_id = ${sessionId}`;
 
     return new Response("OK", { status: 200 });
