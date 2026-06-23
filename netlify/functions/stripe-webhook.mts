@@ -8,13 +8,19 @@
 //      producer's email address (added in the products admin).
 //   3. Records the order in the `orders` table — idempotently, keyed on the
 //      Stripe session id, so Stripe's automatic retries never double-send.
-//   4. Sends the order emails, each via the tool best suited to it:
+//   4. Sends the order notifications, each via the tool best suited to it:
+//        • Netlify Forms submission → `ordrebekreftelse` (the store's order record).
+//        • Netlify Forms submission → `kunde-bekreftelse` (per-order customer record).
 //        • Customer receipt  → the customer's address (Resend, pretty HTML).
 //        • Producer notice    → the product's producer_email (Resend, pretty HTML).
-//        • Shop notification  → the store's own inbox (Netlify Forms).
-//      Netlify Forms can only notify ONE fixed address, so it cannot reach the
-//      customer or producer; Resend handles those dynamic recipients. Every
-//      send is best-effort and never blocks order handling.
+//      Both Netlify Forms submissions are POSTed to the static form skeleton
+//      (/__forms.html) so Netlify's form handling records them. Netlify Forms can
+//      only notify ONE fixed address per form, so it cannot reach the customer or
+//      producer directly; Resend handles those dynamic recipients. Every send is
+//      best-effort and never blocks order handling.
+//
+//      The Netlify Forms feature must be enabled on the deploy (the build-time
+//      activation marker) or these submissions are silently dropped.
 //
 // Configure the endpoint in the Stripe dashboard to POST to
 // `/api/stripe/webhook` and copy its signing secret into STRIPE_WEBHOOK_SECRET.
