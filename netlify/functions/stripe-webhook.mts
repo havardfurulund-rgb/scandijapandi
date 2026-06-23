@@ -8,16 +8,15 @@
 //      producer's email address (added in the products admin).
 //   3. Records the order in the `orders` table — idempotently, keyed on the
 //      Stripe session id, so Stripe's automatic retries never double-send.
-//   4. Sends the order notifications, each via the tool best suited to it:
-//        • Netlify Forms submission → `ordrebekreftelse` (the store's order record).
-//        • Netlify Forms submission → `kunde-bekreftelse` (per-order customer record).
-//        • Customer receipt  → the customer's address (Resend, pretty HTML).
-//        • Producer notice    → the product's producer_email (Resend, pretty HTML).
-//      Both Netlify Forms submissions are POSTed to the static form skeleton
-//      (/__forms.html) so Netlify's form handling records them. Netlify Forms can
-//      only notify ONE fixed address per form, so it cannot reach the customer or
-//      producer directly; Resend handles those dynamic recipients. Every send is
-//      best-effort and never blocks order handling.
+//   4. Sends exactly three notifications — one per recipient, each via the
+//      tool best suited to it:
+//        • Internal shop notice → Netlify Forms submission (`ordrebekreftelse`).
+//          Netlify emails the one fixed address configured in the UI; no API key.
+//        • Customer receipt     → the customer's address (Resend, pretty HTML).
+//        • Producer notice      → the product's producer_email (Resend, pretty HTML).
+//      Netlify Forms can only notify ONE fixed address per form, so it cannot
+//      reach the customer or producer directly; Resend handles those dynamic
+//      recipients. Every send is best-effort and never blocks order handling.
 //
 //      The Netlify Forms feature must be enabled on the deploy (the build-time
 //      activation marker) or these submissions are silently dropped.
@@ -254,34 +253,6 @@ export default async (req: Request) => {
     });
     if (!shopNotify.ok) {
       console.error(`[stripe-webhook] butikkvarsel (Netlify Forms) feilet for ${sessionId}: ${shopNotify.reason}`);
-    }
-
-    // 1b) Customer confirmation via Netlify Forms. The `email` field becomes the
-    //     reply-to on the notification configured in Netlify UI for this form,
-    //     so the store gets a per-order record addressed to the customer.
-    const kundeMelding = [
-      `Takk for bestillingen, ${customer.name || "kunde"}!`,
-      `Produkt: ${productName}`,
-      `Ordrenummer: ${sessionId}`,
-      `Beløp: ${amountFormatted}`,
-      shippingAddress ? `Leveringsadresse:\n${shippingAddress}` : null,
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    console.log(`[stripe-webhook] sender kunde-bekreftelse (Netlify Forms) for ${sessionId}`);
-    const customerNotify = await submitNetlifyForm("kunde-bekreftelse", {
-      subject: `Ordrebekreftelse – ${productName} (${sessionId})`,
-      ordrenummer: sessionId,
-      produkt: productName,
-      belop: amountFormatted,
-      kunde_navn: customer.name || "",
-      // Netlify bruker e-postadressen som svar-til (reply-to) på varselet.
-      email: customer.email || "",
-      melding: kundeMelding,
-    });
-    if (!customerNotify.ok) {
-      console.error(`[stripe-webhook] kunde-bekreftelse (Netlify Forms) feilet for ${sessionId}: ${customerNotify.reason}`);
     }
 
     // 2) Customer receipt — a real, branded email to the customer's own address.
