@@ -1,9 +1,16 @@
 <!doctype html>
 <!--
-  Statisk skjema-skjelett som lar Netlify oppdage skjemaene under bygg.
-  Denne siden vises aldri i UI – den finnes kun for at Netlify Forms skal
-  registrere feltene. E-postvarsling skrus på i Netlify UI under
+  Statisk skjema-skjelett som lar Netlify oppdage skjemaet under bygg.
+  Denne siden vises aldri i butikken – den finnes kun for at Netlify Forms
+  skal registrere feltene ved deploy.
+
+  Det er ÉN form her: `ordrebekreftelse`. Stripe-webhooken sender en innsending
+  hit ved hvert fullførte kjøp, og Netlify sender da et e-postvarsel til
+  butikkens faste adresse. Den adressen settes i Netlify UI under
   Project configuration → Notifications → Emails and webhooks.
+
+  Kunde- og produsent-e-post går IKKE via Netlify Forms (Forms kan bare varsle
+  én fast adresse) – de sendes som ekte e-post via Resend fra stripe-webhooken.
 -->
 <html lang="nb">
   <head>
@@ -11,33 +18,9 @@
     <title>Netlify Forms</title>
   </head>
   <body>
-    <!-- Test-e-post sendt fra admin-panelet -->
-    <form name="test-epost" data-netlify="true" netlify-honeypot="bot-field" hidden>
-      <input type="hidden" name="form-name" value="test-epost" />
-      <input type="text" name="subject" />
-      <input type="email" name="email" />
-      <textarea name="melding"></textarea>
-      <input name="bot-field" />
-    </form>
-
-    <!-- Ordrebekreftelse / varsel til butikken ved Stripe-kjøp -->
+    <!-- Internt butikkvarsel ved fullført Stripe-kjøp. -->
     <form name="ordrebekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
       <input type="hidden" name="form-name" value="ordrebekreftelse" />
-      <input type="text" name="subject" />
-      <input type="text" name="ordrenummer" />
-      <input type="text" name="produkt" />
-      <input type="text" name="belop" />
-      <input type="text" name="kunde_navn" />
-      <input type="email" name="email" />
-      <textarea name="melding"></textarea>
-      <input name="bot-field" />
-    </form>
-
-    <!-- Kunde-bekreftelse: kvittering til kunden etter Stripe-kjøp.
-         Kundens e-post legges i `email`-feltet, som Netlify bruker som
-         svar-til (reply-to) på varselet. -->
-    <form name="kunde-bekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
-      <input type="hidden" name="form-name" value="kunde-bekreftelse" />
       <input type="text" name="subject" />
       <input type="text" name="ordrenummer" />
       <input type="text" name="produkt" />
