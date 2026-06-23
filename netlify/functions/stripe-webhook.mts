@@ -8,16 +8,28 @@
 //      producer's email address (added in the products admin).
 //   3. Records the order in the `orders` table — idempotently, keyed on the
 //      Stripe session id, so Stripe's automatic retries never double-send.
-//   4. Sends a basic order confirmation via Netlify Forms — the simplest
-//      built-in email option. Netlify emails the configured notification
-//      address with the product, customer and order details. No API keys,
-//      SMTP or external email service required.
+//   4. Sends the order emails, each via the tool best suited to it:
+//        • Customer receipt  → the customer's address (Resend, pretty HTML).
+//        • Producer notice    → the product's producer_email (Resend, pretty HTML).
+//        • Shop notification  → the store's own inbox (Netlify Forms).
+//      Netlify Forms can only notify ONE fixed address, so it cannot reach the
+//      customer or producer; Resend handles those dynamic recipients. Every
+//      send is best-effort and never blocks order handling.
 //
 // Configure the endpoint in the Stripe dashboard to POST to
 // `/api/stripe/webhook` and copy its signing secret into STRIPE_WEBHOOK_SECRET.
+// Set RESEND_API_KEY (and EMAIL_FROM on a verified domain) to deliver the
+// customer and producer emails.
 import type { Config } from "@netlify/functions";
 import { db } from "../lib/db.mts";
-import { submitNetlifyForm, type NotifyResult } from "../lib/notify-form.mts";
+import { submitNetlifyForm } from "../lib/notify-form.mts";
+import {
+  sendEmail,
+  emailConfigured,
+  customerConfirmationEmail,
+  producerNotificationEmail,
+  type OrderEmailData,
+} from "../lib/email.mts";
 
 // ---- Stripe signature verification (Web Crypto, no SDK) -------------------
 
@@ -193,12 +205,23 @@ export default async (req: Request) => {
       return new Response("Already processed", { status: 200 });
     }
 
-    // Basic order confirmation via Netlify Forms (the simplest built-in email
-    // option). Netlify emails the configured notification address with the
-    // order details. Best-effort: a failure here must never block order
-    // handling, so we only log it and record the outcome on the order.
+    // Build the shared order detail once; each email reuses it.
     const productName = product?.name || slug || "Produkt";
     const amountFormatted = formatNok(session.amount_total, session.currency || "nok");
+    const orderData: OrderEmailData = {
+      productName,
+      orderId: sessionId,
+      amount: amountFormatted,
+      customerName: customer.name,
+      customerEmail: customer.email,
+      customerPhone: customer.phone,
+      shippingAddress: shippingAddress || null,
+      curator: curator || null,
+    };
+
+    // 1) Shop notification via Netlify Forms (the simplest built-in option: it
+    //    emails the address configured in Netlify UI). This is the store's own
+    //    always-on record of the order and needs no API keys.
     const melding = [
       `Ny bestilling: ${productName}`,
       `Ordrenummer: ${sessionId}`,
@@ -212,9 +235,8 @@ export default async (req: Request) => {
       .filter(Boolean)
       .join("\n");
 
-    // 1) Varsel til butikken (admin) med alle ordredetaljer.
-    console.log(`[stripe-webhook] sender ordrebekreftelse for ${sessionId} (${productName})`);
-    const notify = await submitNetlifyForm("ordrebekreftelse", {
+    console.log(`[stripe-webhook] sender butikkvarsel for ${sessionId} (${productName})`);
+    const shopNotify = await submitNetlifyForm("ordrebekreftelse", {
       subject: `Ny bestilling – ${productName} (${sessionId})`,
       ordrenummer: sessionId,
       produkt: productName,
@@ -224,53 +246,56 @@ export default async (req: Request) => {
       email: customer.email || "",
       melding,
     });
-    if (notify.ok) {
-      console.log(`[stripe-webhook] ordrebekreftelse sendt for ${sessionId}`);
-    } else {
-      console.error(`[stripe-webhook] ordrebekreftelse (Netlify Forms) feilet for ${sessionId}: ${notify.reason}`);
+    if (!shopNotify.ok) {
+      console.error(`[stripe-webhook] butikkvarsel (Netlify Forms) feilet for ${sessionId}: ${shopNotify.reason}`);
     }
 
-    // 2) Kvittering til kunden. Egen innsending slik at butikken kan sette opp
-    //    et eget e-postvarsel for `kunde-bekreftelse` i Netlify UI. Sendes bare
-    //    når vi faktisk har en kunde-e-post, og blokkerer aldri ordrehåndteringen.
-    let customerNotify: NotifyResult = { ok: false, reason: "ingen kunde-e-post" };
-    if (customer.email) {
-      const kundeMelding = [
-        `Hei ${customer.name || ""}`.trim() + ",",
-        ``,
-        `Takk for bestillingen din hos ScandiJapandi!`,
-        `Produkt: ${productName}`,
-        `Beløp: ${amountFormatted}`,
-        `Ordrenummer: ${sessionId}`,
-        shippingAddress ? `\nLeveres til:\n${shippingAddress}` : null,
-        ``,
-        `Vi gir beskjed når varen sendes.`,
-      ]
-        .filter((l) => l !== null)
-        .join("\n");
-
-      console.log(`[stripe-webhook] sender kunde-bekreftelse for ${sessionId} (svar-til: ${customer.email})`);
-      customerNotify = await submitNetlifyForm("kunde-bekreftelse", {
-        subject: `Ordrebekreftelse – ${productName} (${sessionId})`,
-        ordrenummer: sessionId,
-        produkt: productName,
-        belop: amountFormatted,
-        kunde_navn: customer.name || "",
-        email: customer.email,
-        melding: kundeMelding,
+    // 2) Customer receipt — a real, branded email to the customer's own address.
+    //    Netlify Forms cannot do this (fixed recipient), so we use Resend.
+    let customerOk = false;
+    if (customer.email && emailConfigured()) {
+      const mail = customerConfirmationEmail(orderData);
+      console.log(`[stripe-webhook] sender kundekvittering for ${sessionId} → ${customer.email}`);
+      const r = await sendEmail({
+        to: customer.email,
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
+        replyTo: Netlify.env.get("SHOP_EMAIL") || undefined,
       });
-      if (customerNotify.ok) {
-        console.log(`[stripe-webhook] kunde-bekreftelse sendt for ${sessionId}`);
-      } else {
-        console.error(`[stripe-webhook] kunde-bekreftelse (Netlify Forms) feilet for ${sessionId}: ${customerNotify.reason}`);
-      }
+      customerOk = r.ok;
+      if (!r.ok) console.error(`[stripe-webhook] kundekvittering feilet for ${sessionId}: ${r.reason}`);
+    } else if (!emailConfigured()) {
+      console.warn(`[stripe-webhook] hopper over kundekvittering for ${sessionId}: RESEND_API_KEY mangler`);
     } else {
-      console.warn(`[stripe-webhook] hopper over kunde-bekreftelse for ${sessionId}: ingen kunde-e-post`);
+      console.warn(`[stripe-webhook] hopper over kundekvittering for ${sessionId}: ingen kunde-e-post`);
     }
 
-    // Statusen gjenspeiler butikkvarselet (system of record for ordrehåndtering),
-    // mens kunde-bekreftelsen logges separat ovenfor.
-    const status = notify.ok ? "emailed" : "email-failed";
+    // 3) Producer notification — sent straight to the product's producer_email so
+    //    they can pack and ship. Again a dynamic recipient → Resend.
+    if (product?.producer_email && emailConfigured()) {
+      const mail = producerNotificationEmail(orderData);
+      console.log(`[stripe-webhook] sender produsentvarsel for ${sessionId} → ${product.producer_email}`);
+      const r = await sendEmail({
+        to: String(product.producer_email),
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
+        replyTo: Netlify.env.get("SHOP_EMAIL") || customer.email || undefined,
+      });
+      if (!r.ok) console.error(`[stripe-webhook] produsentvarsel feilet for ${sessionId}: ${r.reason}`);
+    } else if (product && !product.producer_email) {
+      console.warn(`[stripe-webhook] hopper over produsentvarsel for ${sessionId}: produktet mangler produsent-e-post`);
+    }
+
+    // Reflect the outcome on the order. The customer receipt is the signal that
+    // matters most for the customer experience; fall back to the shop notice
+    // when there was no customer email to send to.
+    const status = customerOk
+      ? "emailed"
+      : shopNotify.ok && !customer.email
+        ? "emailed"
+        : "email-failed";
     await db.sql`UPDATE orders SET routing_status = ${status}, updated_at = NOW() WHERE stripe_session_id = ${sessionId}`;
 
     return new Response("OK", { status: 200 });

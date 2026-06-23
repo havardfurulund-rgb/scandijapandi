@@ -177,6 +177,20 @@ import Base from '../layouts/Base.astro';
 
       <div id="product-list" class="space-y-3"></div>
 
+      <!-- Ordrehistorikk: ordrene fra Stripe, lagret av stripe-webhook -->
+      <div class="mt-16">
+        <div class="flex items-baseline justify-between mb-6">
+          <div>
+            <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Salg</span>
+            <h2 class="font-serif text-2xl text-ink">Ordrehistorikk</h2>
+          </div>
+          <button type="button" id="orders-refresh" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">Oppdater</button>
+        </div>
+        <div id="orders-list" class="space-y-3">
+          <p class="text-sm text-stone">Laster ordrer …</p>
+        </div>
+      </div>
+
       <!-- Influencer links -->
       <div class="mt-16 bg-ink text-paper p-8">
         <h2 class="font-serif text-xl">Influenser-lenker</h2>
@@ -220,11 +234,26 @@ import Base from '../layouts/Base.astro';
         const status = document.getElementById('test-email-status');
         const configStatus = document.getElementById('email-config-status');
 
-        // E-post sendes nå via Netlify Forms – innebygd i plattformen. Ingen
-        // API-nøkler, SMTP eller eksterne tjenester. Varslingsadressen settes i
-        // Netlify UI under Notifications → Emails and webhooks.
-        configStatus.textContent = 'E-post sendes via Netlify Forms. Varselet går til adressen som er satt opp i Netlify (Notifications → Emails and webhooks) for skjemaene «test-epost», «ordrebekreftelse» og «kunde-bekreftelse».';
-        configStatus.style.color = '#3f6212';
+        // Test-e-post sendes via /api/admin/test-email, som bruker den samme
+        // utgående e-postveien (Resend) som kundekvittering og produsentvarsel.
+        // Slik tester knappen den faktiske produksjonsveien – ikke bare et
+        // internt Netlify Forms-varsel.
+        (async () => {
+          try {
+            const res = await fetch('/api/admin/test-email');
+            const data = await res.json().catch(() => ({}));
+            if (data.configured) {
+              configStatus.textContent = `Utgående e-post er konfigurert. Avsender: ${data.from}. Skriv inn en adresse og send en ekte test.`;
+              configStatus.style.color = '#3f6212';
+            } else {
+              configStatus.textContent = 'Utgående e-post er ikke konfigurert ennå (RESEND_API_KEY mangler). Butikkvarsel sendes via Netlify Forms, men kunde- og produsent-e-post krever Resend.';
+              configStatus.style.color = '#A6694C';
+            }
+          } catch (e) {
+            configStatus.textContent = 'Kunne ikke sjekke e-postkonfigurasjon.';
+            configStatus.style.color = '#A6694C';
+          }
+        })();
 
         // Liten hjelper for konsistent status + konsoll-logging, slik at det er
         // enkelt å feilsøke e-post fra nettleserens utviklerverktøy.
@@ -245,28 +274,20 @@ import Base from '../layouts/Base.astro';
           setStatus('Sender …', '#666');
 
           try {
-            const body = new URLSearchParams({
-              'form-name': 'test-epost',
-              subject: 'Test-e-post fra ScandiJapandi-admin',
-              email,
-              melding: `Dette er en test-e-post sendt fra admin-panelet (oppgitt mottaker: ${email}).`,
-            });
-
-            // Send til det statiske skjema-skjelettet (/__forms.html), ikke '/',
-            // slik at Netlify Forms fanger opp innsendingen og sender varselet.
-            console.log('[test-epost] POST /__forms.html', { email });
-            const res = await fetch('/__forms.html', {
+            console.log('[test-epost] POST /api/admin/test-email', { email });
+            const res = await fetch('/api/admin/test-email', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-              body: body.toString(),
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email }),
             });
-            console.log('[test-epost] svar', res.status, res.statusText);
+            const data = await res.json().catch(() => ({}));
+            console.log('[test-epost] svar', res.status, data);
 
             if (res.ok) {
-              setStatus('✅ Innsending mottatt av Netlify Forms. Varselet sendes til adressen som er konfigurert i Netlify (sjekk også spam).', 'green');
+              setStatus('✅ Test-e-post sendt. Sjekk innboksen (og spam).', 'green');
               input.value = '';
             } else {
-              setStatus(`Feil ved sending (HTTP ${res.status} ${res.statusText}). Sjekk at skjemaet «test-epost» er registrert i Netlify.`, 'red');
+              setStatus(`Feil ved sending: ${data.error || `HTTP ${res.status}`}`, 'red');
             }
           } catch (err) {
             console.error('[test-epost] nettverksfeil', err);
@@ -344,6 +365,54 @@ import Base from '../layouts/Base.astro';
       const data = await res.json();
       cache = data.products || [];
       renderList(cache);
+    }
+
+    // ---- Ordrehistorikk ----
+
+    // Menneskelig etikett + farge for ordrens e-poststatus.
+    function orderStatus(status) {
+      if (status === 'emailed') return { label: 'E-post sendt', cls: 'text-ink' };
+      if (status === 'email-failed') return { label: 'E-post feilet', cls: 'text-clay' };
+      return { label: status || 'Mottatt', cls: 'text-stone' };
+    }
+
+    function renderOrders(orders) {
+      const list = $('orders-list');
+      if (!orders.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen ordrer ennå.</p>'; return; }
+      const fmtDate = (s) => { try { return new Date(s).toLocaleString('nb-NO', { dateStyle: 'medium', timeStyle: 'short' }); } catch { return s || ''; } };
+      list.innerHTML = orders.map((o) => {
+        const st = orderStatus(o.status);
+        const amount = Number.isFinite(o.amount) ? nok.format(o.amount) : '';
+        return `
+        <details class="bg-paper border border-ink/10">
+          <summary class="flex items-center gap-4 p-4 cursor-pointer list-none">
+            <div class="flex-1 min-w-0">
+              <p class="font-serif text-lg text-ink truncate">${escapeHtml(o.product)} · ${escapeHtml(amount)}</p>
+              <p class="text-[10px] uppercase tracking-wider text-stone">${escapeHtml(fmtDate(o.created_at))} · ${escapeHtml(o.customer_name || o.customer_email || 'Ukjent kunde')}${o.curator ? ` · henvist av ${escapeHtml(o.curator)}` : ''}</p>
+            </div>
+            <span class="text-[10px] uppercase tracking-widest ${st.cls} whitespace-nowrap">${escapeHtml(st.label)}</span>
+          </summary>
+          <div class="border-t border-ink/10 px-4 py-4 text-sm text-stone space-y-1">
+            <p><span class="text-[10px] uppercase tracking-wider text-stone/70">Ordrenr</span> <span class="text-ink break-all">${escapeHtml(o.order_id)}</span></p>
+            ${o.customer_email ? `<p><span class="text-[10px] uppercase tracking-wider text-stone/70">Kunde</span> <span class="text-ink">${escapeHtml(o.customer_name || '')} · ${escapeHtml(o.customer_email)}</span></p>` : ''}
+            ${o.customer_phone ? `<p><span class="text-[10px] uppercase tracking-wider text-stone/70">Telefon</span> <span class="text-ink">${escapeHtml(o.customer_phone)}</span></p>` : ''}
+            ${o.producer_email ? `<p><span class="text-[10px] uppercase tracking-wider text-stone/70">Produsent</span> <span class="text-ink">${escapeHtml(o.producer_email)}</span></p>` : ''}
+            ${o.shipping_address ? `<p><span class="text-[10px] uppercase tracking-wider text-stone/70">Leveres til</span><br /><span class="text-ink whitespace-pre-line">${escapeHtml(o.shipping_address)}</span></p>` : ''}
+          </div>
+        </details>`;
+      }).join('');
+    }
+
+    async function loadOrders() {
+      const list = $('orders-list');
+      try {
+        const res = await api('/api/admin/orders');
+        if (!res.ok) { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste ordrer.</p>'; return; }
+        const data = await res.json();
+        renderOrders(data.orders || []);
+      } catch (e) {
+        list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste ordrer.</p>';
+      }
     }
 
     function startEdit(p) {
@@ -478,6 +547,9 @@ import Base from '../layouts/Base.astro';
     });
     $('ref-copy').addEventListener('click', () => navigator.clipboard?.writeText($('ref-link').textContent || ''));
 
+    // Oppdater ordrehistorikken på forespørsel.
+    $('orders-refresh').addEventListener('click', () => loadOrders());
+
     // ---- Auth ----
 
     // ---- Kodebasert admin-innlogging (hovedløsning: brukernavn + passord) ----
@@ -503,6 +575,7 @@ import Base from '../layouts/Base.astro';
       show('logout-btn');
       showOnly('admin-view');
       await loadProducts();
+      loadOrders();
     }
 
     // Logg inn med kodebasert brukernavn + passord.
@@ -633,6 +706,7 @@ import Base from '../layouts/Base.astro';
       if (!user.roles?.includes('admin')) { showOnly('noaccess-view'); return; }
       showOnly('admin-view');
       await loadProducts();
+      loadOrders();
     }
 
     // On page load, redeem any token in the URL hash (recovery, invite,
