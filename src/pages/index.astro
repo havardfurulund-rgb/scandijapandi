@@ -225,7 +225,47 @@ const checkoutHref = (product) =>
     </div>
   </section>
 
+  <!-- Ordrer — kun synlig når en admin-økt er aktiv. Selve dataene hentes fra
+       /api/admin/orders, som krever gyldig admin-autorisering på SERVEREN (samme
+       gating som resten av /api/admin/*). Å skjule seksjonen i klienten er kun
+       kosmetisk; den ekte beskyttelsen ligger i funksjonen. Storefronten for
+       vanlige besøkende er uendret. -->
+  <section id="admin-orders" class="hidden bg-oat px-6 sm:px-12 py-20 border-t border-ink/10">
+    <div class="mx-auto max-w-6xl">
+      <div class="flex items-baseline justify-between mb-8">
+        <div>
+          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Admin</span>
+          <h2 class="font-serif text-2xl sm:text-3xl text-ink">Ordrer</h2>
+        </div>
+        <button id="admin-orders-refresh" type="button" class="text-[10px] font-medium uppercase tracking-widest text-stone transition-colors hover:text-ink">
+          Oppdater
+        </button>
+      </div>
+      <p id="admin-orders-status" class="text-sm text-stone font-light">Laster ordrer …</p>
+      <div class="overflow-x-auto">
+        <table id="admin-orders-table" class="hidden mt-2 w-full text-left text-sm">
+          <thead class="text-[10px] uppercase tracking-widest text-stone">
+            <tr class="border-b border-ink/10">
+              <th class="py-3 pr-4 font-medium">Dato</th>
+              <th class="py-3 pr-4 font-medium">Produkt</th>
+              <th class="py-3 pr-4 font-medium">Kunde</th>
+              <th class="py-3 pr-4 font-medium">Beløp</th>
+              <th class="py-3 pr-4 font-medium">Henvist</th>
+              <th class="py-3 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody id="admin-orders-body" class="align-top text-ink/90"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
   <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
+    <!-- Designersøknad åpnes i et native <dialog>. Knappen ligger diskret i
+         footeren, slik at resten av layouten er uendret. -->
+    <button id="designer-apply-btn" type="button" class="mb-8 inline-block border border-paper/25 px-8 py-4 text-[10px] font-medium uppercase tracking-widest text-paper/80 transition-colors hover:border-paper hover:text-paper" data-i18n="designer_cta">
+      Søk som designer
+    </button>
     <p data-i18n="footer_rights">© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
     <!-- Diskret admin-inngang: skjult for vanlige besøkende. Vises kun som en
          liten, nedtonet lenke nederst i footeren når en admin-økt er aktiv
@@ -234,6 +274,66 @@ const checkoutHref = (product) =>
       <a href="/admin" class="transition-colors hover:text-paper/80" data-i18n="footer_admin">Admin</a>
     </p>
   </footer>
+
+  <!-- Designersøknad i et native <dialog>. Sendes via AJAX til /__forms.html slik
+       at Netlify Forms fanger den opp uten at besøkende forlater forsiden. Skjemaet
+       må også deklareres statisk i public/__forms.html (form-navn:
+       "scandijapandi-designers") for at byggboten skal registrere feltene. -->
+  <dialog id="designer-dialog" class="sj-dialog w-full max-w-lg border border-ink/10 bg-paper p-0 text-ink">
+    <form id="designer-form" name="scandijapandi-designers" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="p-8 sm:p-10">
+      <input type="hidden" name="form-name" value="scandijapandi-designers" />
+      <p class="hidden"><label>La denne stå tom: <input name="bot-field" /></label></p>
+
+      <div class="flex items-start justify-between mb-6">
+        <div>
+          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2" data-i18n="designer_eyebrow">For designere</span>
+          <h2 class="font-serif text-2xl sm:text-3xl text-ink" data-i18n="designer_title">Søk som designer</h2>
+        </div>
+        <button type="button" id="designer-close" aria-label="Lukk" class="ml-4 text-xl leading-none text-stone transition-colors hover:text-ink">✕</button>
+      </div>
+      <p class="text-sm text-stone font-light mb-6" data-i18n="designer_body">
+        Fortell oss kort om deg selv og arbeidet ditt, så tar vi kontakt.
+      </p>
+
+      <div class="space-y-5">
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_name">Navn</span>
+          <input type="text" name="name" required class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_email">E-post</span>
+          <input type="email" name="email" required class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="designer_role">Rolle / Portefølje</span>
+          <input type="text" name="role" required class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="designer_message">Melding</span>
+          <textarea name="message" rows="4" class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+        </label>
+      </div>
+
+      <button type="submit" id="designer-submit" class="mt-8 w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay disabled:opacity-50" data-i18n="designer_submit">
+        Send søknad
+      </button>
+      <p id="designer-feedback" class="hidden mt-4 text-sm" role="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+
+  <style is:global>
+    /* Native <dialog>-styling i tråd med designsystemet — sentrert kort med en
+       myk, blekk-tonet backdrop. Ingen UI-bibliotek, kun ren CSS. */
+    dialog.sj-dialog {
+      margin: auto;
+      max-height: calc(100vh - 3rem);
+      overflow: auto;
+    }
+    dialog.sj-dialog::backdrop {
+      background: rgba(42, 39, 35, 0.45);
+      backdrop-filter: blur(2px);
+    }
+  </style>
 
   <script is:inline>
     // ---- Flerspråklig støtte: Norsk / Engelsk / Japansk ----
@@ -277,6 +377,15 @@ const checkoutHref = (product) =>
         footer_rights: '© 2026 ScandiJapandi. Alle rettigheter reservert.',
         footer_admin: 'Admin',
         product_buy: 'Kjøp nå →',
+        designer_cta: 'Søk som designer',
+        designer_eyebrow: 'For designere',
+        designer_title: 'Søk som designer',
+        designer_body: 'Fortell oss kort om deg selv og arbeidet ditt, så tar vi kontakt.',
+        designer_role: 'Rolle / Portefølje',
+        designer_message: 'Melding',
+        designer_submit: 'Send søknad',
+        designer_success: 'Takk! Vi har mottatt søknaden din og tar kontakt.',
+        designer_error: 'Noe gikk galt. Prøv igjen, eller send oss en e-post.',
       },
       en: {
         nav_collection: 'Collection', nav_join: 'Join', nav_partner: 'Become a Partner', nav_admin: 'Admin',
@@ -314,6 +423,15 @@ const checkoutHref = (product) =>
         footer_rights: '© 2026 ScandiJapandi. All rights reserved.',
         footer_admin: 'Admin',
         product_buy: 'Buy now →',
+        designer_cta: 'Apply as a designer',
+        designer_eyebrow: 'For designers',
+        designer_title: 'Apply as a designer',
+        designer_body: 'Tell us briefly about yourself and your work, and we will be in touch.',
+        designer_role: 'Role / Portfolio',
+        designer_message: 'Message',
+        designer_submit: 'Send application',
+        designer_success: 'Thank you! We have received your application and will be in touch.',
+        designer_error: 'Something went wrong. Please try again, or email us.',
       },
       jp: {
         nav_collection: 'コレクション', nav_join: '参加する', nav_partner: 'パートナー募集', nav_admin: '管理',
@@ -351,6 +469,15 @@ const checkoutHref = (product) =>
         footer_rights: '© 2026 ScandiJapandi. 無断複製禁止。',
         footer_admin: '管理',
         product_buy: '購入する →',
+        designer_cta: 'デザイナーとして応募',
+        designer_eyebrow: 'デザイナーの方へ',
+        designer_title: 'デザイナーとして応募',
+        designer_body: 'ご自身と制作について簡単にお聞かせください。追ってご連絡します。',
+        designer_role: '役割 / ポートフォリオ',
+        designer_message: 'メッセージ',
+        designer_submit: '応募を送信',
+        designer_success: 'ありがとうございます。応募を受け付けました。追ってご連絡します。',
+        designer_error: '問題が発生しました。もう一度お試しいただくか、メールでご連絡ください。',
       },
     };
 
@@ -377,6 +504,9 @@ const checkoutHref = (product) =>
 
     // Eksponert slik at det dynamisk rendrede produktgridet kan re-oversettes.
     window.__sjApplyLang = applyLang;
+    // Eksponert slik at dynamiske meldinger (f.eks. designer-søknadsskjemaet)
+    // kan slå opp riktig språk uten å duplisere ordlistene.
+    window.__SJ_I18N = I18N;
     try { window.__sjLang = localStorage.getItem('sj-lang') || 'no'; } catch (e) { window.__sjLang = 'no'; }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -385,6 +515,64 @@ const checkoutHref = (product) =>
         btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
       });
     });
+  </script>
+
+  <script is:inline>
+    // ---- Designersøknad i et native <dialog> ----
+    // Åpnes fra footer-knappen, sendes via AJAX til /__forms.html (Netlify Forms),
+    // og gir tilbakemelding inline uten å forlate forsiden. Best-effort: en feil
+    // blokkerer aldri annen funksjonalitet på siden.
+    (function () {
+      const dialog = document.getElementById('designer-dialog');
+      const openBtn = document.getElementById('designer-apply-btn');
+      const closeBtn = document.getElementById('designer-close');
+      const form = document.getElementById('designer-form');
+      const submitBtn = document.getElementById('designer-submit');
+      const feedback = document.getElementById('designer-feedback');
+      if (!dialog || !openBtn || !form) return;
+
+      function openDialog() {
+        if (feedback) feedback.classList.add('hidden');
+        if (typeof dialog.showModal === 'function') dialog.showModal();
+        else dialog.setAttribute('open', 'open');
+      }
+      openBtn.addEventListener('click', openDialog);
+      if (closeBtn) closeBtn.addEventListener('click', () => dialog.close());
+      // Klikk på backdrop (utenfor selve kortet) lukker dialogen.
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+
+      function showFeedback(key, ok) {
+        if (!feedback) return;
+        const lang = window.__sjLang || 'no';
+        const dict = (window.__SJ_I18N && window.__SJ_I18N[lang]) || {};
+        feedback.textContent = dict[key] || '';
+        feedback.className = 'mt-4 text-sm ' + (ok ? 'text-ink' : 'text-clay');
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (feedback) feedback.classList.add('hidden');
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+          // Submit mot det statiske skjema-skjelettet, ikke '/', slik at Netlify
+          // sin skjemabehandling alltid fanger innsendingen (jf. Netlify Forms-doc).
+          const res = await fetch('/__forms.html', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(new FormData(form)).toString(),
+          });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          form.reset();
+          showFeedback('designer_success', true);
+        } catch (err) {
+          showFeedback('designer_error', false);
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+    })();
   </script>
 
   <script>
@@ -467,15 +655,76 @@ const checkoutHref = (product) =>
     // active — either the temporary hardcoded login (a server-set httpOnly
     // cookie, checked via /api/admin/session) or a real Netlify Identity user.
     // The link stays hidden for anonymous visitors; the storefront is untouched.
+    //
+    // The same admin signal also reveals the minimal "Ordrer" section and loads
+    // it once from /api/admin/orders (which enforces admin auth server-side —
+    // the client-side hiding is cosmetic only).
     import { getUser, onAuthChange } from '@netlify/identity';
 
     const adminLink = document.getElementById('admin-link');
+    const ordersSection = document.getElementById('admin-orders');
     let identityUser = null;
     let tempAdmin = false;
+    let ordersLoaded = false;
 
-    function syncAdminLink() {
-      if (adminLink) adminLink.classList.toggle('hidden', !(identityUser || tempAdmin));
+    function isAdmin() {
+      return !!(identityUser || tempAdmin);
     }
+
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    async function loadOrders() {
+      const status = document.getElementById('admin-orders-status');
+      const table = document.getElementById('admin-orders-table');
+      const body = document.getElementById('admin-orders-body');
+      if (!body) return;
+      if (status) { status.textContent = 'Laster ordrer …'; status.classList.remove('hidden'); }
+      if (table) table.classList.add('hidden');
+      try {
+        const res = await fetch('/api/admin/orders', { headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        const orders = Array.isArray(data.orders) ? data.orders : [];
+        if (!orders.length) {
+          if (status) { status.textContent = 'Ingen ordrer ennå.'; status.classList.remove('hidden'); }
+          return;
+        }
+        body.innerHTML = orders.map((o) => {
+          let when = '—';
+          try { if (o.created_at) when = new Date(o.created_at).toLocaleDateString('nb-NO'); } catch (e) {}
+          let amount;
+          try {
+            amount = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: o.currency || 'NOK', maximumFractionDigits: 0 }).format(Number(o.amount) || 0);
+          } catch (e) {
+            amount = (o.amount != null ? o.amount : '') + ' ' + (o.currency || '');
+          }
+          return `<tr class="border-b border-ink/5">
+            <td class="py-3 pr-4 whitespace-nowrap">${esc(when)}</td>
+            <td class="py-3 pr-4">${esc(o.product || '—')}</td>
+            <td class="py-3 pr-4">${esc(o.customer_name || '—')}<br /><span class="text-xs text-stone">${esc(o.customer_email || '')}</span></td>
+            <td class="py-3 pr-4 whitespace-nowrap">${esc(amount)}</td>
+            <td class="py-3 pr-4">${esc(o.curator || '—')}</td>
+            <td class="py-3"><span class="text-[10px] uppercase tracking-widest text-stone">${esc(o.status || '—')}</span></td>
+          </tr>`;
+        }).join('');
+        if (status) status.classList.add('hidden');
+        if (table) table.classList.remove('hidden');
+      } catch (err) {
+        if (status) { status.textContent = 'Kunne ikke laste ordrer.'; status.classList.remove('hidden'); }
+      }
+    }
+
+    function syncAdminUI() {
+      const admin = isAdmin();
+      if (adminLink) adminLink.classList.toggle('hidden', !admin);
+      if (ordersSection) ordersSection.classList.toggle('hidden', !admin);
+      if (admin && !ordersLoaded) { ordersLoaded = true; loadOrders(); }
+    }
+
+    document.getElementById('admin-orders-refresh')?.addEventListener('click', loadOrders);
 
     // Midlertidig hurtig-admin: spør serveren om øktcookien er gyldig.
     async function checkTempAdmin() {
@@ -489,8 +738,8 @@ const checkoutHref = (product) =>
       }
     }
 
-    checkTempAdmin().then((ok) => { tempAdmin = ok; syncAdminLink(); });
-    getUser().then((u) => { identityUser = u; syncAdminLink(); }).catch(() => { identityUser = null; syncAdminLink(); });
-    onAuthChange((_event, user) => { identityUser = user; syncAdminLink(); });
+    checkTempAdmin().then((ok) => { tempAdmin = ok; syncAdminUI(); });
+    getUser().then((u) => { identityUser = u; syncAdminUI(); }).catch(() => { identityUser = null; syncAdminUI(); });
+    onAuthChange((_event, user) => { identityUser = user; syncAdminUI(); });
   </script>
 </Base>
