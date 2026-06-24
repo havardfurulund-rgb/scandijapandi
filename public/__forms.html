@@ -10,10 +10,11 @@
     • partner-produsent        – registrering for produsenter og designere
     • scandijapandi-designers  – designersøknad (sendes via AJAX til /__forms.html)
     • ordrebekreftelse         – internt butikkvarsel ved fullført Stripe-kjøp
+    • kunde-bekreftelse        – kundebekreftelse ved fullført Stripe-kjøp
 
-  For `ordrebekreftelse` sender Stripe-webhooken en innsending hit ved hvert
-  fullførte kjøp, og Netlify sender da et e-postvarsel til butikkens faste
-  adresse. Den adressen settes i Netlify UI under
+  For `ordrebekreftelse` og `kunde-bekreftelse` sender Stripe-webhooken en
+  innsending hit ved hvert fullførte kjøp, og Netlify sender da et e-postvarsel
+  til butikkens faste adresse. Den adressen settes i Netlify UI under
   Project configuration → Notifications → Emails and webhooks.
 
   Kunde- og produsent-e-post går IKKE via Netlify Forms (Forms kan bare varsle
@@ -61,6 +62,19 @@
     <!-- Internt butikkvarsel ved fullført Stripe-kjøp. -->
     <form name="ordrebekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
       <input type="hidden" name="form-name" value="ordrebekreftelse" />
+      <input type="text" name="subject" />
+      <input type="text" name="ordrenummer" />
+      <input type="text" name="produkt" />
+      <input type="text" name="belop" />
+      <input type="text" name="kunde_navn" />
+      <input type="email" name="email" />
+      <textarea name="melding"></textarea>
+      <input name="bot-field" />
+    </form>
+
+    <!-- Kundebekreftelse ved fullført Stripe-kjøp. -->
+    <form name="kunde-bekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="kunde-bekreftelse" />
       <input type="text" name="subject" />
       <input type="text" name="ordrenummer" />
       <input type="text" name="produkt" />

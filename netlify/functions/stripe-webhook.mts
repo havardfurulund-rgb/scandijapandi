@@ -255,6 +255,37 @@ export default async (req: Request) => {
       console.error(`[stripe-webhook] butikkvarsel (Netlify Forms) feilet for ${sessionId}: ${shopNotify.reason}`);
     }
 
+    // 1b) Customer confirmation, also recorded as a Netlify Forms submission
+    //     (`kunde-bekreftelse`). Like every Forms submission this is captured in
+    //     the Netlify Forms dashboard and notifies the store's configured
+    //     address. Best-effort: it never blocks order handling.
+    const kundeMelding = [
+      `Takk for bestillingen!`,
+      `Produkt: ${productName}`,
+      `Ordrenummer: ${sessionId}`,
+      `Beløp: ${amountFormatted}`,
+      customer.name ? `Navn: ${customer.name}` : null,
+      customer.email ? `E-post: ${customer.email}` : null,
+      shippingAddress ? `Leveres til:\n${shippingAddress}` : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    console.log(`[stripe-webhook] sender kundebekreftelse (Netlify Forms) for ${sessionId}`);
+    const customerNotify = await submitNetlifyForm("kunde-bekreftelse", {
+      subject: `Ordrebekreftelse – ${productName} (${sessionId})`,
+      ordrenummer: sessionId,
+      produkt: productName,
+      belop: amountFormatted,
+      kunde_navn: customer.name || "",
+      // Netlify bruker e-postadressen som svar-til (reply-to) på varselet.
+      email: customer.email || "",
+      melding: kundeMelding,
+    });
+    if (!customerNotify.ok) {
+      console.error(`[stripe-webhook] kundebekreftelse (Netlify Forms) feilet for ${sessionId}: ${customerNotify.reason}`);
+    }
+
     // 2) Customer receipt — a real, branded email to the customer's own address.
     //    Netlify Forms cannot do this (fixed recipient), so we use Resend.
     let customerOk = false;
