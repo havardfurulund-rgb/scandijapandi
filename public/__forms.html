@@ -1,12 +1,19 @@
 <!doctype html>
 <!--
-  Statisk skjema-skjelett som lar Netlify oppdage skjemaet under bygg.
+  Statisk skjema-skjelett som lar Netlify oppdage skjemaene under bygg.
   Denne siden vises aldri i butikken – den finnes kun for at Netlify Forms
-  skal registrere feltene ved deploy.
+  skal registrere feltene ved deploy. Hvert skjema her speiler et faktisk
+  skjema i appen, slik at byggboten kjenner igjen feltnavnene ved innsending.
 
-  Det er ÉN form her: `ordrebekreftelse`. Stripe-webhooken sender en innsending
-  hit ved hvert fullførte kjøp, og Netlify sender da et e-postvarsel til
-  butikkens faste adresse. Den adressen settes i Netlify UI under
+  Skjemaene som faktisk mottar innsendinger:
+    • interesse                – fellesskaps-/interesseskjema på forsiden
+    • partner-produsent        – registrering for produsenter og designere
+    • scandijapandi-designers  – designersøknad (sendes via AJAX til /__forms.html)
+    • ordrebekreftelse         – internt butikkvarsel ved fullført Stripe-kjøp
+
+  For `ordrebekreftelse` sender Stripe-webhooken en innsending hit ved hvert
+  fullførte kjøp, og Netlify sender da et e-postvarsel til butikkens faste
+  adresse. Den adressen settes i Netlify UI under
   Project configuration → Notifications → Emails and webhooks.
 
   Kunde- og produsent-e-post går IKKE via Netlify Forms (Forms kan bare varsle
@@ -18,6 +25,39 @@
     <title>Netlify Forms</title>
   </head>
   <body>
+    <!-- Fellesskaps-/interesseskjema fra forsiden. -->
+    <form name="interesse" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="interesse" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="checkbox" name="interests" />
+      <textarea name="message"></textarea>
+      <input name="bot-field" />
+    </form>
+
+    <!-- Registrering for produsenter og designere. -->
+    <form name="partner-produsent" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="partner-produsent" />
+      <input type="text" name="name" />
+      <input type="text" name="company" />
+      <input type="email" name="email" />
+      <input type="url" name="website" />
+      <input type="text" name="persona" />
+      <textarea name="message"></textarea>
+      <input type="hidden" name="market" />
+      <input name="bot-field" />
+    </form>
+
+    <!-- Designersøknad fra forsidens dialog (sendt via AJAX til /__forms.html). -->
+    <form name="scandijapandi-designers" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="hidden" name="form-name" value="scandijapandi-designers" />
+      <input type="text" name="name" />
+      <input type="email" name="email" />
+      <input type="text" name="role" />
+      <textarea name="message"></textarea>
+      <input name="bot-field" />
+    </form>
+
     <!-- Internt butikkvarsel ved fullført Stripe-kjøp. -->
     <form name="ordrebekreftelse" data-netlify="true" netlify-honeypot="bot-field" hidden>
       <input type="hidden" name="form-name" value="ordrebekreftelse" />
