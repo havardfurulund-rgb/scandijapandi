@@ -334,6 +334,10 @@ export default async (req: Request) => {
         : "email-failed";
     await db.sql`UPDATE orders SET routing_status = ${status}, updated_at = NOW() WHERE stripe_session_id = ${sessionId}`;
 
+    if (!customerOk && !!customer.email) {
+      // Returning 500 causes Stripe to retry — INSERT is idempotent so safe.
+      return new Response("Email delivery failed — will retry", { status: 500 });
+    }
     return new Response("OK", { status: 200 });
   } catch (err) {
     console.error("[stripe-webhook]", err instanceof Error ? err.message : err);
