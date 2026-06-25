@@ -264,7 +264,7 @@ export default async (req: Request) => {
         const r = await sendEmail({
           to: shopEmail,
           subject: `Ny bestilling – ${productName} (${sessionId})`,
-          html: producerNotificationEmail({ ...orderData, customerName: customer.name, customerEmail: customer.email }).html,
+          html: producerNotificationEmailBilingual({ ...orderData, customerName: customer.name, customerEmail: customer.email }).html,
           text: melding,
           replyTo: customer.email || undefined,
         });
