@@ -82,6 +82,7 @@ export default async (req: Request) => {
   const url = new URL(req.url);
   const slug = url.searchParams.get("slug") || "";
   const curator = url.searchParams.get("ref") || url.searchParams.get("client_reference_id") || "";
+  console.log(`[checkout] slug=${slug} locale=${url.searchParams.get("locale")} ref=${curator}`);
 
   if (!slug || slug === "undefined") {
     return redirect(`${siteUrl()}/?checkout=error&reason=missing-slug`);
