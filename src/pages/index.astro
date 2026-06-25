@@ -578,10 +578,12 @@ const checkoutHref = (product) =>
   <script>
     const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
     const ref = new URLSearchParams(window.location.search).get('ref');
+    const locale = document.documentElement.lang || 'en';
 
     function checkoutHref(product) {
       let href = product.stripeLink || `/api/checkout?slug=${encodeURIComponent(product.slug)}`;
       if (ref) href += `${href.includes('?') ? '&' : '?'}ref=${encodeURIComponent(ref)}`;
+      if (href.includes('/api/checkout')) href += `&locale=${encodeURIComponent(locale)}`;
       return href;
     }
 
