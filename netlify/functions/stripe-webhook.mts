@@ -32,7 +32,9 @@ import {
   sendEmail,
   emailConfigured,
   customerConfirmationEmail,
-  producerNotificationEmail,
+  customerConfirmationEmailEN,
+  customerConfirmationEmailJA,
+  producerNotificationEmailBilingual,
   type OrderEmailData,
 } from "../lib/email.mts";
 
@@ -132,6 +134,21 @@ async function fetchProductForEmail(slug: string) {
 }
 
 // ---- Handler --------------------------------------------------------------
+
+function detectLocale(session: any): 'no' | 'en' | 'ja' {
+  const meta = session.metadata?.locale;
+  if (meta === 'ja') return 'ja';
+  if (meta === 'no') return 'no';
+  if (meta === 'en') return 'en';
+  const country = (
+    session.collected_information?.shipping_details?.address?.country ||
+    session.customer_details?.address?.country ||
+    ""
+  ).toUpperCase();
+  if (['JP', 'KR', 'TW', 'HK', 'SG', 'CN'].includes(country)) return 'ja';
+  if (['NO', 'SE', 'DK', 'FI', 'IS'].includes(country)) return 'no';
+  return 'en';
+}
 
 export default async (req: Request) => {
   const secret = Netlify.env.get("STRIPE_WEBHOOK_SECRET");
@@ -262,7 +279,13 @@ export default async (req: Request) => {
     //    Netlify Forms cannot do this (fixed recipient), so we use Resend.
     let customerOk = false;
     if (customer.email && emailConfigured()) {
-      const mail = customerConfirmationEmail(orderData);
+      const locale = detectLocale(session);
+      const mail = locale === 'ja'
+        ? customerConfirmationEmailJA(orderData)
+        : locale === 'no'
+          ? customerConfirmationEmail(orderData)
+          : customerConfirmationEmailEN(orderData);
+      console.log(`[stripe-webhook] locale: ${locale} → sending ${locale} customer receipt`);
       console.log(`[stripe-webhook] sender kundekvittering for ${sessionId} → ${customer.email}`);
       const r = await sendEmail({
         to: customer.email,
@@ -282,7 +305,7 @@ export default async (req: Request) => {
     // 3) Producer notification — sent straight to the product's producer_email so
     //    they can pack and ship. Again a dynamic recipient → Resend.
     if (product?.producer_email && emailConfigured()) {
-      const mail = producerNotificationEmail(orderData);
+      const mail = producerNotificationEmailBilingual(orderData);
       console.log(`[stripe-webhook] sender produsentvarsel for ${sessionId} → ${product.producer_email}`);
       const r = await sendEmail({
         to: String(product.producer_email),

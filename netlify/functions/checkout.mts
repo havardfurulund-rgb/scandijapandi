@@ -39,6 +39,7 @@ async function createCheckoutSession(opts: {
   amountMinor: number;
   curator: string;
   slug: string;
+  locale: string;
 }): Promise<string> {
   const key = Netlify.env.get("STRIPE_SECRET_KEY");
   if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
@@ -57,6 +58,7 @@ async function createCheckoutSession(opts: {
   if (opts.curator) form.set("client_reference_id", opts.curator);
   form.set("metadata[curator]", opts.curator);
   form.set("metadata[slug]", opts.slug);
+  form.set("metadata[locale]", opts.locale);
   form.set("success_url", `${siteUrl()}/?checkout=success`);
   form.set("cancel_url", `${siteUrl()}/?checkout=cancel`);
 
@@ -96,6 +98,7 @@ export default async (req: Request) => {
       amountMinor: Math.round(Number(product.price_nok) * 100),
       curator,
       slug,
+      locale: url.searchParams.get("locale") || "en",
     });
 
     return redirect(checkoutUrl);

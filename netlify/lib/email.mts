@@ -240,3 +240,130 @@ export function testEmail(recipient: string): { subject: string; html: string; t
   const text = `Test-e-post fra ScandiJapandi-admin til ${recipient}. Ser du denne, fungerer utgående e-post.`;
   return { subject: "Test-e-post fra ScandiJapandi", html, text };
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Flerspråklige e-postmaler
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Kundekvittering på engelsk */
+export function customerConfirmationEmailEN(d: OrderEmailData): { subject: string; html: string; text: string } {
+  const greeting = d.customerName ? `Dear ${esc(d.customerName)},` : "Dear Customer,";
+  const details = [
+    row("Product", esc(d.productName)),
+    row("Amount", esc(d.amount)),
+    row("Order number", esc(d.orderId)),
+    d.shippingAddress ? row("Ship to", nl2br(d.shippingAddress)) : "",
+  ].join("");
+
+  const html = shell(`
+    <h1 style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:normal;color:#2A2723;">Thank you for your order</h1>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#2A2723;">${greeting}</p>
+    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#2A2723;">
+      We have received your order and look forward to sending it to you. Here are your order details:
+    </p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(42,39,35,0.08);border-bottom:1px solid rgba(42,39,35,0.08);margin-bottom:24px;">
+      ${details}
+    </table>
+    <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#2A2723;">
+      We will notify you as soon as your item is on its way. If you have any questions, please reply directly to this email.
+    </p>
+    <p style="margin:24px 0 0;font-size:15px;line-height:1.6;color:#2A2723;">Warm regards,<br />ScandiJapandi</p>
+  `);
+
+  const text = [
+    greeting, ``,
+    `Thank you for your order with ScandiJapandi!`,
+    `Product: ${d.productName}`,
+    `Amount: ${d.amount}`,
+    `Order number: ${d.orderId}`,
+    d.shippingAddress ? `\nShip to:\n${d.shippingAddress}` : "",
+    ``, `We will notify you when your item is dispatched.`,
+    `Warm regards, ScandiJapandi`,
+  ].filter(Boolean).join("\n");
+
+  return { subject: `Order confirmation — ${d.productName}`, html, text };
+}
+
+/** Kundekvittering på japansk (med engelsk under) */
+export function customerConfirmationEmailJA(d: OrderEmailData): { subject: string; html: string; text: string } {
+  const namePart = d.customerName ? `${esc(d.customerName)}様` : "お客様";
+  const details = [
+    row("商品 / Product", esc(d.productName)),
+    row("金額 / Amount", esc(d.amount)),
+    row("注文番号 / Order No.", esc(d.orderId)),
+    d.shippingAddress ? row("お届け先 / Ship to", nl2br(d.shippingAddress)) : "",
+  ].join("");
+
+  const html = shell(`
+    <h1 style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:normal;color:#2A2723;">ご注文ありがとうございます</h1>
+    <p style="margin:0 0 4px;font-size:15px;line-height:1.6;color:#2A2723;">${namePart}</p>
+    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#2A2723;">
+      ご注文を承りました。以下がご注文の詳細です。
+    </p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(42,39,35,0.08);border-bottom:1px solid rgba(42,39,35,0.08);margin-bottom:24px;">
+      ${details}
+    </table>
+    <p style="margin:0 0 8px;font-size:15px;line-height:1.6;color:#2A2723;">
+      発送の準備が整い次第、改めてご連絡いたします。ご不明な点がございましたら、このメールに直接ご返信ください。
+    </p>
+    <div style="margin:24px 0;padding:16px;border-top:1px solid rgba(42,39,35,0.08);">
+      <p style="margin:0 0 4px;font-size:13px;line-height:1.6;color:#6F6A5F;">— In English —</p>
+      <p style="margin:0 0 4px;font-size:13px;line-height:1.6;color:#6F6A5F;">Dear ${d.customerName ? esc(d.customerName) : "Customer"}, thank you for your order. We will notify you as soon as your item is on its way.</p>
+    </div>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:#2A2723;">ScandiJapandi</p>
+  `);
+
+  const text = [
+    `${namePart}`, ``,
+    `ご注文ありがとうございます。`,
+    `商品: ${d.productName}`,
+    `金額: ${d.amount}`,
+    `注文番号: ${d.orderId}`,
+    d.shippingAddress ? `お届け先:\n${d.shippingAddress}` : "",
+    ``, `— In English —`,
+    `Thank you for your order with ScandiJapandi.`,
+    `We will notify you when your item is dispatched.`,
+  ].filter(Boolean).join("\n");
+
+  return { subject: `ご注文確認 — ScandiJapandi`, html, text };
+}
+
+/** Produsentvarsel på norsk + engelsk */
+export function producerNotificationEmailBilingual(d: OrderEmailData): { subject: string; html: string; text: string } {
+  const details = [
+    row("Produkt / Product", esc(d.productName)),
+    row("Ordrenummer / Order No.", esc(d.orderId)),
+    row("Beløp / Amount", esc(d.amount)),
+    row("Kunde / Customer", esc([d.customerName, d.customerEmail].filter(Boolean).join(" · "))),
+    d.customerPhone ? row("Telefon / Phone", esc(d.customerPhone)) : "",
+    d.shippingAddress ? row("Leveringsadresse / Ship to", nl2br(d.shippingAddress)) : "",
+    d.curator ? row("Henvist av / Referred by", esc(d.curator)) : "",
+  ].join("");
+
+  const html = shell(`
+    <h1 style="margin:0 0 6px;font-family:Georgia,'Times New Roman',serif;font-size:26px;font-weight:normal;color:#2A2723;">Ny bestilling / New Order</h1>
+    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#2A2723;">
+      Det har kommet en ny bestilling på <strong>${esc(d.productName)}</strong>. Vennligst klargjør varen for forsendelse.<br/>
+      <span style="color:#6F6A5F;font-size:13px;">A new order has been placed for <strong>${esc(d.productName)}</strong>. Please prepare the item for shipment.</span>
+    </p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(42,39,35,0.08);border-bottom:1px solid rgba(42,39,35,0.08);margin-bottom:24px;">
+      ${details}
+    </table>
+    <p style="margin:0;font-size:13px;line-height:1.6;color:#6F6A5F;">
+      Denne meldingen ble sendt automatisk av ScandiJapandi ved fullført betaling.<br/>
+      This message was sent automatically by ScandiJapandi upon completed payment.
+    </p>
+  `);
+
+  const text = [
+    `Ny bestilling / New Order: ${d.productName}`,
+    `Ordrenummer: ${d.orderId}`,
+    `Beløp: ${d.amount}`,
+    `Kunde: ${[d.customerName, d.customerEmail].filter(Boolean).join(" · ") || "—"}`,
+    d.customerPhone ? `Telefon: ${d.customerPhone}` : "",
+    d.shippingAddress ? `Leveringsadresse:\n${d.shippingAddress}` : "",
+    d.curator ? `Henvist av: ${d.curator}` : "",
+  ].filter(Boolean).join("\n");
+
+  return { subject: `Ny bestilling / New Order — ${d.productName}`, html, text };
+}
