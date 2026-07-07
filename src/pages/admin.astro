@@ -139,6 +139,10 @@ import Base from '../layouts/Base.astro';
               <span class="text-[10px] uppercase tracking-widest text-stone">Navn (JP 日本語)</span>
               <input type="text" id="p-name-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="例：ハーダンゲルのウールセーター" />
             </label>
+            <label class="block sm:col-span-2">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Slug (URL) — auto-genereres fra navn om tomt</span>
+              <input type="text" id="p-slug-edit" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm" placeholder="produkt-navn-her" />
+            </label>
           </div>
           <div class="grid sm:grid-cols-2 gap-5">
             <label class="block">
@@ -156,6 +160,22 @@ import Base from '../layouts/Base.astro';
             <label class="block">
               <span class="text-[10px] uppercase tracking-widest text-stone">Pris (JPY ¥)</span>
               <input type="number" id="p-price-jpy" min="0" step="1" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="0" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Stripe Payment Link (valgfritt)</span>
+              <input type="url" id="p-stripe-link" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="https://buy.stripe.com/..." />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Antall på lager (blank = ubegrenset)</span>
+              <input type="number" id="p-stock" min="0" step="1" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="f.eks. 3" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Vekt (gram) — for frakt</span>
+              <input type="number" id="p-weight-grams" min="0" step="1" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="f.eks. 450" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Produksjonsland (for toll)</span>
+              <input type="text" id="p-country-of-origin" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Norge" />
             </label>
           </div>
         </fieldset>
@@ -176,6 +196,13 @@ import Base from '../layouts/Base.astro';
               <p class="mt-2 text-[11px] text-stone font-light">Dra og slipp, eller velg en fil. JPG, PNG, WebP — maks 5 MB.</p>
               <p id="p-image-status" class="hidden mt-1 text-[11px]"></p>
             </div>
+          </div>
+          <div class="mt-4 space-y-2">
+            <span class="text-[10px] uppercase tracking-widest text-stone block">Galleribilder — URL-er (opptil 4 ekstra bilder)</span>
+            <input type="url" id="p-gallery-1" class="w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" placeholder="https://... (bilde 2)" />
+            <input type="url" id="p-gallery-2" class="w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" placeholder="https://... (bilde 3)" />
+            <input type="url" id="p-gallery-3" class="w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" placeholder="https://... (bilde 4)" />
+            <input type="url" id="p-gallery-4" class="w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" placeholder="https://... (bilde 5)" />
           </div>
         </fieldset>
 
@@ -519,6 +546,16 @@ import Base from '../layouts/Base.astro';
       $('p-dimensions').value = p.dimensions || '';
       $('p-care').value = p.care_instructions || '';
       $('p-active').checked = !!p.active;
+      $('p-slug-edit').value = p.slug || '';
+      $('p-stripe-link').value = p.stripe_link || '';
+      $('p-stock').value = p.stock_quantity ?? '';
+      $('p-weight-grams').value = p.weight_grams ?? '';
+      $('p-country-of-origin').value = p.country_of_origin || '';
+      const gallery = Array.isArray(p.gallery_urls) ? p.gallery_urls : [];
+      $('p-gallery-1').value = gallery[0] || '';
+      $('p-gallery-2').value = gallery[1] || '';
+      $('p-gallery-3').value = gallery[2] || '';
+      $('p-gallery-4').value = gallery[3] || '';
       show('cancel-edit');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -533,7 +570,8 @@ import Base from '../layouts/Base.astro';
       // Clear fields not covered by form.reset() (hidden inputs etc)
       ['p-name-en','p-name-jp','p-price-jpy','p-description-en','p-description-jp',
        'p-origin-story','p-producer-location','p-producer-image-url',
-       'p-producer-story','p-material','p-dimensions','p-care'].forEach(id => {
+       'p-producer-story','p-material','p-dimensions','p-care',
+       'p-slug-edit', 'p-stripe-link', 'p-stock', 'p-weight-grams', 'p-country-of-origin', 'p-gallery-1', 'p-gallery-2', 'p-gallery-3', 'p-gallery-4'].forEach(id => {
         const el = document.getElementById(id);
         if (el) (el as HTMLInputElement | HTMLTextAreaElement).value = '';
       });
@@ -576,6 +614,11 @@ import Base from '../layouts/Base.astro';
         material:             $('p-material').value.trim() || null,
         dimensions:           $('p-dimensions').value.trim() || null,
         care_instructions:    $('p-care').value.trim() || null,
+        stripe_link:          $('p-stripe-link').value.trim() || null,
+        stock_quantity:       $('p-stock').value !== '' ? Number($('p-stock').value) : null,
+        weight_grams:         $('p-weight-grams').value !== '' ? Number($('p-weight-grams').value) : null,
+        country_of_origin:    $('p-country-of-origin').value.trim() || null,
+        gallery_urls:         [$('p-gallery-1').value.trim(), $('p-gallery-2').value.trim(), $('p-gallery-3').value.trim(), $('p-gallery-4').value.trim()].filter(Boolean),
         active:               $('p-active').checked,
       };
       const res = slug
