@@ -119,35 +119,53 @@ import Base from '../layouts/Base.astro';
       </div>
 
       <!-- Add / edit product -->
-      <form id="product-form" class="bg-oat/60 p-8 border border-ink/5 mb-12 space-y-5">
+      <form id="product-form" class="bg-oat/60 p-8 border border-ink/5 mb-12 space-y-8">
         <h2 id="form-title" class="font-serif text-xl text-ink">Nytt produkt</h2>
         <input type="hidden" id="edit-slug" value="" />
-        <div class="grid sm:grid-cols-2 gap-5">
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Navn *</span>
-            <input type="text" id="p-name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Produsent</span>
-            <input type="text" id="p-producer" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Produsent e-post *</span>
-            <input type="email" id="p-producer-email" required autocomplete="off" placeholder="produsent@eksempel.no" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Pris (NOK) *</span>
-            <input type="number" id="p-price" min="0" step="1" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-        </div>
 
-        <!-- Produktbilde: opplasting med forhåndsvisning -->
-        <div class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone">Produktbilde</span>
-          <!-- Skjult felt som holder den endelige bilde-URL-en (sendes til API-et). -->
+        <!-- ── Grunnleggende info ── -->
+        <fieldset class="space-y-5">
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-4 block">Grunnleggende</legend>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Navn (NO) *</span>
+              <input type="text" id="p-name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Navn (EN)</span>
+              <input type="text" id="p-name-en" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+            </label>
+            <label class="block sm:col-span-2">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Navn (JP 日本語)</span>
+              <input type="text" id="p-name-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="例：ハーダンゲルのウールセーター" />
+            </label>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Produsent</span>
+              <input type="text" id="p-producer" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Produsent e-post *</span>
+              <input type="email" id="p-producer-email" required autocomplete="off" placeholder="produsent@eksempel.no" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Pris (NOK) *</span>
+              <input type="number" id="p-price" min="0" step="1" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Pris (JPY ¥)</span>
+              <input type="number" id="p-price-jpy" min="0" step="1" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="0" />
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- ── Produktbilde ── -->
+        <fieldset class="space-y-3">
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Produktbilde</legend>
           <input type="hidden" id="p-image" value="" />
           <input type="file" id="p-image-file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/svg+xml" class="hidden" />
-          <div id="p-image-drop" class="mt-2 flex items-center gap-5 border border-dashed border-ink/15 bg-paper/60 p-4 transition-colors">
+          <div id="p-image-drop" class="flex items-center gap-5 border border-dashed border-ink/15 bg-paper/60 p-4 transition-colors">
             <div id="p-image-preview-wrap" class="hidden relative shrink-0">
               <img id="p-image-preview" src="" alt="Forhåndsvisning" class="h-24 w-24 object-cover bg-oat border border-ink/10" />
               <button type="button" id="p-image-remove" title="Fjern bilde" aria-label="Fjern bilde" class="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-paper text-sm leading-none transition-colors hover:bg-clay">×</button>
@@ -155,22 +173,85 @@ import Base from '../layouts/Base.astro';
             <div id="p-image-placeholder" class="flex h-24 w-24 shrink-0 items-center justify-center bg-oat/60 text-center text-[10px] uppercase tracking-widest text-stone">Ingen<br />bilde</div>
             <div class="flex-1 min-w-0">
               <button type="button" id="p-image-upload" class="border border-ink/20 px-6 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:border-ink">Last opp bilde</button>
-              <p class="mt-2 text-[11px] text-stone font-light">Dra og slipp, eller velg en fil. JPG, PNG, WebP, GIF, AVIF eller SVG — maks 5 MB.</p>
+              <p class="mt-2 text-[11px] text-stone font-light">Dra og slipp, eller velg en fil. JPG, PNG, WebP — maks 5 MB.</p>
               <p id="p-image-status" class="hidden mt-1 text-[11px]"></p>
             </div>
           </div>
-        </div>
+        </fieldset>
 
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse</span>
-          <textarea id="p-description" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
-        </label>
-        <label class="flex items-center gap-3 text-sm">
-          <input type="checkbox" id="p-active" checked class="accent-clay" /> Aktiv (vises i butikken)
-        </label>
-        <div class="flex gap-4">
-          <button type="submit" class="bg-ink text-paper px-8 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Lagre produkt</button>
-          <button type="button" id="cancel-edit" class="hidden border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Avbryt</button>
+        <!-- ── Beskrivelser ── -->
+        <fieldset class="space-y-5">
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Beskrivelse</legend>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse (NO)</span>
+            <textarea id="p-description" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse (EN)</span>
+            <textarea id="p-description-en" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse (JP 日本語)</span>
+            <textarea id="p-description-jp" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+          </label>
+        </fieldset>
+
+        <!-- ── Historiefortelling ── -->
+        <fieldset class="space-y-5">
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Historiefortelling</legend>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Objektets historie — vises som sitat på produktsiden</span>
+            <textarea id="p-origin-story" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Hva gjør dette objektet unikt? Materialet, stedet, håndverket..."></textarea>
+          </label>
+        </fieldset>
+
+        <!-- ── Produsenthistorie ── -->
+        <fieldset class="space-y-5">
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Produsenten</legend>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Sted (f.eks. Hardanger, Norge)</span>
+              <input type="text" id="p-producer-location" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Hardanger, Norge" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Produsent portrettbilde URL</span>
+              <input type="url" id="p-producer-image-url" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="https://..." />
+            </label>
+          </div>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Produsenthistorie — vises under produktet</span>
+            <textarea id="p-producer-story" rows="4" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Hvem er produsenten? Hva driver dem? Hva gjør håndverket deres spesielt?"></textarea>
+          </label>
+        </fieldset>
+
+        <!-- ── Produktdetaljer ── -->
+        <fieldset class="space-y-5">
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Produktdetaljer</legend>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Materiale</span>
+              <input type="text" id="p-material" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="100% norsk ull" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Dimensjoner</span>
+              <input type="text" id="p-dimensions" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="H 22 cm × Ø 14 cm" />
+            </label>
+          </div>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Vedlikehold</span>
+            <input type="text" id="p-care" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Håndvask, 30°C" />
+          </label>
+        </fieldset>
+
+        <!-- ── Status + lagre ── -->
+        <div class="flex items-center justify-between pt-4 border-t border-ink/8">
+          <label class="flex items-center gap-3 text-sm">
+            <input type="checkbox" id="p-active" checked class="accent-clay" /> Aktiv (vises i butikken)
+          </label>
+          <div class="flex gap-4">
+            <button type="button" id="cancel-edit" class="hidden border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Avbryt</button>
+            <button type="submit" class="bg-ink text-paper px-8 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Lagre produkt</button>
+          </div>
         </div>
         <p id="product-msg" class="hidden text-sm"></p>
       </form>
@@ -420,11 +501,23 @@ import Base from '../layouts/Base.astro';
       $('form-title').textContent = 'Rediger produkt';
       $('edit-slug').value = p.slug;
       $('p-name').value = p.name || '';
+      $('p-name-en').value = p.name_en || '';
+      $('p-name-jp').value = p.name_jp || '';
       $('p-producer').value = p.producer || '';
       $('p-producer-email').value = p.producer_email || '';
       $('p-price').value = p.price_nok ?? '';
+      $('p-price-jpy').value = p.price_jpy ?? '';
       setImage(p.image_url || '');
       $('p-description').value = p.description || '';
+      $('p-description-en').value = p.description_en || '';
+      $('p-description-jp').value = p.description_jp || '';
+      $('p-origin-story').value = p.origin_story || '';
+      $('p-producer-location').value = p.producer_location || '';
+      $('p-producer-image-url').value = p.producer_image_url || '';
+      $('p-producer-story').value = p.producer_story || '';
+      $('p-material').value = p.material || '';
+      $('p-dimensions').value = p.dimensions || '';
+      $('p-care').value = p.care_instructions || '';
       $('p-active').checked = !!p.active;
       show('cancel-edit');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -437,6 +530,13 @@ import Base from '../layouts/Base.astro';
       $('p-active').checked = true;
       setImage('');
       hide('cancel-edit');
+      // Clear fields not covered by form.reset() (hidden inputs etc)
+      ['p-name-en','p-name-jp','p-price-jpy','p-description-en','p-description-jp',
+       'p-origin-story','p-producer-location','p-producer-image-url',
+       'p-producer-story','p-material','p-dimensions','p-care'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) (el as HTMLInputElement | HTMLTextAreaElement).value = '';
+      });
     }
 
     function msg(text, ok) {
@@ -456,14 +556,27 @@ import Base from '../layouts/Base.astro';
     $('product-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const slug = $('edit-slug').value;
+      const priceJpy = Number($('p-price-jpy').value);
       const payload = {
-        name: $('p-name').value.trim(),
-        producer: $('p-producer').value.trim(),
-        producer_email: $('p-producer-email').value.trim(),
-        price_nok: Number($('p-price').value),
-        image_url: $('p-image').value.trim(),
-        description: $('p-description').value.trim(),
-        active: $('p-active').checked,
+        name:                 $('p-name').value.trim(),
+        name_en:              $('p-name-en').value.trim() || null,
+        name_jp:              $('p-name-jp').value.trim() || null,
+        producer:             $('p-producer').value.trim(),
+        producer_email:       $('p-producer-email').value.trim(),
+        price_nok:            Number($('p-price').value),
+        price_jpy:            Number.isFinite(priceJpy) && priceJpy > 0 ? Math.round(priceJpy) : null,
+        image_url:            $('p-image').value.trim(),
+        description:          $('p-description').value.trim() || null,
+        description_en:       $('p-description-en').value.trim() || null,
+        description_jp:       $('p-description-jp').value.trim() || null,
+        origin_story:         $('p-origin-story').value.trim() || null,
+        producer_location:    $('p-producer-location').value.trim() || null,
+        producer_image_url:   $('p-producer-image-url').value.trim() || null,
+        producer_story:       $('p-producer-story').value.trim() || null,
+        material:             $('p-material').value.trim() || null,
+        dimensions:           $('p-dimensions').value.trim() || null,
+        care_instructions:    $('p-care').value.trim() || null,
+        active:               $('p-active').checked,
       };
       const res = slug
         ? await api(`/api/admin/products/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(payload) })
