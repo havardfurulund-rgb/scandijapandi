@@ -21,6 +21,7 @@ export default async (_req: Request) => {
       description: r.description,
       price: Number(r.price_nok),
       image: r.image_url,
+      product_page: `/products/${r.slug}`,
     }));
 
     return Response.json(
