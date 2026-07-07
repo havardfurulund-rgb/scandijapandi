@@ -58,7 +58,8 @@ export default async (req: Request, context: Context) => {
           slug, name, producer, producer_email, description, price_nok, image_url, active,
           producer_story, producer_location, producer_image_url,
           material, dimensions, care_instructions, origin_story,
-          name_en, name_jp, description_en, description_jp, price_jpy
+          name_en, name_jp, description_en, description_jp, price_jpy,
+          stripe_link, stock_quantity, weight_grams, country_of_origin, gallery_urls
         )
         VALUES (
           ${slug}, ${name}, ${body.producer || null}, ${producerEmail},
@@ -68,7 +69,12 @@ export default async (req: Request, context: Context) => {
           ${body.producer_story || null}, ${body.producer_location || null}, ${body.producer_image_url || null},
           ${body.material || null}, ${body.dimensions || null}, ${body.care_instructions || null}, ${body.origin_story || null},
           ${body.name_en || null}, ${body.name_jp || null}, ${body.description_en || null}, ${body.description_jp || null},
-          ${Number.isFinite(priceJpy) ? Math.round(priceJpy) : null}
+          ${Number.isFinite(priceJpy) ? Math.round(priceJpy) : null},
+          ${body.stripe_link || null},
+          ${body.stock_quantity != null ? Number(body.stock_quantity) : null},
+          ${body.weight_grams != null ? Number(body.weight_grams) : null},
+          ${body.country_of_origin || null},
+          ${JSON.stringify(Array.isArray(body.gallery_urls) ? body.gallery_urls : [])}::jsonb
         )
         RETURNING *
       `;
@@ -109,6 +115,11 @@ export default async (req: Request, context: Context) => {
           description_en = ${body.description_en ?? null},
           description_jp = ${body.description_jp ?? null},
           price_jpy = COALESCE(${Number.isFinite(priceJpy) ? Math.round(priceJpy) : null}, price_jpy),
+          stripe_link = ${body.stripe_link ?? null},
+          stock_quantity = COALESCE(${body.stock_quantity != null ? Number(body.stock_quantity) : null}, stock_quantity),
+          weight_grams = COALESCE(${body.weight_grams != null ? Number(body.weight_grams) : null}, weight_grams),
+          country_of_origin = ${body.country_of_origin ?? null},
+          gallery_urls = ${JSON.stringify(Array.isArray(body.gallery_urls) ? body.gallery_urls : [])}::jsonb,
           updated_at = NOW()
         WHERE slug = ${slugParam}
         RETURNING *
