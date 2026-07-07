@@ -97,7 +97,9 @@ const checkoutHref = (product) =>
             </div>
             <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
               <div>
-                <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{product.name}</h3>
+                <a href={`/products/${product.slug}`} class="hover:text-clay transition-colors">
+                  <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">{product.name}</h3>
+                </a>
                 <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{product.producer}</p>
               </div>
               <span class="text-base font-light text-ink">{nok.format(product.price)}</span>
@@ -604,7 +606,7 @@ const checkoutHref = (product) =>
             </div>
             <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
               <div>
-                <h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">${p.name || ''}</h3>
+                <a href="/products/${p.slug}" class="hover:text-clay transition-colors"><h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">${p.name || ''}</h3></a>
                 <p class="text-[10px] text-stone uppercase tracking-wider mt-1">${p.producer || ''}</p>
               </div>
               <span class="text-base font-light text-ink">${nokFmt.format(p.price || 0)}</span>

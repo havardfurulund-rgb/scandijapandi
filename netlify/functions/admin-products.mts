@@ -52,13 +52,23 @@ export default async (req: Request, context: Context) => {
         return Response.json({ error: "a valid producer_email is required" }, { status: 400 });
       }
       const slug = slugify(body.slug || name) || `produkt-${Date.now()}`;
+      const priceJpy = Number(body.price_jpy);
       const [row] = await db.sql`
-        INSERT INTO products (slug, name, producer, producer_email, description, price_nok, image_url, active)
+        INSERT INTO products (
+          slug, name, producer, producer_email, description, price_nok, image_url, active,
+          producer_story, producer_location, producer_image_url,
+          material, dimensions, care_instructions, origin_story,
+          name_en, name_jp, description_en, description_jp, price_jpy
+        )
         VALUES (
           ${slug}, ${name}, ${body.producer || null}, ${producerEmail},
           ${body.description || null},
           ${Math.round(price)}, ${body.image_url || body.image || null},
-          ${body.active === false ? false : true}
+          ${body.active === false ? false : true},
+          ${body.producer_story || null}, ${body.producer_location || null}, ${body.producer_image_url || null},
+          ${body.material || null}, ${body.dimensions || null}, ${body.care_instructions || null}, ${body.origin_story || null},
+          ${body.name_en || null}, ${body.name_jp || null}, ${body.description_en || null}, ${body.description_jp || null},
+          ${Number.isFinite(priceJpy) ? Math.round(priceJpy) : null}
         )
         RETURNING *
       `;
@@ -69,6 +79,7 @@ export default async (req: Request, context: Context) => {
       if (!slugParam) return Response.json({ error: "slug required" }, { status: 400 });
       const body = await req.json();
       const price = Number(body.price_nok ?? body.price);
+      const priceJpy = Number(body.price_jpy);
       // producer_email is required on the product. Only validate/update it when
       // the client sends a value; an omitted field leaves the stored address
       // untouched (COALESCE), so partial updates never blank it out.
@@ -86,6 +97,18 @@ export default async (req: Request, context: Context) => {
           price_nok = COALESCE(${Number.isFinite(price) ? Math.round(price) : null}, price_nok),
           image_url = ${body.image_url ?? body.image ?? null},
           active = COALESCE(${typeof body.active === "boolean" ? body.active : null}, active),
+          producer_story = ${body.producer_story ?? null},
+          producer_location = ${body.producer_location ?? null},
+          producer_image_url = ${body.producer_image_url ?? null},
+          material = ${body.material ?? null},
+          dimensions = ${body.dimensions ?? null},
+          care_instructions = ${body.care_instructions ?? null},
+          origin_story = ${body.origin_story ?? null},
+          name_en = ${body.name_en ?? null},
+          name_jp = ${body.name_jp ?? null},
+          description_en = ${body.description_en ?? null},
+          description_jp = ${body.description_jp ?? null},
+          price_jpy = COALESCE(${Number.isFinite(priceJpy) ? Math.round(priceJpy) : null}, price_jpy),
           updated_at = NOW()
         WHERE slug = ${slugParam}
         RETURNING *

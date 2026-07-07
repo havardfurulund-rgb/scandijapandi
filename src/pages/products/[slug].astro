@@ -1,0 +1,337 @@
+---
+// Dynamic product detail page — SSR via Netlify.
+// Reads from /api/products/:slug at request time.
+// Falls back to 404 if product not found or inactive.
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+
+const { slug } = Astro.params;
+
+// Fetch product from our own API
+const apiUrl = `${import.meta.env.PUBLIC_SITE_URL || 'https://scandijapandi.no'}/api/products/${slug}`;
+let product: any = null;
+let notFound = false;
+
+try {
+  const res = await fetch(apiUrl);
+  if (res.status === 404) {
+    notFound = true;
+  } else if (res.ok) {
+    const data = await res.json();
+    product = data.product;
+  }
+} catch {
+  notFound = true;
+}
+
+if (notFound || !product) {
+  return Astro.redirect('/');
+}
+
+const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+const jpyFmt = new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
+
+const gallery = Array.isArray(product.gallery_urls) ? product.gallery_urls : [];
+---
+
+<Base title={`${product.name} — ScandiJapandi`} description={product.description || product.name}>
+
+  <!-- Back navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-5 flex items-center justify-between bg-paper/95 backdrop-blur-sm border-b border-ink/5">
+    <a href="/" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors flex items-center gap-2">
+      <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 5h14M1 5L5 1M1 5L5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-i18n-back>Tilbake</span>
+    </a>
+    <span class="font-serif text-sm text-ink tracking-wide">ScandiJapandi</span>
+    <div class="flex gap-4 text-[10px] uppercase tracking-widest text-stone">
+      <button onclick="setLang('no')" class="lang-btn hover:text-ink transition-colors">NO</button>
+      <button onclick="setLang('en')" class="lang-btn hover:text-ink transition-colors">EN</button>
+      <button onclick="setLang('jp')" class="lang-btn hover:text-ink transition-colors">日本語</button>
+    </div>
+  </nav>
+
+  <main class="pt-20 bg-paper min-h-screen">
+
+    <!-- HERO: Image + Purchase -->
+    <section class="max-w-[1400px] mx-auto px-6 py-16 lg:py-24">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
+
+        <!-- Left: Image gallery -->
+        <div class="space-y-3">
+          <div class="aspect-[4/5] bg-oat overflow-hidden">
+            <img
+              id="main-image"
+              src={product.image_url || ''}
+              alt={product.name}
+              class="w-full h-full object-cover"
+              loading="eager"
+            />
+          </div>
+          {gallery.length > 0 && (
+            <div class="grid grid-cols-4 gap-3">
+              <button
+                onclick={`document.getElementById('main-image').src='${product.image_url}'`}
+                class="aspect-square bg-oat overflow-hidden border-2 border-ink/20 hover:border-ink/60 transition-colors"
+              >
+                <img src={product.image_url} alt="" class="w-full h-full object-cover" loading="lazy" />
+              </button>
+              {gallery.map((url: string, i: number) => (
+                <button
+                  onclick={`document.getElementById('main-image').src='${url}'`}
+                  class="aspect-square bg-oat overflow-hidden border-2 border-transparent hover:border-ink/60 transition-colors"
+                >
+                  <img src={url} alt={`${product.name} ${i + 2}`} class="w-full h-full object-cover" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <!-- Right: Product info + purchase -->
+        <div class="lg:sticky lg:top-28">
+
+          <!-- Eyebrow -->
+          <p class="text-[10px] uppercase tracking-widest text-stone mb-4">
+            {product.producer_location || 'Skandinavia'}
+          </p>
+
+          <!-- Name -->
+          <h1 id="product-name" class="font-serif text-4xl lg:text-5xl text-ink font-light leading-tight mb-3">
+            {product.name}
+          </h1>
+
+          <!-- Producer -->
+          <p class="text-sm text-stone mb-8">{product.producer}</p>
+
+          <!-- Price -->
+          <div class="mb-8 pb-8 border-b border-ink/8">
+            <div class="flex items-baseline gap-4">
+              <span id="price-nok" class="font-serif text-3xl text-ink">
+                {nokFmt.format(product.price_nok)}
+              </span>
+              {product.price_jpy && (
+                <span id="price-jpy" class="text-base text-stone">
+                  {jpyFmt.format(product.price_jpy)}
+                </span>
+              )}
+            </div>
+            <p class="text-[10px] text-stone mt-2 uppercase tracking-wider" data-i18n-shipping>
+              Frakt beregnes i kassen · Toll kan påløpe ved import
+            </p>
+          </div>
+
+          <!-- Description -->
+          {product.description && (
+            <p id="product-description" class="text-base text-stone leading-relaxed mb-10">
+              {product.description}
+            </p>
+          )}
+
+          <!-- Buy button -->
+          <a
+            id="checkout-btn"
+            href={`/api/checkout?slug=${product.slug}`}
+            class="block w-full bg-ink text-paper py-5 text-[11px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay mb-4"
+          >
+            <span data-i18n-buy>Kjøp nå</span>
+          </a>
+
+          <!-- Product details accordion -->
+          <div class="border-t border-ink/8 mt-10 space-y-0">
+            {product.material && (
+              <details class="border-b border-ink/8 group">
+                <summary class="flex justify-between items-center py-4 cursor-pointer text-[10px] uppercase tracking-widest text-ink list-none">
+                  <span data-i18n-material>Materiale</span>
+                  <span class="text-stone group-open:rotate-180 transition-transform duration-200">↓</span>
+                </summary>
+                <p class="pb-4 text-sm text-stone leading-relaxed">{product.material}</p>
+              </details>
+            )}
+            {product.dimensions && (
+              <details class="border-b border-ink/8 group">
+                <summary class="flex justify-between items-center py-4 cursor-pointer text-[10px] uppercase tracking-widest text-ink list-none">
+                  <span data-i18n-dimensions>Dimensjoner</span>
+                  <span class="text-stone group-open:rotate-180 transition-transform duration-200">↓</span>
+                </summary>
+                <p class="pb-4 text-sm text-stone leading-relaxed">{product.dimensions}</p>
+              </details>
+            )}
+            {product.care_instructions && (
+              <details class="border-b border-ink/8 group">
+                <summary class="flex justify-between items-center py-4 cursor-pointer text-[10px] uppercase tracking-widest text-ink list-none">
+                  <span data-i18n-care>Vedlikehold</span>
+                  <span class="text-stone group-open:rotate-180 transition-transform duration-200">↓</span>
+                </summary>
+                <p class="pb-4 text-sm text-stone leading-relaxed">{product.care_instructions}</p>
+              </details>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ORIGIN STORY -->
+    {product.origin_story && (
+      <section class="bg-oat py-24">
+        <div class="max-w-2xl mx-auto px-6 text-center">
+          <p class="text-[10px] uppercase tracking-widest text-stone mb-8">Om dette objektet</p>
+          <blockquote id="origin-story" class="font-serif text-2xl lg:text-3xl text-ink font-light leading-relaxed italic">
+            "{product.origin_story}"
+          </blockquote>
+        </div>
+      </section>
+    )}
+
+    <!-- PRODUCER STORY -->
+    {(product.producer_story || product.producer_image_url) && (
+      <section class="max-w-[1400px] mx-auto px-6 py-24">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+
+          {product.producer_image_url && (
+            <div class="aspect-square bg-oat overflow-hidden">
+              <img
+                src={product.producer_image_url}
+                alt={product.producer}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          <div class={product.producer_image_url ? '' : 'lg:col-span-2 max-w-2xl'}>
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-4">Produsenten</p>
+            <h2 class="font-serif text-3xl lg:text-4xl text-ink font-light mb-2">{product.producer}</h2>
+            {product.producer_location && (
+              <p class="text-sm text-stone mb-8">{product.producer_location}</p>
+            )}
+            {product.producer_story && (
+              <p id="producer-story" class="text-base text-stone leading-relaxed">{product.producer_story}</p>
+            )}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- BACK TO COLLECTION -->
+    <section class="border-t border-ink/8 py-16 text-center">
+      <a href="/" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
+        ← <span data-i18n-back-collection>Tilbake til samlingen</span>
+      </a>
+    </section>
+
+  </main>
+</Base>
+
+<!--
+  Server-rendered product data for the client script. Astro does not interpolate
+  frontmatter into <script> tags, so the localized fields are handed to the
+  browser through this JSON island and read back with JSON.parse below.
+-->
+<script type="application/json" id="sj-product-data" set:html={JSON.stringify({
+  name_en: product.name_en || product.name,
+  name_jp: product.name_jp || product.name,
+  name_no: product.name,
+  description_en: product.description_en || product.description || '',
+  description_jp: product.description_jp || product.description || '',
+  description_no: product.description || '',
+  producer_story_en: product.producer_story || '',
+  producer_story_jp: product.producer_story || '',
+  slug: product.slug,
+})}></script>
+
+<script>
+  // ── Language switching ──────────────────────────────────────────────
+  const TRANSLATIONS: Record<string, Record<string, string>> = {
+    no: {
+      back: 'Tilbake',
+      buy: 'Kjøp nå',
+      shipping: 'Frakt beregnes i kassen · Toll kan påløpe ved import',
+      material: 'Materiale',
+      dimensions: 'Dimensjoner',
+      care: 'Vedlikehold',
+      'back-collection': 'Tilbake til samlingen',
+    },
+    en: {
+      back: 'Back',
+      buy: 'Buy now',
+      shipping: 'Shipping calculated at checkout · Import duties may apply',
+      material: 'Material',
+      dimensions: 'Dimensions',
+      care: 'Care',
+      'back-collection': 'Back to collection',
+    },
+    jp: {
+      back: '戻る',
+      buy: '今すぐ購入',
+      shipping: '送料はチェックアウト時に計算されます · 輸入関税が発生する場合があります',
+      material: '素材',
+      dimensions: 'サイズ',
+      care: 'お手入れ',
+      'back-collection': 'コレクションに戻る',
+    },
+  };
+
+  // Product data translations from server (injected via the JSON island above).
+  const productData = JSON.parse(
+    document.getElementById('sj-product-data')?.textContent || '{}'
+  );
+
+  function setLang(lang: string) {
+    const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
+    // UI strings
+    document.querySelectorAll('[data-i18n-back]').forEach(el => el.textContent = t.back);
+    document.querySelectorAll('[data-i18n-buy]').forEach(el => el.textContent = t.buy);
+    document.querySelectorAll('[data-i18n-shipping]').forEach(el => el.textContent = t.shipping);
+    document.querySelectorAll('[data-i18n-material]').forEach(el => el.textContent = t.material);
+    document.querySelectorAll('[data-i18n-dimensions]').forEach(el => el.textContent = t.dimensions);
+    document.querySelectorAll('[data-i18n-care]').forEach(el => el.textContent = t.care);
+    document.querySelectorAll('[data-i18n-back-collection]').forEach(el => el.textContent = t['back-collection']);
+
+    // Product content
+    const nameEl = document.getElementById('product-name');
+    const descEl = document.getElementById('product-description');
+
+    if (nameEl) {
+      nameEl.textContent = lang === 'jp' ? productData.name_jp
+        : lang === 'en' ? productData.name_en
+        : productData.name_no;
+    }
+    if (descEl) {
+      const desc = lang === 'jp' ? productData.description_jp
+        : lang === 'en' ? productData.description_en
+        : productData.description_no;
+      if (desc) descEl.textContent = desc;
+    }
+
+    // Update checkout link with locale
+    const btn = document.getElementById('checkout-btn') as HTMLAnchorElement;
+    if (btn) {
+      const locale = lang === 'jp' ? 'ja' : lang;
+      const ref = new URLSearchParams(window.location.search).get('ref');
+      let href = `/api/checkout?slug=${encodeURIComponent(productData.slug)}&locale=${locale}`;
+      if (ref) href += `&ref=${encodeURIComponent(ref)}`;
+      btn.href = href;
+    }
+
+    // Sync with main site language system
+    window.__sjLang = lang;
+    try { localStorage.setItem('sj-lang', lang); } catch {}
+
+    // Update lang buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      const btnLang = btn.textContent?.trim().toLowerCase();
+      btn.setAttribute('aria-current', btnLang === lang || (btnLang === '日本語' && lang === 'jp') ? 'true' : 'false');
+    });
+  }
+
+  // Init: read saved language preference
+  document.addEventListener('DOMContentLoaded', () => {
+    let saved = 'no';
+    try { saved = localStorage.getItem('sj-lang') || 'no'; } catch {}
+    setLang(saved);
+  });
+
+  // Expose globally so lang buttons work
+  (window as any).setLang = setLang;
+</script>
