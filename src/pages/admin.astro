@@ -225,7 +225,14 @@ import Base from '../layouts/Base.astro';
 
         <!-- ── Historiefortelling ── -->
         <fieldset class="space-y-5">
-          <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Historiefortelling</legend>
+          <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 flex items-center justify-between">
+            <span>Historiefortelling</span>
+            <button type="button" id="btn-translate" class="flex items-center gap-2 border border-ink/20 px-4 py-2 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">
+              <span id="translate-icon">✦</span>
+              <span id="translate-label">Oversett automatisk (NO → EN + JP)</span>
+            </button>
+          </legend>
+          <p id="translate-status" class="hidden text-[11px] text-stone"></p>
           <label class="block">
             <span class="text-[10px] uppercase tracking-widest text-stone">Objektets historie — vises som sitat på produktsiden</span>
             <textarea id="p-origin-story" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Hva gjør dette objektet unikt? Materialet, stedet, håndverket..."></textarea>
@@ -605,9 +612,17 @@ import Base from '../layouts/Base.astro';
         price_jpy:            Number.isFinite(priceJpy) && priceJpy > 0 ? Math.round(priceJpy) : null,
         image_url:            $('p-image').value.trim(),
         description:          $('p-description').value.trim() || null,
-        description_en:       $('p-description-en').value.trim() || null,
-        description_jp:       $('p-description-jp').value.trim() || null,
-        origin_story:         $('p-origin-story').value.trim() || null,
+        description_en:         $('p-description-en').value.trim() || null,
+        description_jp:         $('p-description-jp').value.trim() || null,
+        origin_story:           $('p-origin-story').value.trim() || null,
+        origin_story_en:        ($('p-origin-story').dataset.en || '').trim() || null,
+        origin_story_jp:        ($('p-origin-story').dataset.jp || '').trim() || null,
+        producer_story_en:      ($('p-producer-story').dataset.en || '').trim() || null,
+        producer_story_jp:      ($('p-producer-story').dataset.jp || '').trim() || null,
+        material_en:            ($('p-material').dataset.en || '').trim() || null,
+        material_jp:            ($('p-material').dataset.jp || '').trim() || null,
+        care_instructions_en:   ($('p-care').dataset.en || '').trim() || null,
+        care_instructions_jp:   ($('p-care').dataset.jp || '').trim() || null,
         producer_location:    $('p-producer-location').value.trim() || null,
         producer_image_url:   $('p-producer-image-url').value.trim() || null,
         producer_story:       $('p-producer-story').value.trim() || null,
@@ -632,6 +647,85 @@ import Base from '../layouts/Base.astro';
     });
 
     $('cancel-edit').addEventListener('click', resetForm);
+
+    // ── AI Translation ────────────────────────────────────────────────
+    document.getElementById('btn-translate')?.addEventListener('click', async () => {
+      const name = $('p-name').value.trim();
+      if (!name) {
+        showTranslateStatus('Fyll inn produktnavn (NO) først.', false);
+        return;
+      }
+
+      const btn = document.getElementById('btn-translate');
+      const label = document.getElementById('translate-label');
+      const icon = document.getElementById('translate-icon');
+      if (btn) btn.setAttribute('disabled', 'true');
+      if (label) label.textContent = 'Oversetter…';
+      if (icon) icon.textContent = '⟳';
+
+      try {
+        const payload = {
+          name:                $('p-name').value.trim(),
+          description:         $('p-description').value.trim(),
+          origin_story:        $('p-origin-story').value.trim(),
+          producer_story:      $('p-producer-story').value.trim(),
+          material:            $('p-material').value.trim(),
+          care_instructions:   $('p-care').value.trim(),
+        };
+
+        const res = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const { translations: t } = await res.json();
+
+        // Fill EN fields
+        if (t.name_en)         $('p-name-en').value = t.name_en;
+        if (t.description_en)  $('p-description-en').value = t.description_en;
+        if (t.origin_story_en) $('p-origin-story').dataset.en = t.origin_story_en;
+        if (t.producer_story_en) $('p-producer-story').dataset.en = t.producer_story_en;
+        if (t.material_en)     $('p-material').dataset.en = t.material_en;
+        if (t.care_en)         $('p-care').dataset.en = t.care_en;
+
+        // Fill JP fields
+        if (t.name_jp)         $('p-name-jp').value = t.name_jp;
+        if (t.description_jp)  $('p-description-jp').value = t.description_jp;
+        if (t.origin_story_jp) {
+          // Store JP in a data attribute — the field shows NO version, JP is sent to API
+          $('p-origin-story').dataset.jp = t.origin_story_jp;
+        }
+        if (t.producer_story_jp) $('p-producer-story').dataset.jp = t.producer_story_jp;
+        if (t.material_jp)     $('p-material').dataset.jp = t.material_jp;
+        if (t.care_jp)         $('p-care').dataset.jp = t.care_jp;
+
+        // Add EN/JP description textareas if they were empty
+        if (t.description_en && !$('p-description-en').value)
+          $('p-description-en').value = t.description_en;
+        if (t.description_jp && !$('p-description-jp').value)
+          $('p-description-jp').value = t.description_jp;
+
+        showTranslateStatus('✓ Oversettelse fullført — kontroller og lagre.', true);
+      } catch (err) {
+        console.error('[translate]', err);
+        showTranslateStatus('Oversettelse feilet — prøv igjen.', false);
+      } finally {
+        if (btn) btn.removeAttribute('disabled');
+        if (label) label.textContent = 'Oversett automatisk (NO → EN + JP)';
+        if (icon) icon.textContent = '✦';
+      }
+    });
+
+    function showTranslateStatus(msg: string, ok: boolean) {
+      const el = document.getElementById('translate-status');
+      if (!el) return;
+      el.textContent = msg;
+      el.className = `text-[11px] ${ok ? 'text-moss' : 'text-clay'}`;
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 6000);
+    }
 
     // ---- Bilde-opplasting (Netlify Blobs via /api/admin/upload) ----
 
