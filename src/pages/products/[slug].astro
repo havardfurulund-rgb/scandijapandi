@@ -176,7 +176,13 @@ const gallery = Array.isArray(product.gallery_urls) ? product.gallery_urls : [];
       <section class="bg-oat py-24">
         <div class="max-w-2xl mx-auto px-6 text-center">
           <p class="text-[10px] uppercase tracking-widest text-stone mb-8">Om dette objektet</p>
-          <blockquote id="origin-story" class="font-serif text-2xl lg:text-3xl text-ink font-light leading-relaxed italic">
+          <blockquote
+            id="origin-story"
+            class="font-serif text-2xl lg:text-3xl text-ink font-light leading-relaxed italic"
+            data-no={JSON.stringify(product.origin_story || '')}
+            data-en={JSON.stringify(product.origin_story_en || product.origin_story || '')}
+            data-jp={JSON.stringify(product.origin_story_jp || product.origin_story || '')}
+          >
             "{product.origin_story}"
           </blockquote>
         </div>
@@ -206,7 +212,15 @@ const gallery = Array.isArray(product.gallery_urls) ? product.gallery_urls : [];
               <p class="text-sm text-stone mb-8">{product.producer_location}</p>
             )}
             {product.producer_story && (
-              <p id="producer-story" class="text-base text-stone leading-relaxed">{product.producer_story}</p>
+              <p
+                id="producer-story"
+                class="text-base text-stone leading-relaxed"
+                data-no={JSON.stringify(product.producer_story || '')}
+                data-en={JSON.stringify(product.producer_story_en || product.producer_story || '')}
+                data-jp={JSON.stringify(product.producer_story_jp || product.producer_story || '')}
+              >
+                {product.producer_story}
+              </p>
             )}
           </div>
         </div>
@@ -322,6 +336,21 @@ const gallery = Array.isArray(product.gallery_urls) ? product.gallery_urls : [];
     document.querySelectorAll('.lang-btn').forEach(btn => {
       const btnLang = btn.textContent?.trim().toLowerCase();
       btn.setAttribute('aria-current', btnLang === lang || (btnLang === '日本語' && lang === 'jp') ? 'true' : 'false');
+    });
+
+    // Translate story elements using data attributes
+    document.querySelectorAll('[data-no][data-en][data-jp]').forEach(el => {
+      let text = '';
+      try {
+        text = lang === 'jp'
+          ? (JSON.parse(el.getAttribute('data-jp') || '""') || JSON.parse(el.getAttribute('data-no') || '""'))
+          : lang === 'en'
+            ? (JSON.parse(el.getAttribute('data-en') || '""') || JSON.parse(el.getAttribute('data-no') || '""'))
+            : JSON.parse(el.getAttribute('data-no') || '""');
+      } catch { text = ''; }
+      if (text) {
+        el.textContent = el.tagName === 'BLOCKQUOTE' ? `"${text}"` : text;
+      }
     });
   }
 
