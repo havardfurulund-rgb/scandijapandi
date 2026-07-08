@@ -233,10 +233,20 @@ import Base from '../layouts/Base.astro';
             </button>
           </legend>
           <p id="translate-status" class="hidden text-[11px] text-stone"></p>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone">Objektets historie — vises som sitat på produktsiden</span>
-            <textarea id="p-origin-story" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Hva gjør dette objektet unikt? Materialet, stedet, håndverket..."></textarea>
-          </label>
+          <div class="space-y-3">
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Objektets historie (NO) — vises som sitat</span>
+              <textarea id="p-origin-story" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Hva gjør dette objektet unikt?"></textarea>
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Objektets historie (EN)</span>
+              <textarea id="p-origin-story-en" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40"></textarea>
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Objektets historie (JP 日本語)</span>
+              <textarea id="p-origin-story-jp" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40"></textarea>
+            </label>
+          </div>
         </fieldset>
 
         <!-- ── Produsenthistorie ── -->
@@ -256,6 +266,14 @@ import Base from '../layouts/Base.astro';
             <span class="text-[10px] uppercase tracking-widest text-stone">Produsenthistorie — vises under produktet</span>
             <textarea id="p-producer-story" rows="4" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Hvem er produsenten? Hva driver dem? Hva gjør håndverket deres spesielt?"></textarea>
           </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Produsenthistorie (EN)</span>
+            <textarea id="p-producer-story-en" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40"></textarea>
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Produsenthistorie (JP 日本語)</span>
+            <textarea id="p-producer-story-jp" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40"></textarea>
+          </label>
         </fieldset>
 
         <!-- ── Produktdetaljer ── -->
@@ -267,6 +285,14 @@ import Base from '../layouts/Base.astro';
               <input type="text" id="p-material" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="100% norsk ull" />
             </label>
             <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Materiale (EN)</span>
+              <input type="text" id="p-material-en" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Materiale (JP)</span>
+              <input type="text" id="p-material-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
+            </label>
+            <label class="block">
               <span class="text-[10px] uppercase tracking-widest text-stone">Dimensjoner</span>
               <input type="text" id="p-dimensions" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="H 22 cm × Ø 14 cm" />
             </label>
@@ -274,6 +300,14 @@ import Base from '../layouts/Base.astro';
           <label class="block">
             <span class="text-[10px] uppercase tracking-widest text-stone">Vedlikehold</span>
             <input type="text" id="p-care" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Håndvask, 30°C" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Vedlikehold (EN)</span>
+            <input type="text" id="p-care-en" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
+          </label>
+          <label class="block">
+            <span class="text-[10px] uppercase tracking-widest text-stone">Vedlikehold (JP)</span>
+            <input type="text" id="p-care-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
           </label>
         </fieldset>
 
@@ -563,6 +597,14 @@ import Base from '../layouts/Base.astro';
       $('p-gallery-2').value = gallery[1] || '';
       $('p-gallery-3').value = gallery[2] || '';
       $('p-gallery-4').value = gallery[3] || '';
+      $('p-origin-story-en').value = p.origin_story_en || '';
+      $('p-origin-story-jp').value = p.origin_story_jp || '';
+      $('p-producer-story-en').value = p.producer_story_en || '';
+      $('p-producer-story-jp').value = p.producer_story_jp || '';
+      $('p-material-en').value = p.material_en || '';
+      $('p-material-jp').value = p.material_jp || '';
+      $('p-care-en').value = p.care_instructions_en || '';
+      $('p-care-jp').value = p.care_instructions_jp || '';
       show('cancel-edit');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -578,7 +620,8 @@ import Base from '../layouts/Base.astro';
       ['p-name-en','p-name-jp','p-price-jpy','p-description-en','p-description-jp',
        'p-origin-story','p-producer-location','p-producer-image-url',
        'p-producer-story','p-material','p-dimensions','p-care',
-       'p-slug-edit', 'p-stripe-link', 'p-stock', 'p-weight-grams', 'p-country-of-origin', 'p-gallery-1', 'p-gallery-2', 'p-gallery-3', 'p-gallery-4'].forEach(id => {
+       'p-slug-edit', 'p-stripe-link', 'p-stock', 'p-weight-grams', 'p-country-of-origin', 'p-gallery-1', 'p-gallery-2', 'p-gallery-3', 'p-gallery-4',
+       'p-origin-story-en', 'p-origin-story-jp', 'p-producer-story-en', 'p-producer-story-jp', 'p-material-en', 'p-material-jp', 'p-care-en', 'p-care-jp'].forEach(id => {
         const el = document.getElementById(id);
         if (el) (el as HTMLInputElement | HTMLTextAreaElement).value = '';
       });
@@ -615,14 +658,14 @@ import Base from '../layouts/Base.astro';
         description_en:         $('p-description-en').value.trim() || null,
         description_jp:         $('p-description-jp').value.trim() || null,
         origin_story:           $('p-origin-story').value.trim() || null,
-        origin_story_en:        ($('p-origin-story').dataset.en || '').trim() || null,
-        origin_story_jp:        ($('p-origin-story').dataset.jp || '').trim() || null,
-        producer_story_en:      ($('p-producer-story').dataset.en || '').trim() || null,
-        producer_story_jp:      ($('p-producer-story').dataset.jp || '').trim() || null,
-        material_en:            ($('p-material').dataset.en || '').trim() || null,
-        material_jp:            ($('p-material').dataset.jp || '').trim() || null,
-        care_instructions_en:   ($('p-care').dataset.en || '').trim() || null,
-        care_instructions_jp:   ($('p-care').dataset.jp || '').trim() || null,
+        origin_story_en:        $('p-origin-story-en').value.trim() || null,
+        origin_story_jp:        $('p-origin-story-jp').value.trim() || null,
+        producer_story_en:      $('p-producer-story-en').value.trim() || null,
+        producer_story_jp:      $('p-producer-story-jp').value.trim() || null,
+        material_en:            $('p-material-en').value.trim() || null,
+        material_jp:            $('p-material-jp').value.trim() || null,
+        care_instructions_en:   $('p-care-en').value.trim() || null,
+        care_instructions_jp:   $('p-care-jp').value.trim() || null,
         producer_location:    $('p-producer-location').value.trim() || null,
         producer_image_url:   $('p-producer-image-url').value.trim() || null,
         producer_story:       $('p-producer-story').value.trim() || null,
@@ -685,21 +728,18 @@ import Base from '../layouts/Base.astro';
         // Fill EN fields
         if (t.name_en)         $('p-name-en').value = t.name_en;
         if (t.description_en)  $('p-description-en').value = t.description_en;
-        if (t.origin_story_en) $('p-origin-story').dataset.en = t.origin_story_en;
-        if (t.producer_story_en) $('p-producer-story').dataset.en = t.producer_story_en;
-        if (t.material_en)     $('p-material').dataset.en = t.material_en;
-        if (t.care_en)         $('p-care').dataset.en = t.care_en;
+        if (t.origin_story_en) $('p-origin-story-en').value = t.origin_story_en;
+        if (t.producer_story_en) $('p-producer-story-en').value = t.producer_story_en;
+        if (t.material_en)     $('p-material-en').value = t.material_en;
+        if (t.care_en)         $('p-care-en').value = t.care_en;
 
         // Fill JP fields
         if (t.name_jp)         $('p-name-jp').value = t.name_jp;
         if (t.description_jp)  $('p-description-jp').value = t.description_jp;
-        if (t.origin_story_jp) {
-          // Store JP in a data attribute — the field shows NO version, JP is sent to API
-          $('p-origin-story').dataset.jp = t.origin_story_jp;
-        }
-        if (t.producer_story_jp) $('p-producer-story').dataset.jp = t.producer_story_jp;
-        if (t.material_jp)     $('p-material').dataset.jp = t.material_jp;
-        if (t.care_jp)         $('p-care').dataset.jp = t.care_jp;
+        if (t.origin_story_jp) $('p-origin-story-jp').value = t.origin_story_jp;
+        if (t.producer_story_jp) $('p-producer-story-jp').value = t.producer_story_jp;
+        if (t.material_jp)     $('p-material-jp').value = t.material_jp;
+        if (t.care_jp)         $('p-care-jp').value = t.care_jp;
 
         // Add EN/JP description textareas if they were empty
         if (t.description_en && !$('p-description-en').value)
