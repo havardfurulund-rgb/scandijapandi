@@ -27,9 +27,8 @@ const checkoutHref = (product) =>
     <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
       <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
       <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
-        <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
-        <a href="#interesse" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_join">Bli med</a>
-        <a href="#partner" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_partner">Bli Partner</a>
+        <a href="#collection" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_collection">Collection</a>
+        <a href="/about" class="hidden sm:inline transition-colors hover:text-ink" data-i18n="nav_about">About</a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -47,7 +46,6 @@ const checkoutHref = (product) =>
     <div class="absolute inset-0 z-0 bg-cover bg-center mix-blend-multiply opacity-20" style="background-image: url('/images/hero-bg.jpg');"></div>
     <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-12 py-20">
       <div class="max-w-2xl reveal">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-4" data-i18n="hero_eyebrow">Etablert 2026</span>
         <h1 class="font-serif text-5xl sm:text-7xl leading-[1.1] tracking-tight text-ink" data-i18n="hero_title">
           Nordisk ro kuratert for verden
         </h1>
@@ -57,9 +55,6 @@ const checkoutHref = (product) =>
         <div class="mt-10 flex flex-wrap gap-4">
           <a href="#collection" class="inline-block bg-ink text-paper px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-clay" data-i18n="hero_cta">
             Utforsk kolleksjonen
-          </a>
-          <a href="#interesse" class="inline-block border border-ink/20 px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:border-ink" data-i18n="hero_cta2">
-            Bli med i fellesskapet
           </a>
         </div>
       </div>
@@ -113,117 +108,63 @@ const checkoutHref = (product) =>
     </div>
   </section>
 
-  <!-- Interest / community signup -->
-  <section id="interesse" class="bg-paper px-6 sm:px-12 py-32 border-t border-ink/5">
-    <div class="mx-auto max-w-2xl reveal">
-      <div class="text-center mb-12">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3" data-i18n="join_eyebrow">Fellesskapet</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="join_title">Fortell oss hva du brenner for</h2>
-        <p class="mt-4 text-sm text-stone font-light leading-relaxed" data-i18n="join_body">
-          Vi bygger et fellesskap rundt nordisk design, mat og reiser. Legg igjen din interesse,
-          så holder vi deg oppdatert og kommuniserer det som faktisk angår deg.
+  <!-- Private Circle — progressive, low-friction email capture -->
+  <section id="circle" class="bg-ink py-24 px-6">
+    <div class="max-w-xl mx-auto text-center">
+
+      <!-- Step 1: Email only -->
+      <div id="circle-step-1">
+        <p class="text-[10px] uppercase tracking-widest text-paper/40 mb-6" data-i18n="circle_eyebrow">Private Circle</p>
+        <h2 class="font-serif text-3xl sm:text-4xl text-paper font-light mb-4" data-i18n="circle_heading">
+          First to know. Always.
+        </h2>
+        <p class="text-sm text-paper/60 font-light mb-10 leading-relaxed" data-i18n="circle_sub">
+          New arrivals, maker stories, and exclusive previews — before anyone else.
         </p>
+        <form id="circle-email-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <input
+            type="email"
+            id="circle-email"
+            required
+            placeholder="your@email.com"
+            class="flex-1 bg-paper/10 border border-paper/20 text-paper placeholder-paper/30 px-5 py-4 text-sm outline-none focus:border-paper/60 transition-colors"
+          />
+          <button type="submit" class="bg-paper text-ink px-8 py-4 text-[10px] uppercase tracking-widest font-medium hover:bg-oat transition-colors whitespace-nowrap" data-i18n="circle_join">
+            Join
+          </button>
+        </form>
+        <p id="circle-email-error" class="hidden mt-3 text-xs text-clay"></p>
       </div>
 
-      <form name="interesse" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/takk" class="space-y-6 bg-oat/60 p-8 sm:p-10 border border-ink/5">
-        <input type="hidden" name="form-name" value="interesse" />
-        <p class="hidden"><label>La denne stå tom: <input name="bot-field" /></label></p>
-
-        <div class="grid sm:grid-cols-2 gap-6">
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_name">Navn</span>
-            <input type="text" name="name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_email">E-post</span>
-            <input type="email" name="email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
+      <!-- Step 2: Segment selection (shown after email submit) -->
+      <div id="circle-step-2" class="hidden">
+        <p class="text-[10px] uppercase tracking-widest text-paper/40 mb-8" data-i18n="circle_thanks_eyebrow">Welcome</p>
+        <h2 class="font-serif text-3xl text-paper font-light mb-10" data-i18n="circle_thanks_heading">
+          One quick thing —
+        </h2>
+        <p class="text-sm text-paper/60 mb-10" data-i18n="circle_thanks_sub">What best describes you?</p>
+        <div class="grid grid-cols-1 gap-3 max-w-xs mx-auto">
+          <button onclick="submitSegment('customer')" class="segment-btn border border-paper/20 text-paper px-6 py-5 text-sm font-light hover:border-paper hover:bg-paper/5 transition-all" data-i18n="segment_customer">
+            I collect beautiful objects
+          </button>
+          <button onclick="submitSegment('maker')" class="segment-btn border border-paper/20 text-paper px-6 py-5 text-sm font-light hover:border-paper hover:bg-paper/5 transition-all" data-i18n="segment_maker">
+            I design or make things
+          </button>
+          <button onclick="submitSegment('curator')" class="segment-btn border border-paper/20 text-paper px-6 py-5 text-sm font-light hover:border-paper hover:bg-paper/5 transition-all" data-i18n="segment_curator">
+            I share what inspires me
+          </button>
         </div>
-
-        <fieldset>
-          <legend class="text-[10px] uppercase tracking-widest text-stone mb-3" data-i18n="join_interests_legend">Hva er du interessert i?</legend>
-          <div class="grid sm:grid-cols-3 gap-3">
-            <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
-              <input type="checkbox" name="interests" value="Design fra Skandinavia og Norden" class="accent-clay" />
-              <span class="text-sm" data-i18n="join_opt_design">Design fra Norden</span>
-            </label>
-            <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
-              <input type="checkbox" name="interests" value="Mat og matkultur" class="accent-clay" />
-              <span class="text-sm" data-i18n="join_opt_food">Mat & matkultur</span>
-            </label>
-            <label class="flex items-center gap-3 bg-paper p-4 border border-ink/10 cursor-pointer hover:border-ink transition-colors">
-              <input type="checkbox" name="interests" value="Reiser til Skandinavia" class="accent-clay" />
-              <span class="text-sm" data-i18n="join_opt_travel">Reiser til Skandinavia</span>
-            </label>
-          </div>
-        </fieldset>
-
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="join_message">Fortell oss mer (valgfritt)</span>
-          <textarea name="message" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
-        </label>
-
-        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay" data-i18n="join_submit">
-          Send inn
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Producer / designer registration -->
-  <section id="partner" class="bg-oat px-6 sm:px-12 py-32 border-t border-ink/5">
-    <div class="mx-auto max-w-2xl reveal">
-      <div class="text-center mb-12">
-        <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-3" data-i18n="partner_eyebrow">For produsenter & designere</span>
-        <h2 class="font-serif text-3xl sm:text-4xl text-ink leading-snug" data-i18n="partner_title">Nå det japanske markedet</h2>
-        <p class="mt-4 text-sm text-stone font-light leading-relaxed" data-i18n="partner_body">
-          Er du produsent eller designer fra Norden og ønsker kontakt med det japanske markedet?
-          Registrer deg, så tar vi kontakt om et mulig samarbeid.
-        </p>
       </div>
 
-      <form name="partner-produsent" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/takk" class="space-y-6 bg-paper p-8 sm:p-10 border border-ink/5">
-        <input type="hidden" name="form-name" value="partner-produsent" />
-        <p class="hidden"><label>La denne stå tom: <input name="bot-field" /></label></p>
-
-        <div class="grid sm:grid-cols-2 gap-6">
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_name">Navn</span>
-            <input type="text" name="name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_company">Bedrift / merkevare</span>
-            <input type="text" name="company" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_email">E-post</span>
-            <input type="email" name="email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
-          <label class="block">
-            <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_website">Nettside (valgfritt)</span>
-            <input type="url" name="website" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
-          </label>
+      <!-- Step 3: Confirmation -->
+      <div id="circle-step-3" class="hidden">
+        <div class="w-12 h-12 border border-paper/30 rounded-full flex items-center justify-center mx-auto mb-8">
+          <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 7L7 13L19 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="text-paper"/></svg>
         </div>
+        <p class="font-serif text-2xl text-paper font-light mb-3" data-i18n="circle_done_heading">You're in.</p>
+        <p class="text-sm text-paper/50" data-i18n="circle_done_sub">We'll be in touch when something worthy of your attention arrives.</p>
+      </div>
 
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_persona_label">Jeg er</span>
-          <select name="persona" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
-            <option value="Produsent" data-i18n="partner_persona_producer">Produsent</option>
-            <option value="Designer" data-i18n="partner_persona_designer">Designer</option>
-            <option value="Begge" data-i18n="partner_persona_both">Begge</option>
-          </select>
-        </label>
-
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="partner_message">Kort om hva du lager</span>
-          <textarea name="message" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
-        </label>
-
-        <input type="hidden" name="market" value="Japan" />
-        <button type="submit" class="w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay" data-i18n="partner_submit">
-          Registrer interesse
-        </button>
-      </form>
     </div>
   </section>
 
@@ -263,11 +204,9 @@ const checkoutHref = (product) =>
   </section>
 
   <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
-    <!-- Designersøknad åpnes i et native <dialog>. Knappen ligger diskret i
-         footeren, slik at resten av layouten er uendret. -->
-    <button id="designer-apply-btn" type="button" class="mb-8 inline-block border border-paper/25 px-8 py-4 text-[10px] font-medium uppercase tracking-widest text-paper/80 transition-colors hover:border-paper hover:text-paper" data-i18n="designer_cta">
-      Søk som designer
-    </button>
+    <!-- Diskret makers-inngang. Selve søknaden bor nå på den dedikerte
+         /makers-siden, slik at forsiden holdes minimal og uten partner-mas. -->
+    <a href="/makers" class="mb-8 inline-block text-[10px] uppercase tracking-widest text-stone/40 hover:text-stone transition-colors">For makers</a>
     <p data-i18n="footer_rights">© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
     <!-- Diskret admin-inngang: skjult for vanlige besøkende. Vises kun som en
          liten, nedtonet lenke nederst i footeren når en admin-økt er aktiv
@@ -277,66 +216,6 @@ const checkoutHref = (product) =>
     </p>
   </footer>
 
-  <!-- Designersøknad i et native <dialog>. Sendes via AJAX til /__forms.html slik
-       at Netlify Forms fanger den opp uten at besøkende forlater forsiden. Skjemaet
-       må også deklareres statisk i public/__forms.html (form-navn:
-       "scandijapandi-designers") for at byggboten skal registrere feltene. -->
-  <dialog id="designer-dialog" class="sj-dialog w-full max-w-lg border border-ink/10 bg-paper p-0 text-ink">
-    <form id="designer-form" name="scandijapandi-designers" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="p-8 sm:p-10">
-      <input type="hidden" name="form-name" value="scandijapandi-designers" />
-      <p class="hidden"><label>La denne stå tom: <input name="bot-field" /></label></p>
-
-      <div class="flex items-start justify-between mb-6">
-        <div>
-          <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2" data-i18n="designer_eyebrow">For designere</span>
-          <h2 class="font-serif text-2xl sm:text-3xl text-ink" data-i18n="designer_title">Søk som designer</h2>
-        </div>
-        <button type="button" id="designer-close" aria-label="Lukk" class="ml-4 text-xl leading-none text-stone transition-colors hover:text-ink">✕</button>
-      </div>
-      <p class="text-sm text-stone font-light mb-6" data-i18n="designer_body">
-        Fortell oss kort om deg selv og arbeidet ditt, så tar vi kontakt.
-      </p>
-
-      <div class="space-y-5">
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_name">Navn</span>
-          <input type="text" name="name" required class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none" />
-        </label>
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="form_email">E-post</span>
-          <input type="email" name="email" required class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none" />
-        </label>
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="designer_role">Rolle / Portefølje</span>
-          <input type="text" name="role" required class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none" />
-        </label>
-        <label class="block">
-          <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n="designer_message">Melding</span>
-          <textarea name="message" rows="4" class="mt-2 w-full bg-oat/60 p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
-        </label>
-      </div>
-
-      <button type="submit" id="designer-submit" class="mt-8 w-full bg-ink text-paper py-4 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay disabled:opacity-50" data-i18n="designer_submit">
-        Send søknad
-      </button>
-      <p id="designer-feedback" class="hidden mt-4 text-sm" role="status" aria-live="polite"></p>
-    </form>
-  </dialog>
-
-  <style is:global>
-    /* Native <dialog>-styling i tråd med designsystemet — sentrert kort med en
-       myk, blekk-tonet backdrop. Ingen UI-bibliotek, kun ren CSS. */
-    dialog.sj-dialog {
-      margin: auto;
-      max-height: calc(100vh - 3rem);
-      overflow: auto;
-    }
-    dialog.sj-dialog::backdrop {
-      background: rgba(42, 39, 35, 0.45);
-      backdrop-filter: blur(2px);
-    }
-  </style>
-
   <script is:inline>
     // ---- Flerspråklig støtte: Norsk / Engelsk / Japansk ----
     // Statiske grensesnittstekster bytter via data-i18n; valget huskes i
@@ -344,7 +223,19 @@ const checkoutHref = (product) =>
     // produktgridet kan oversettes på nytt etter at det rendres.
     const I18N = {
       no: {
-        nav_collection: 'Kolleksjon', nav_join: 'Bli med', nav_partner: 'Bli Partner', nav_admin: 'Admin',
+        nav_collection: 'Kolleksjon', nav_about: 'Om oss', nav_join: 'Bli med', nav_partner: 'Bli Partner', nav_admin: 'Admin',
+        circle_eyebrow: 'Privat sirkel',
+        circle_heading: 'Alltid først.',
+        circle_sub: 'Nye ankomster, håndverkshistorier og eksklusive forhåndsvisninger — før alle andre.',
+        circle_join: 'Bli med',
+        circle_thanks_eyebrow: 'Velkommen',
+        circle_thanks_heading: 'Én ting til —',
+        circle_thanks_sub: 'Hva beskriver deg best?',
+        segment_customer: 'Jeg samler vakre objekter',
+        segment_maker: 'Jeg designer eller lager ting',
+        segment_curator: 'Jeg deler det som inspirerer meg',
+        circle_done_heading: 'Du er med.',
+        circle_done_sub: 'Vi tar kontakt når noe verdig din oppmerksomhet ankommer.',
         hero_eyebrow: 'Etablert 2026',
         hero_title: 'Nordisk ro kuratert for verden',
         hero_body: 'En eksklusiv samling av tidløse skandinaviske objekter. Rene linjer, kompromissløst nordisk håndverk og bærekraftige naturmaterialer.',
@@ -390,7 +281,19 @@ const checkoutHref = (product) =>
         designer_error: 'Noe gikk galt. Prøv igjen, eller send oss en e-post.',
       },
       en: {
-        nav_collection: 'Collection', nav_join: 'Join', nav_partner: 'Become a Partner', nav_admin: 'Admin',
+        nav_collection: 'Collection', nav_about: 'About', nav_join: 'Join', nav_partner: 'Become a Partner', nav_admin: 'Admin',
+        circle_eyebrow: 'Private Circle',
+        circle_heading: 'First to know. Always.',
+        circle_sub: 'New arrivals, maker stories, and exclusive previews — before anyone else.',
+        circle_join: 'Join',
+        circle_thanks_eyebrow: 'Welcome',
+        circle_thanks_heading: 'One quick thing —',
+        circle_thanks_sub: 'What best describes you?',
+        segment_customer: 'I collect beautiful objects',
+        segment_maker: 'I design or make things',
+        segment_curator: 'I share what inspires me',
+        circle_done_heading: "You're in.",
+        circle_done_sub: "We'll be in touch when something worthy of your attention arrives.",
         hero_eyebrow: 'Established 2026',
         hero_title: 'Nordic calm, curated for the world',
         hero_body: 'An exclusive collection of timeless Scandinavian objects. Clean lines, uncompromising Nordic craftsmanship and sustainable natural materials.',
@@ -436,7 +339,19 @@ const checkoutHref = (product) =>
         designer_error: 'Something went wrong. Please try again, or email us.',
       },
       jp: {
-        nav_collection: 'コレクション', nav_join: '参加する', nav_partner: 'パートナー募集', nav_admin: '管理',
+        nav_collection: 'コレクション', nav_about: '私たちについて', nav_join: '参加する', nav_partner: 'パートナー募集', nav_admin: '管理',
+        circle_eyebrow: 'プライベートサークル',
+        circle_heading: '誰よりも早く。',
+        circle_sub: '新着情報、作り手の物語、限定プレビュー——誰よりも先にお届けします。',
+        circle_join: '参加する',
+        circle_thanks_eyebrow: 'ようこそ',
+        circle_thanks_heading: 'ひとつだけ——',
+        circle_thanks_sub: 'あなたに近いのはどれですか？',
+        segment_customer: '美しいものを集めています',
+        segment_maker: 'デザインや制作をしています',
+        segment_curator: 'インスピレーションをシェアしています',
+        circle_done_heading: 'ご登録ありがとうございます。',
+        circle_done_sub: 'ご注目に値する新着情報をお届けします。',
         hero_eyebrow: '2026年設立',
         hero_title: '世界へ届ける、北欧の静けさ',
         hero_body: '時代を超えるスカンジナビアの逸品を集めた特別なコレクション。澄んだ線、妥協のない北欧の職人技、そして持続可能な天然素材。',
@@ -517,64 +432,6 @@ const checkoutHref = (product) =>
         btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
       });
     });
-  </script>
-
-  <script is:inline>
-    // ---- Designersøknad i et native <dialog> ----
-    // Åpnes fra footer-knappen, sendes via AJAX til /__forms.html (Netlify Forms),
-    // og gir tilbakemelding inline uten å forlate forsiden. Best-effort: en feil
-    // blokkerer aldri annen funksjonalitet på siden.
-    (function () {
-      const dialog = document.getElementById('designer-dialog');
-      const openBtn = document.getElementById('designer-apply-btn');
-      const closeBtn = document.getElementById('designer-close');
-      const form = document.getElementById('designer-form');
-      const submitBtn = document.getElementById('designer-submit');
-      const feedback = document.getElementById('designer-feedback');
-      if (!dialog || !openBtn || !form) return;
-
-      function openDialog() {
-        if (feedback) feedback.classList.add('hidden');
-        if (typeof dialog.showModal === 'function') dialog.showModal();
-        else dialog.setAttribute('open', 'open');
-      }
-      openBtn.addEventListener('click', openDialog);
-      if (closeBtn) closeBtn.addEventListener('click', () => dialog.close());
-      // Klikk på backdrop (utenfor selve kortet) lukker dialogen.
-      dialog.addEventListener('click', (e) => {
-        if (e.target === dialog) dialog.close();
-      });
-
-      function showFeedback(key, ok) {
-        if (!feedback) return;
-        const lang = window.__sjLang || 'no';
-        const dict = (window.__SJ_I18N && window.__SJ_I18N[lang]) || {};
-        feedback.textContent = dict[key] || '';
-        feedback.className = 'mt-4 text-sm ' + (ok ? 'text-ink' : 'text-clay');
-      }
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (feedback) feedback.classList.add('hidden');
-        if (submitBtn) submitBtn.disabled = true;
-        try {
-          // Submit mot det statiske skjema-skjelettet, ikke '/', slik at Netlify
-          // sin skjemabehandling alltid fanger innsendingen (jf. Netlify Forms-doc).
-          const res = await fetch('/__forms.html', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams(new FormData(form)).toString(),
-          });
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          form.reset();
-          showFeedback('designer_success', true);
-        } catch (err) {
-          showFeedback('designer_error', false);
-        } finally {
-          if (submitBtn) submitBtn.disabled = false;
-        }
-      });
-    })();
   </script>
 
   <script>
@@ -751,5 +608,90 @@ const checkoutHref = (product) =>
     checkTempAdmin().then((ok) => { tempAdmin = ok; syncAdminUI(); });
     getUser().then((u) => { identityUser = u; syncAdminUI(); }).catch(() => { identityUser = null; syncAdminUI(); });
     onAuthChange((_event, user) => { identityUser = user; syncAdminUI(); });
+  </script>
+
+  <script>
+    // ── Progressive email capture ─────────────────────────────────────────
+    const circleEmailForm = document.getElementById('circle-email-form');
+    let capturedEmail = '';
+    let capturedRef = new URLSearchParams(window.location.search).get('ref') || '';
+    let capturedLang = '';
+
+    circleEmailForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = (document.getElementById('circle-email') as HTMLInputElement)?.value?.trim();
+      if (!email) return;
+      capturedEmail = email;
+      capturedLang = window.__sjLang || 'no';
+
+      // Submit to Netlify Forms (interesse form, email only first)
+      try {
+        const body = new URLSearchParams({
+          'form-name': 'interesse',
+          email,
+          name: '',
+          message: '',
+          'ref': capturedRef,
+          'language': capturedLang,
+          'segment': 'pending',
+        });
+        await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: body.toString(),
+        });
+      } catch { /* non-critical */ }
+
+      // Move to step 2
+      document.getElementById('circle-step-1')?.classList.add('hidden');
+      document.getElementById('circle-step-2')?.classList.remove('hidden');
+    });
+
+    async function submitSegment(segment: string) {
+      // Disable buttons
+      document.querySelectorAll('.segment-btn').forEach(b => (b as HTMLButtonElement).disabled = true);
+
+      try {
+        // Submit segment to Netlify Forms
+        const body = new URLSearchParams({
+          'form-name': 'interesse',
+          email: capturedEmail,
+          name: '',
+          message: segment,
+          'ref': capturedRef,
+          'language': capturedLang,
+          'segment': segment,
+        });
+        await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: body.toString(),
+        });
+
+        // Also submit to our own leads API for DB storage
+        await fetch('/api/leads', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: capturedEmail,
+            segment,
+            language: capturedLang,
+            ref_code: capturedRef,
+            source: 'homepage_circle',
+          }),
+        });
+      } catch { /* non-critical */ }
+
+      // Move to step 3
+      document.getElementById('circle-step-2')?.classList.add('hidden');
+      document.getElementById('circle-step-3')?.classList.remove('hidden');
+
+      // If maker or curator — redirect to makers page after 3 seconds
+      if (segment === 'maker' || segment === 'curator') {
+        setTimeout(() => { window.location.href = '/makers'; }, 3000);
+      }
+    }
+
+    (window as any).submitSegment = submitSegment;
   </script>
 </Base>
