@@ -8,8 +8,11 @@ import Base from '../../layouts/Base.astro';
 
 const { slug } = Astro.params;
 
-// Fetch product from our own API
-const apiUrl = `${import.meta.env.PUBLIC_SITE_URL || 'https://scandijapandi.no'}/api/products/${slug}`;
+// Fetch product from our own API. Resolve against the origin the request came
+// in on so SSR works on production, deploy previews, and branch deploys alike;
+// PUBLIC_SITE_URL and the production domain remain as fallbacks.
+const origin = Astro.url.origin || import.meta.env.PUBLIC_SITE_URL || 'https://scandijapandi.no';
+const apiUrl = `${origin}/api/products/${slug}`;
 let product: any = null;
 let notFound = false;
 
