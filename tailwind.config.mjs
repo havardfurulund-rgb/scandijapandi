@@ -1,35 +1,20 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // Scoped to the storefront source only. The Sanity Studio route brings its
-  // own styling, so Tailwind's preflight is kept out of /studio via
-  // `applyBaseStyles: false` in astro.config.mjs.
-  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx,md}'],
+  content: ['./src/**/*.{astro,html,js,jsx,ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Warm Japandi neutrals — never pure black, gently desaturated.
-        paper: '#F4F1EA',
-        oat: '#ECE7DB',
-        sand: '#E2DBCB',
-        ink: '#2A2723',
-        stone: '#6F6A5F',
-        clay: '#A6694C',
+        paper: '#FBFBFA',
+        ink:   '#1A1A1A',
+        stone: '#706E6B',
+        oat:   '#F1EFEA',
+        clay:  '#A37B65',
+        moss:  '#4A5E4A',
       },
       fontFamily: {
-        // Distinctive pairing: a soft optical serif + a quiet geometric sans.
-        serif: ['Fraunces', 'Georgia', 'serif'],
-        sans: ['Jost', 'system-ui', 'sans-serif'],
-      },
-      letterSpacing: {
-        widest: '0.3em',
-      },
-      maxWidth: {
-        prose: '68ch',
-      },
-      transitionTimingFunction: {
-        japandi: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        serif: ['Fraunces', 'serif'],
+        sans:  ['Jost', 'sans-serif'],
       },
     },
   },
-  plugins: [],
 };
