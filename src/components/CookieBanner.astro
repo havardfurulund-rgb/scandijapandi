@@ -1,0 +1,50 @@
+---
+// Cookie consent banner — GDPR (EU/Norway) and APPI (Japan) compliant.
+// Shown on first visit, hidden after acceptance or rejection.
+// Stores consent in localStorage under 'sj-cookie-consent'.
+---
+<div id="cookie-banner" class="fixed bottom-0 left-0 right-0 z-50 bg-ink text-paper px-6 py-5 hidden">
+  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div class="flex-1">
+      <p class="text-xs font-light leading-relaxed text-paper/80 max-w-2xl">
+        <span class="text-paper font-medium">ScandiJapandi</span> uses cookies to improve your experience and analyse site traffic.
+        By continuing, you accept our use of cookies.
+        <a href="/privacy" class="underline text-paper/60 hover:text-paper transition-colors ml-1">Privacy policy</a>
+      </p>
+    </div>
+    <div class="flex items-center gap-3 shrink-0">
+      <button
+        id="cookie-reject"
+        class="text-[10px] uppercase tracking-widest text-paper/50 hover:text-paper transition-colors px-2 py-1"
+      >
+        Reject
+      </button>
+      <button
+        id="cookie-accept"
+        class="bg-paper text-ink px-6 py-3 text-[10px] uppercase tracking-widest font-medium hover:bg-oat transition-colors"
+      >
+        Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const banner = document.getElementById('cookie-banner');
+  const consent = localStorage.getItem('sj-cookie-consent');
+
+  // Show banner if no consent recorded yet
+  if (!consent) {
+    banner?.classList.remove('hidden');
+  }
+
+  document.getElementById('cookie-accept')?.addEventListener('click', () => {
+    localStorage.setItem('sj-cookie-consent', 'accepted');
+    banner?.classList.add('hidden');
+  });
+
+  document.getElementById('cookie-reject')?.addEventListener('click', () => {
+    localStorage.setItem('sj-cookie-consent', 'rejected');
+    banner?.classList.add('hidden');
+  });
+</script>

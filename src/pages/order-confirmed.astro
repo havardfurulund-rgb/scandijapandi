@@ -1,0 +1,88 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Order confirmed — ScandiJapandi" description="Your order has been received.">
+  <main class="min-h-screen bg-paper flex items-center justify-center px-6 py-32">
+    <div class="max-w-lg text-center">
+
+      <!-- Success mark -->
+      <div class="w-16 h-16 border border-moss/40 rounded-full flex items-center justify-center mx-auto mb-10">
+        <svg width="24" height="18" viewBox="0 0 24 18" fill="none">
+          <path d="M1 9L8 16L23 1" stroke="#4A5E4A" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-4">ScandiJapandi</p>
+
+      <h1 class="font-serif text-4xl sm:text-5xl text-ink font-light leading-tight mb-6" id="confirm-heading">
+        Thank you.
+      </h1>
+
+      <p class="text-sm text-stone font-light leading-relaxed mb-4" id="confirm-body">
+        Your order has been received and is being prepared with care.
+        A confirmation has been sent to your email address.
+      </p>
+
+      <div id="order-ref-block" class="hidden my-8 py-6 border-t border-b border-ink/8">
+        <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Order reference</p>
+        <p id="order-ref" class="font-serif text-lg text-ink italic">—</p>
+      </div>
+
+      <div class="mt-10 space-y-4">
+        <a href="/" class="block w-full bg-ink text-paper py-4 text-[10px] uppercase tracking-widest text-center hover:bg-clay transition-colors">
+          <span id="cta-text">Continue browsing</span>
+        </a>
+        <a href="mailto:hello@scandijapandi.no" class="block text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
+          Questions? Contact us
+        </a>
+      </div>
+
+      <p class="mt-16 text-xs text-stone/30 tracking-widest">scandijapandi.no</p>
+    </div>
+  </main>
+</Base>
+
+<script>
+  // Detect language from localStorage
+  let lang = 'en';
+  try { lang = localStorage.getItem('sj-lang') || 'en'; } catch {}
+
+  const translations: Record<string, Record<string, string>> = {
+    no: {
+      heading: 'Takk.',
+      body: 'Bestillingen din er mottatt og klargjøres med omhu. En bekreftelse er sendt til din e-postadresse.',
+      cta: 'Tilbake til kolleksjonen',
+    },
+    en: {
+      heading: 'Thank you.',
+      body: 'Your order has been received and is being prepared with care. A confirmation has been sent to your email address.',
+      cta: 'Continue browsing',
+    },
+    jp: {
+      heading: 'ありがとうございます。',
+      body: 'ご注文を承りました。確認メールをお送りしております。大切に準備いたします。',
+      cta: 'コレクションに戻る',
+    },
+  };
+
+  const t = translations[lang] || translations.en;
+  const heading = document.getElementById('confirm-heading');
+  const body = document.getElementById('confirm-body');
+  const cta = document.getElementById('cta-text');
+  if (heading) heading.textContent = t.heading;
+  if (body) body.textContent = t.body;
+  if (cta) cta.textContent = t.cta;
+
+  // Show order reference from URL if present
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  if (sessionId) {
+    const refBlock = document.getElementById('order-ref-block');
+    const refEl = document.getElementById('order-ref');
+    if (refBlock) refBlock.classList.remove('hidden');
+    if (refEl) {
+      // Show last 8 chars of session ID as readable reference
+      refEl.textContent = sessionId.slice(-8).toUpperCase();
+    }
+  }
+</script>

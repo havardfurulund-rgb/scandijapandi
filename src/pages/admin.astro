@@ -340,6 +340,41 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
 
+      <!-- Leads: Private Circle-påmeldinger fra forsiden (circle_leads) -->
+      <div class="mt-16">
+        <div class="flex items-baseline justify-between mb-6">
+          <div>
+            <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Private Circle</span>
+            <h2 class="font-serif text-2xl text-ink">Leads</h2>
+          </div>
+          <button type="button" id="leads-refresh" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">Oppdater</button>
+        </div>
+
+        <!-- Sammendragskort -->
+        <div id="leads-summary" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="bg-oat/60 border border-ink/5 p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Total</p>
+            <p id="leads-total" class="font-serif text-3xl text-ink">—</p>
+          </div>
+          <div class="bg-oat/60 border border-ink/5 p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Customers</p>
+            <p id="leads-customers" class="font-serif text-3xl text-ink">—</p>
+          </div>
+          <div class="bg-oat/60 border border-ink/5 p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Makers</p>
+            <p id="leads-makers" class="font-serif text-3xl text-ink">—</p>
+          </div>
+          <div class="bg-oat/60 border border-ink/5 p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Curators</p>
+            <p id="leads-curators" class="font-serif text-3xl text-ink">—</p>
+          </div>
+        </div>
+
+        <div id="leads-list" class="overflow-x-auto">
+          <p class="text-sm text-stone">Laster leads …</p>
+        </div>
+      </div>
+
       <!-- Influencer links -->
       <div class="mt-16 bg-ink text-paper p-8">
         <h2 class="font-serif text-xl">Influenser-lenker</h2>
@@ -561,6 +596,53 @@ import Base from '../layouts/Base.astro';
         renderOrders(data.orders || []);
       } catch (e) {
         list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste ordrer.</p>';
+      }
+    }
+
+    // ---- Leads (Private Circle) ----
+
+    function renderLeads(leads, summary) {
+      $('leads-total').textContent = summary?.total ?? leads.length;
+      $('leads-customers').textContent = summary?.customers ?? 0;
+      $('leads-makers').textContent = summary?.makers ?? 0;
+      $('leads-curators').textContent = summary?.curators ?? 0;
+
+      const list = $('leads-list');
+      if (!leads.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen leads ennå.</p>'; return; }
+      const fmtDate = (s) => { try { return new Date(s).toLocaleDateString('nb-NO', { dateStyle: 'medium' }); } catch { return s || ''; } };
+      list.innerHTML = `
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="text-left border-b border-ink/10">
+              <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Email</th>
+              <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Segment</th>
+              <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Language</th>
+              <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Ref code</th>
+              <th class="py-3 text-[10px] uppercase tracking-widest text-stone font-medium">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${leads.map((l) => `
+              <tr class="border-b border-ink/5">
+                <td class="py-3 pr-4 text-ink break-all">${escapeHtml(l.email)}</td>
+                <td class="py-3 pr-4 text-stone">${escapeHtml(l.segment || '—')}</td>
+                <td class="py-3 pr-4 text-stone uppercase">${escapeHtml(l.language || '—')}</td>
+                <td class="py-3 pr-4 text-stone">${escapeHtml(l.ref_code || '—')}</td>
+                <td class="py-3 text-stone whitespace-nowrap">${escapeHtml(fmtDate(l.created_at))}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    async function loadLeads() {
+      const list = $('leads-list');
+      try {
+        const res = await api('/api/admin/leads');
+        if (!res.ok) { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste leads.</p>'; return; }
+        const data = await res.json();
+        renderLeads(data.leads || [], data.summary);
+      } catch (e) {
+        list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste leads.</p>';
       }
     }
 
@@ -839,6 +921,7 @@ import Base from '../layouts/Base.astro';
 
     // Oppdater ordrehistorikken på forespørsel.
     $('orders-refresh').addEventListener('click', () => loadOrders());
+    $('leads-refresh').addEventListener('click', () => loadLeads());
 
     // ---- Auth ----
 
@@ -866,6 +949,7 @@ import Base from '../layouts/Base.astro';
       showOnly('admin-view');
       await loadProducts();
       loadOrders();
+      loadLeads();
     }
 
     // Logg inn med kodebasert brukernavn + passord.
@@ -997,6 +1081,7 @@ import Base from '../layouts/Base.astro';
       showOnly('admin-view');
       await loadProducts();
       loadOrders();
+      loadLeads();
     }
 
     // On page load, redeem any token in the URL hash (recovery, invite,

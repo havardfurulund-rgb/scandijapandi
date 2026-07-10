@@ -35,6 +35,12 @@ export default async (req: Request) => {
         ref_code = COALESCE(EXCLUDED.ref_code, circle_leads.ref_code),
         updated_at = NOW()
     `;
+    // Send welcome email (best-effort, non-blocking)
+    const { sendCircleWelcome } = await import("./circle-welcome.mts");
+    sendCircleWelcome(email, body.language || 'en', body.segment || 'customer').catch(err => {
+      console.error("[leads] welcome email failed:", err);
+    });
+
     return Response.json({ ok: true }, { status: 201 });
   } catch (err) {
     console.error("[leads]", err instanceof Error ? err.message : err);

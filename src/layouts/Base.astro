@@ -6,6 +6,7 @@
 // @astrojs/tailwind integration (colors live in tailwind.config.mjs). Utility
 // classes on markup injected at runtime (the dynamic product grid and the admin
 // table) still work because those classes also appear in the scanned source.
+import CookieBanner from '../components/CookieBanner.astro';
 interface Props {
   title?: string;
   description?: string;
@@ -67,5 +68,6 @@ const {
   </head>
   <body class="overflow-x-hidden bg-paper text-ink antialiased">
     <slot />
+    <CookieBanner />
   </body>
 </html>
