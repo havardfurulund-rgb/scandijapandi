@@ -59,7 +59,7 @@ async function createCheckoutSession(opts: {
   form.set("metadata[curator]", opts.curator);
   form.set("metadata[slug]", opts.slug);
   form.set("metadata[locale]", opts.locale);
-  form.set("success_url", `${siteUrl()}/?checkout=success`);
+  form.set("success_url", `${siteUrl()}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`);
   form.set("cancel_url", `${siteUrl()}/?checkout=cancel`);
 
   const res = await fetch("https://api.stripe.com/v1/checkout/sessions", {
