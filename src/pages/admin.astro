@@ -403,6 +403,32 @@ import Base from '../layouts/Base.astro';
             <button type="button" id="nl-new" class="border border-ink/20 px-6 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink transition-colors">Nytt nyhetsbrev</button>
           </div>
 
+          <div class="mb-8">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-4">Maler</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <button type="button" onclick="loadNewsletterTemplate('arrival')" class="border border-ink/10 bg-paper p-4 text-left hover:border-ink/30 transition-colors group">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-1">Mal 1</p>
+                <p class="text-sm text-ink font-light">Ny kolleksjon</p>
+                <p class="text-xs text-stone/50 mt-1">Ny ankomst fra produsent</p>
+              </button>
+              <button type="button" onclick="loadNewsletterTemplate('spotlight')" class="border border-ink/10 bg-paper p-4 text-left hover:border-ink/30 transition-colors">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-1">Mal 2</p>
+                <p class="text-sm text-ink font-light">Produsenthistorie</p>
+                <p class="text-xs text-stone/50 mt-1">Spotlight på en maker</p>
+              </button>
+              <button type="button" onclick="loadNewsletterTemplate('seasonal')" class="border border-ink/10 bg-paper p-4 text-left hover:border-ink/30 transition-colors">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-1">Mal 3</p>
+                <p class="text-sm text-ink font-light">Sesong</p>
+                <p class="text-xs text-stone/50 mt-1">Sesongbasert innhold</p>
+              </button>
+              <button type="button" onclick="loadNewsletterTemplate('exclusive')" class="border border-ink/10 bg-paper p-4 text-left hover:border-ink/30 transition-colors">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-1">Mal 4</p>
+                <p class="text-sm text-ink font-light">Eksklusivt</p>
+                <p class="text-xs text-stone/50 mt-1">Kun for Circle-members</p>
+              </button>
+            </div>
+          </div>
+
           <form id="nl-form" class="hidden bg-oat/60 p-8 border border-ink/5 mb-10 space-y-6">
             <input type="hidden" id="nl-id" value="" />
             <fieldset class="space-y-5">
@@ -474,6 +500,27 @@ import Base from '../layouts/Base.astro';
             <button type="button" id="pr-new" class="border border-ink/20 px-6 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink transition-colors">Ny pressemelding</button>
           </div>
 
+          <div class="mb-8">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-4">Maler</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button type="button" onclick="loadPressTemplate('launch')" class="border border-ink/10 bg-paper p-4 text-left hover:border-ink/30 transition-colors">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-1">Mal 1</p>
+                <p class="text-sm text-ink font-light">Kolleksjonslansering</p>
+                <p class="text-xs text-stone/50 mt-1">Ny kolleksjon eller produkt</p>
+              </button>
+              <button type="button" onclick="loadPressTemplate('partnership')" class="border border-ink/10 bg-paper p-4 text-left hover:border-ink/30 transition-colors">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-1">Mal 2</p>
+                <p class="text-sm text-ink font-light">Nytt partnerskap</p>
+                <p class="text-xs text-stone/50 mt-1">Ny produsent eller designer</p>
+              </button>
+              <button type="button" onclick="loadPressTemplate('brand')" class="border border-ink/10 bg-paper p-4 text-left hover:border-ink/30 transition-colors">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-1">Mal 3</p>
+                <p class="text-sm text-ink font-light">Merkevarehistorie</p>
+                <p class="text-xs text-stone/50 mt-1">Om ScandiJapandi</p>
+              </button>
+            </div>
+          </div>
+
           <form id="pr-form" class="hidden bg-oat/60 p-8 border border-ink/5 mb-10 space-y-6">
             <input type="hidden" id="pr-id" value="" />
             <fieldset class="space-y-5">
@@ -487,7 +534,7 @@ import Base from '../layouts/Base.astro';
               <div class="grid sm:grid-cols-3 gap-5">
                 <label class="block">
                   <span class="text-[10px] uppercase tracking-widest text-stone">Tittel (NO)</span>
-                  <input type="text" id="pr-title-no" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+                  <input type="text" id="pr-title" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
                 </label>
                 <label class="block">
                   <span class="text-[10px] uppercase tracking-widest text-stone">Tittel (EN)</span>
@@ -659,97 +706,110 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
 
-      <!-- === TEST E-POST KNAPP - IKKE FJERN NOE OVER ELLER UNDER === -->
-      <div class="admin-test-email mt-10 p-6 border border-stone/30 rounded-2xl bg-oat/30">
-        <h3 class="font-serif text-xl mb-4 text-ink">Send Test E-post</h3>
-        <p id="email-config-status" class="mb-4 text-xs text-stone">Sjekker konfigurasjon …</p>
-        <div class="flex flex-col sm:flex-row gap-3">
-          <input
-            type="email"
-            id="test-email-input"
-            placeholder="mottaker@example.com"
-            class="flex-1 px-5 py-3 border border-stone/30 rounded-xl focus:outline-none focus:border-clay text-sm"
-          />
-          <button
-            id="send-test-email-btn"
-            class="px-8 py-3 bg-ink hover:bg-clay text-paper rounded-xl font-medium transition-colors whitespace-nowrap"
-          >
-            Send test
-          </button>
+      <!-- System -->
+      <section class="px-6 sm:px-12 py-10 border-t border-ink/5">
+        <div class="mx-auto max-w-6xl">
+          <details class="group">
+            <summary class="cursor-pointer text-[10px] uppercase tracking-widest text-stone/40 hover:text-stone transition-colors list-none flex items-center gap-2">
+              <span>System</span>
+              <span class="group-open:rotate-180 transition-transform duration-200 text-stone/30">↓</span>
+            </summary>
+            <div class="mt-6">
+              <!-- === TEST E-POST KNAPP - IKKE FJERN NOE OVER ELLER UNDER === -->
+              <div class="admin-test-email mt-10 p-6 border border-stone/30 rounded-2xl bg-oat/30">
+                <h3 class="font-serif text-xl mb-4 text-ink">Send Test E-post</h3>
+                <p id="email-config-status" class="mb-4 text-xs text-stone">Sjekker konfigurasjon …</p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    id="test-email-input"
+                    placeholder="mottaker@example.com"
+                    class="flex-1 px-5 py-3 border border-stone/30 rounded-xl focus:outline-none focus:border-clay text-sm"
+                  />
+                  <button
+                    id="send-test-email-btn"
+                    class="px-8 py-3 bg-ink hover:bg-clay text-paper rounded-xl font-medium transition-colors whitespace-nowrap"
+                  >
+                    Send test
+                  </button>
+                </div>
+                <p id="test-email-status" class="mt-3 text-sm min-h-[20px]"></p>
+              </div>
+
+              <script>
+                const btn = document.getElementById('send-test-email-btn');
+                const input = document.getElementById('test-email-input');
+                const status = document.getElementById('test-email-status');
+                const configStatus = document.getElementById('email-config-status');
+
+                // Test-e-post sendes via /api/admin/test-email, som bruker den samme
+                // utgående e-postveien (Resend) som kundekvittering og produsentvarsel.
+                // Slik tester knappen den faktiske produksjonsveien – ikke bare et
+                // internt Netlify Forms-varsel.
+                (async () => {
+                  try {
+                    const res = await fetch('/api/admin/test-email');
+                    const data = await res.json().catch(() => ({}));
+                    if (data.configured) {
+                      configStatus.textContent = `Utgående e-post er konfigurert. Avsender: ${data.from}. Skriv inn en adresse og send en ekte test.`;
+                      configStatus.style.color = '#3f6212';
+                    } else {
+                      configStatus.textContent = 'Utgående e-post er ikke konfigurert ennå (RESEND_API_KEY mangler). Butikkvarsel sendes via Netlify Forms, men kunde- og produsent-e-post krever Resend.';
+                      configStatus.style.color = '#A6694C';
+                    }
+                  } catch (e) {
+                    configStatus.textContent = 'Kunne ikke sjekke e-postkonfigurasjon.';
+                    configStatus.style.color = '#A6694C';
+                  }
+                })();
+
+                // Liten hjelper for konsistent status + konsoll-logging, slik at det er
+                // enkelt å feilsøke e-post fra nettleserens utviklerverktøy.
+                function setStatus(message, color) {
+                  status.textContent = message;
+                  status.style.color = color;
+                  console.log('[test-epost]', message);
+                }
+
+                btn.addEventListener('click', async () => {
+                  const email = input.value.trim();
+                  if (!email) {
+                    setStatus('Skriv inn en e-postadresse', 'red');
+                    return;
+                  }
+
+                  btn.disabled = true;
+                  setStatus('Sender …', '#666');
+
+                  try {
+                    console.log('[test-epost] POST /api/admin/test-email', { email });
+                    const res = await fetch('/api/admin/test-email', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email }),
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    console.log('[test-epost] svar', res.status, data);
+
+                    if (res.ok) {
+                      setStatus('✅ Test-e-post sendt. Sjekk innboksen (og spam).', 'green');
+                      input.value = '';
+                    } else {
+                      setStatus(`Feil ved sending: ${data.error || `HTTP ${res.status}`}`, 'red');
+                    }
+                  } catch (err) {
+                    console.error('[test-epost] nettverksfeil', err);
+                    setStatus('Nettverksfeil – prøv igjen', 'red');
+                  } finally {
+                    btn.disabled = false;
+                  }
+                });
+              </script>
+              <!-- === SLUTT PÅ TEST E-POST KNAPP === -->
+            </div>
+          </details>
         </div>
-        <p id="test-email-status" class="mt-3 text-sm min-h-[20px]"></p>
-      </div>
-
-      <script>
-        const btn = document.getElementById('send-test-email-btn');
-        const input = document.getElementById('test-email-input');
-        const status = document.getElementById('test-email-status');
-        const configStatus = document.getElementById('email-config-status');
-
-        // Test-e-post sendes via /api/admin/test-email, som bruker den samme
-        // utgående e-postveien (Resend) som kundekvittering og produsentvarsel.
-        // Slik tester knappen den faktiske produksjonsveien – ikke bare et
-        // internt Netlify Forms-varsel.
-        (async () => {
-          try {
-            const res = await fetch('/api/admin/test-email');
-            const data = await res.json().catch(() => ({}));
-            if (data.configured) {
-              configStatus.textContent = `Utgående e-post er konfigurert. Avsender: ${data.from}. Skriv inn en adresse og send en ekte test.`;
-              configStatus.style.color = '#3f6212';
-            } else {
-              configStatus.textContent = 'Utgående e-post er ikke konfigurert ennå (RESEND_API_KEY mangler). Butikkvarsel sendes via Netlify Forms, men kunde- og produsent-e-post krever Resend.';
-              configStatus.style.color = '#A6694C';
-            }
-          } catch (e) {
-            configStatus.textContent = 'Kunne ikke sjekke e-postkonfigurasjon.';
-            configStatus.style.color = '#A6694C';
-          }
-        })();
-
-        // Liten hjelper for konsistent status + konsoll-logging, slik at det er
-        // enkelt å feilsøke e-post fra nettleserens utviklerverktøy.
-        function setStatus(message, color) {
-          status.textContent = message;
-          status.style.color = color;
-          console.log('[test-epost]', message);
-        }
-
-        btn.addEventListener('click', async () => {
-          const email = input.value.trim();
-          if (!email) {
-            setStatus('Skriv inn en e-postadresse', 'red');
-            return;
-          }
-
-          btn.disabled = true;
-          setStatus('Sender …', '#666');
-
-          try {
-            console.log('[test-epost] POST /api/admin/test-email', { email });
-            const res = await fetch('/api/admin/test-email', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email }),
-            });
-            const data = await res.json().catch(() => ({}));
-            console.log('[test-epost] svar', res.status, data);
-
-            if (res.ok) {
-              setStatus('✅ Test-e-post sendt. Sjekk innboksen (og spam).', 'green');
-              input.value = '';
-            } else {
-              setStatus(`Feil ved sending: ${data.error || `HTTP ${res.status}`}`, 'red');
-            }
-          } catch (err) {
-            console.error('[test-epost] nettverksfeil', err);
-            setStatus('Nettverksfeil – prøv igjen', 'red');
-          } finally {
-            btn.disabled = false;
-          }
-        });
-      </script>
-      <!-- === SLUTT PÅ TEST E-POST KNAPP === -->
+      </section>
     </section>
   </main>
 
@@ -1572,6 +1632,267 @@ import Base from '../layouts/Base.astro';
       }
     });
 
+    // ── Nyhetsbrev-maler ─────────────────────────────────────────────
+    // Ferdige utkast som fyller skjemafeltene. Eksponeres på window fordi
+    // mal-knappene bruker inline onclick, mens dette er et modul-skript.
+    const NEWSLETTER_TEMPLATES = {
+  arrival: {
+    subject_no: 'Ny ankomst: [Produktnavn] fra [Produsent]',
+    subject_en: 'New arrival: [Product name] from [Producer]',
+    subject_jp: '新着：[製品名]（[生産者]より）',
+    body_no: `Kjære [Navn],
+
+Et nytt objekt har funnet veien til ScandiJapandi-kolleksjonen.
+
+[PRODUKTNAVN]
+[Produsent] · [Sted]
+
+[Kort beskrivelse av produktet og hva som gjør det spesielt — materialet, håndverket, historien.]
+
+Laget for hånd i [sted], bærer dette objektet med seg [beskriv særtrekk].
+
+→ Se produktet: https://scandijapandi.no/products/[slug]
+
+Kun [antall] tilgjengelig.
+
+Med nordisk ro,
+ScandiJapandi`,
+    body_en: `Dear [Name],
+
+A new object has joined the ScandiJapandi collection.
+
+[PRODUCT NAME]
+[Producer] · [Location]
+
+[Short description of the product — the material, the craft, the story.]
+
+Made by hand in [location], this object carries [describe quality].
+
+→ View the piece: https://scandijapandi.no/products/[slug]
+
+Only [number] available.
+
+With Nordic calm,
+ScandiJapandi`,
+    body_jp: `[お名前] 様、
+
+ScandiJapandiコレクションに、新しいオブジェクトが加わりました。
+
+[製品名]
+[生産者] · [場所]
+
+[製品の簡単な説明 — 素材、手仕事、ものがたり。]
+
+[場所]で手作りされたこの作品は、[特徴を記述]を宿しています。
+
+→ 作品を見る: https://scandijapandi.no/products/[slug]
+
+残り[数]点。
+
+北欧の静けさとともに、
+ScandiJapandi`,
+  },
+  spotlight: {
+    subject_no: 'Møt [Produsent]: Håndverk fra [Sted]',
+    subject_en: 'Meet [Producer]: Craft from [Location]',
+    subject_jp: '[生産者]との出会い：[場所]の手仕事',
+    body_no: `Kjære [Navn],
+
+Bak hvert objekt i vår kolleksjon er det et menneske, en praksis, et sted.
+
+I DAG MØTER DU: [PRODUSENT]
+[Sted], [Land]
+
+[Fortell produsentens historie — hvem er de, hva driver dem, hva gjør håndverket deres unikt. 2-3 setninger.]
+
+"[Sitat fra produsenten]"
+
+Deres produkter i vår kolleksjon:
+→ [Produktnavn]: https://scandijapandi.no/products/[slug]
+
+Med nordisk ro,
+ScandiJapandi`,
+    body_en: `Dear [Name],
+
+Behind every object in our collection is a person, a practice, a place.
+
+TODAY YOU MEET: [PRODUCER]
+[Location], [Country]
+
+[Tell the producer's story — who they are, what drives them, what makes their craft unique. 2-3 sentences.]
+
+"[Quote from producer]"
+
+Their pieces in our collection:
+→ [Product name]: https://scandijapandi.no/products/[slug]
+
+With Nordic calm,
+ScandiJapandi`,
+    body_jp: `[お名前] 様、
+
+コレクションのすべてのオブジェクトの背後には、人がいて、実践があり、場所があります。
+
+今日ご紹介するのは：[生産者]
+[場所]、[国]
+
+[生産者のストーリー — 誰なのか、何が彼らを動かすのか、手仕事の何が特別なのか。2〜3文。]
+
+「[生産者からの引用]」
+
+コレクションの作品：
+→ [製品名]: https://scandijapandi.no/products/[slug]
+
+北欧の静けさとともに、
+ScandiJapandi`,
+  },
+  seasonal: {
+    subject_no: '[Sesong] hos ScandiJapandi — objekter for [stemning]',
+    subject_en: '[Season] at ScandiJapandi — objects for [mood]',
+    subject_jp: 'ScandiJapandiの[季節] — [雰囲気]のためのオブジェクト',
+    body_no: `Kjære [Navn],
+
+[Sesongbeskrivelse — hva preger denne årstiden, hva er stemningen. 1-2 setninger.]
+
+Vi har valgt ut noen objekter som passer til akkurat dette øyeblikket.
+
+──────────────────
+
+[PRODUKTNAVN 1]
+[Kort beskrivelse]
+→ https://scandijapandi.no/products/[slug1]
+
+[PRODUKTNAVN 2]
+[Kort beskrivelse]
+→ https://scandijapandi.no/products/[slug2]
+
+──────────────────
+
+Med nordisk ro,
+ScandiJapandi`,
+    body_en: `Dear [Name],
+
+[Seasonal description — what defines this time of year, what is the mood. 1-2 sentences.]
+
+We have selected a few objects that feel right for this moment.
+
+──────────────────
+
+[PRODUCT NAME 1]
+[Short description]
+→ https://scandijapandi.no/products/[slug1]
+
+[PRODUCT NAME 2]
+[Short description]
+→ https://scandijapandi.no/products/[slug2]
+
+──────────────────
+
+With Nordic calm,
+ScandiJapandi`,
+    body_jp: `[お名前] 様、
+
+[季節の説明 — この季節を特徴づけるもの、雰囲気。1〜2文。]
+
+この瞬間にふさわしいオブジェクトをいくつか選びました。
+
+──────────────────
+
+[製品名1]
+[簡単な説明]
+→ https://scandijapandi.no/products/[slug1]
+
+[製品名2]
+[簡単な説明]
+→ https://scandijapandi.no/products/[slug2]
+
+──────────────────
+
+北欧の静けさとともに、
+ScandiJapandi`,
+  },
+  exclusive: {
+    subject_no: 'Kun for deg — [Produktnavn] tilgjengelig før alle andre',
+    subject_en: 'For you first — [Product name] available before anyone else',
+    subject_jp: 'あなたへ先行公開 — [製品名]、誰よりも早く',
+    body_no: `Kjære [Navn],
+
+Som medlem av ScandiJapandi Private Circle får du tilgang til dette 24 timer før alle andre.
+
+[PRODUKTNAVN]
+[Produsent] · [Sted]
+[Pris] NOK / [Pris] JPY
+
+[Kort beskrivelse — hva gjør dette objektet spesielt, hvorfor er det verdt oppmerksomheten.]
+
+Kun [antall] tilgjengelig. Ingen restordre.
+
+→ Reserver ditt nå: https://scandijapandi.no/products/[slug]
+
+Dette tilbudet gjelder til [dato/tid].
+
+Med nordisk ro,
+ScandiJapandi`,
+    body_en: `Dear [Name],
+
+As a member of the ScandiJapandi Private Circle, you have access to this 24 hours before anyone else.
+
+[PRODUCT NAME]
+[Producer] · [Location]
+[Price] NOK / [Price] JPY
+
+[Short description — what makes this object special, why it deserves your attention.]
+
+Only [number] available. No back orders.
+
+→ Reserve yours now: https://scandijapandi.no/products/[slug]
+
+This offer is valid until [date/time].
+
+With Nordic calm,
+ScandiJapandi`,
+    body_jp: `[お名前] 様、
+
+ScandiJapandi プライベートサークルのメンバーとして、他の誰よりも24時間早くアクセスできます。
+
+[製品名]
+[生産者] · [場所]
+[価格] NOK / [価格] JPY
+
+[簡単な説明 — このオブジェクトの特別さ、なぜ注目に値するか。]
+
+残り[数]点。入荷待ちなし。
+
+→ 今すぐご予約: https://scandijapandi.no/products/[slug]
+
+このオファーは[日時]まで有効です。
+
+北欧の静けさとともに、
+ScandiJapandi`,
+  },
+};
+
+    function loadNewsletterTemplate(type) {
+      const t = NEWSLETTER_TEMPLATES[type];
+      if (!t) return;
+      show('nl-form');
+      // Fill in newsletter form fields
+      const fields = {
+        'nl-subject-no': t.subject_no,
+        'nl-subject-en': t.subject_en,
+        'nl-subject-jp': t.subject_jp,
+        'nl-body-no': t.body_no,
+        'nl-body-en': t.body_en,
+        'nl-body-jp': t.body_jp,
+      };
+      Object.entries(fields).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) (el as HTMLInputElement | HTMLTextAreaElement).value = value;
+      });
+      // Scroll to form
+      document.getElementById('nl-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    (window as any).loadNewsletterTemplate = loadNewsletterTemplate;
+
     // ─────────────────────────────────────────────────────────────────
     //  PRESSEMELDINGER + PRESSEKONTAKTER
     // ─────────────────────────────────────────────────────────────────
@@ -1638,13 +1959,13 @@ import Base from '../layouts/Base.astro';
 
     function prReset() {
       $('pr-id').value = '';
-      ['pr-title-no','pr-title-en','pr-title-jp','pr-body-no','pr-body-en','pr-body-jp'].forEach((id) => { $(id).value = ''; });
+      ['pr-title','pr-title-en','pr-title-jp','pr-body-no','pr-body-en','pr-body-jp'].forEach((id) => { $(id).value = ''; });
     }
     $('pr-new')?.addEventListener('click', () => { prReset(); show('pr-form'); });
     $('pr-cancel')?.addEventListener('click', () => { hide('pr-form'); prReset(); });
 
     $('pr-translate')?.addEventListener('click', async () => {
-      const r = await kTranslate($('pr-title-no').value.trim(), $('pr-body-no').value.trim(),
+      const r = await kTranslate($('pr-title').value.trim(), $('pr-body-no').value.trim(),
         'pr-translate', 'pr-translate-icon', 'pr-translate-label', (t) => {
           if (t.name_en) $('pr-title-en').value = t.name_en;
           if (t.name_jp) $('pr-title-jp').value = t.name_jp;
@@ -1657,7 +1978,7 @@ import Base from '../layouts/Base.astro';
 
     function prPayload() {
       return {
-        title: $('pr-title-no').value.trim(),
+        title: $('pr-title').value.trim(),
         title_en: $('pr-title-en').value.trim() || null,
         title_jp: $('pr-title-jp').value.trim() || null,
         body_no: $('pr-body-no').value.trim() || null,
@@ -1714,6 +2035,227 @@ import Base from '../layouts/Base.astro';
       if (res.ok) await loadPress();
       else alert('Kunne ikke slette.');
     }
+
+    // ── Pressemelding-maler ──────────────────────────────────────────
+    // Ferdige utkast for pressemeldinger. Eksponeres på window fordi
+    // mal-knappene bruker inline onclick, mens dette er et modul-skript.
+    const PRESS_TEMPLATES = {
+  launch: {
+    title: 'ScandiJapandi lanserer [Produktnavn] — nordisk håndverk for det japanske markedet',
+    title_en: 'ScandiJapandi launches [Product name] — Nordic craft for the Japanese market',
+    title_jp: 'ScandiJapandi、[製品名]を発表 — 日本市場向け北欧クラフト',
+    body_no: `PRESSEMELDING
+Til umiddelbar publisering
+
+ScandiJapandi lanserer [Produktnavn]
+
+[BY/DATO] — ScandiJapandi, den norske kureringsplattformen som bringer skandinavisk håndverk til Japan og Asia, lanserer i dag [Produktnavn] — et [beskriv produkt] laget av [Produsent] i [Sted].
+
+[Beskriv produktet i 2-3 setninger. Hva er det, hva gjør det spesielt, hva er historien bak?]
+
+"[Sitat fra Kurator eller grunnlegger om produktet og hva det representerer for merket.]"
+
+Produktet er tilgjengelig eksklusivt på scandijapandi.no fra [dato], priset til NOK [pris] / JPY [pris].
+
+Om ScandiJapandi
+ScandiJapandi er en kuratert e-handelsplattform som bygger bro mellom skandinavisk håndverkstradisjon og japansk estetisk filosofi. Plattformen arbeider med et lite antall nordiske produsenter og designere hvis objekter legemliggjør prinsipper om autentisk materialitet, formålsbevisst form og varig kvalitet.
+
+Kontakt:
+[Kuratorens navn]
+[E-post]
+scandijapandi.no`,
+    body_en: `PRESS RELEASE
+For immediate release
+
+ScandiJapandi launches [Product name]
+
+[CITY/DATE] — ScandiJapandi, the Norwegian curation platform bringing Scandinavian craft to Japan and Asia, today launches [Product name] — a [describe product] made by [Producer] in [Location].
+
+[Describe the product in 2-3 sentences. What is it, what makes it special, what is the story?]
+
+"[Quote from Curator or founder about the product and what it represents for the brand.]"
+
+The piece is available exclusively at scandijapandi.no from [date], priced at NOK [price] / JPY [price].
+
+About ScandiJapandi
+ScandiJapandi is a curated e-commerce platform bridging Scandinavian craft tradition with Japanese aesthetic philosophy. The platform works with a small number of Nordic producers and designers whose objects embody principles of authentic materiality, purposeful form, and enduring quality.
+
+Press contact:
+[Curator name]
+[Email]
+scandijapandi.no`,
+    body_jp: `プレスリリース
+即時配信
+
+ScandiJapandi、[製品名]を発表
+
+[都市/日付] — ノルウェーのキュレーションプラットフォーム「ScandiJapandi」は本日、[製品名]を発表しました。[場所]の[生産者]が制作した[製品の説明]です。
+
+[製品を2〜3文で説明。何であるか、何が特別か、背景にあるストーリーは？]
+
+「[キュレーターまたは創業者からの引用]」
+
+本作品は[日付]よりscandijapandi.noにて独占販売。価格はNOK [価格] / JPY [価格]。
+
+ScandiJapandiについて
+ScandiJapandiは、スカンジナビアのクラフト伝統と日本の美学哲学を繋ぐキュレーテッドEコマースプラットフォームです。真正な素材感、目的のあるフォルム、そして永続的な品質という原則を体現する少数の北欧生産者・デザイナーと協力しています。
+
+報道関係者のお問い合わせ：
+[キュレーター名]
+[メール]
+scandijapandi.no`,
+  },
+  partnership: {
+    title: 'ScandiJapandi velger [Produsent] som ny samarbeidspartner',
+    title_en: 'ScandiJapandi selects [Producer] as new partner',
+    title_jp: 'ScandiJapandi、[生産者]を新パートナーとして選定',
+    body_no: `PRESSEMELDING
+Til umiddelbar publisering
+
+ScandiJapandi og [Produsent] inngår partnerskap
+
+[BY/DATO] — ScandiJapandi kunngjør i dag et samarbeid med [Produsent], et [beskriv virksomheten] basert i [Sted], [Land].
+
+[Beskriv produsenten i 2-3 setninger. Hvem er de, hva lager de, hva er filosofien deres?]
+
+Gjennom dette partnerskapet vil [Produsents] [produkttype] bli tilgjengelig for japanske og asiatiske kunder via scandijapandi.no.
+
+"[Sitat fra Produsent om partnerskapet.]"
+
+"[Sitat fra ScandiJapandi om hvorfor de valgte denne produsenten.]"
+
+De første produktene fra [Produsent] er tilgjengelige på scandijapandi.no fra [dato].
+
+Kontakt:
+[Kuratorens navn]
+[E-post]
+scandijapandi.no`,
+    body_en: `PRESS RELEASE
+For immediate release
+
+ScandiJapandi and [Producer] announce partnership
+
+[CITY/DATE] — ScandiJapandi today announces a partnership with [Producer], a [describe business] based in [Location], [Country].
+
+[Describe the producer in 2-3 sentences. Who are they, what do they make, what is their philosophy?]
+
+Through this partnership, [Producer]'s [product type] will be available to Japanese and Asian customers via scandijapandi.no.
+
+"[Quote from Producer about the partnership.]"
+
+"[Quote from ScandiJapandi about why they chose this producer.]"
+
+The first products from [Producer] are available at scandijapandi.no from [date].
+
+Press contact:
+[Curator name]
+[Email]
+scandijapandi.no`,
+    body_jp: `プレスリリース
+即時配信
+
+ScandiJapandiと[生産者]がパートナーシップを締結
+
+[都市/日付] — ScandiJapandiは本日、[国][場所]を拠点とする[ビジネスの説明]「[生産者]」とのパートナーシップを発表しました。
+
+[生産者を2〜3文で説明。誰なのか、何を作るのか、哲学は？]
+
+このパートナーシップにより、[生産者]の[製品タイプ]がscandijapandi.noを通じて日本・アジアの顧客に提供されます。
+
+「[生産者からの引用]」
+
+「[ScandiJapandiからの引用]」
+
+[生産者]の最初の作品は[日付]よりscandijapandi.noにて販売開始。
+
+報道関係者のお問い合わせ：
+[キュレーター名]
+[メール]
+scandijapandi.no`,
+  },
+  brand: {
+    title: 'ScandiJapandi — Nordisk håndverk møter japansk estetikk',
+    title_en: 'ScandiJapandi — Where Nordic craft meets Japanese aesthetics',
+    title_jp: 'ScandiJapandi — 北欧クラフトと日本の美学が出会う場所',
+    body_no: `PRESSEMELDING
+Til umiddelbar publisering
+
+ScandiJapandi: En ny bro mellom Skandinavia og Japan
+
+[BY/DATO] — I en tid der globaliseringen har gjort alt tilgjengelig, har den håndlagde gjenstanden fått ny verdi. ScandiJapandi er en kuratert e-handelsplattform som bringer nøye utvalgte skandinaviske håndverksobjekter til Japan og det asiatiske markedet.
+
+Plattformen bygger på en enkel observasjon: skandinavisk og japansk designfilosofi deler dype røtter — respekt for materialet, tro på enkelhet, og overbevisningen om at et objekt laget for å vare er et objekt som betyr noe.
+
+"Vi er ikke en nettbutikk. Vi er et kuratorisk prosjekt — vi velger objekter som fortjener å bli sett, og vi forteller historiene bak dem." — [Grunnlegger/Kurator]
+
+ScandiJapandi arbeider med et begrenset antall nordiske produsenter og designere, og tilbyr deres arbeider til japanske og asiatiske kunder gjennom scandijapandi.no. Alle produkter er ledsaget av produsenthistorier, materialinformasjon og mulighet for direkte bestilling med levering til Japan og Asia.
+
+Om ScandiJapandi
+Grunnlagt i 2026 av SKM Nordic AS · scandijapandi.no
+
+Kontakt:
+[Kuratorens navn]
+[E-post]`,
+    body_en: `PRESS RELEASE
+For immediate release
+
+ScandiJapandi: A new bridge between Scandinavia and Japan
+
+[CITY/DATE] — In an era when globalisation has made everything accessible, the handmade object has acquired new meaning. ScandiJapandi is a curated e-commerce platform bringing carefully selected Scandinavian craft objects to Japan and the Asian market.
+
+The platform is built on a simple observation: Scandinavian and Japanese design philosophy share deep roots — respect for the material, faith in simplicity, and the conviction that an object made to last is an object that matters.
+
+"We are not a shop. We are a curatorial project — we choose objects that deserve to be seen, and we tell the stories behind them." — [Founder/Curator]
+
+ScandiJapandi works with a limited number of Nordic producers and designers, offering their work to Japanese and Asian customers through scandijapandi.no. All products are accompanied by maker stories, material information, and direct ordering with delivery to Japan and Asia.
+
+About ScandiJapandi
+Founded 2026 by SKM Nordic AS · scandijapandi.no
+
+Press contact:
+[Curator name]
+[Email]`,
+    body_jp: `プレスリリース
+即時配信
+
+ScandiJapandi：スカンジナビアと日本を繋ぐ新たな架け橋
+
+[都市/日付] — グローバル化によってあらゆるものが手に入る時代において、手作りのオブジェクトは新たな価値を持つようになりました。ScandiJapandiは、厳選されたスカンジナビアのクラフトオブジェクトを日本・アジア市場にお届けするキュレーテッドEコマースプラットフォームです。
+
+このプラットフォームはシンプルな観察から生まれました：スカンジナビアと日本のデザイン哲学は深い共通点を持っています — 素材への敬意、シンプルさへの信念、そして長持ちするオブジェクトこそが意味を持つという確信。
+
+「私たちはショップではありません。キュレーションプロジェクトです — 見られるべきオブジェクトを選び、その背景にあるストーリーを伝えます。」— [創業者/キュレーター]
+
+ScandiJapandiは少数の北欧生産者・デザイナーと協力し、scandijapandi.noを通じて日本・アジアの顧客に作品を届けています。すべての製品には作り手のストーリー、素材情報が添えられ、日本・アジアへの直接配送が可能です。
+
+ScandiJapandiについて
+2026年設立、SKM Nordic AS · scandijapandi.no
+
+報道関係者のお問い合わせ：
+[キュレーター名]
+[メール]`,
+  },
+};
+
+    function loadPressTemplate(type) {
+      const t = PRESS_TEMPLATES[type];
+      if (!t) return;
+      show('pr-form');
+      const fields = {
+        'pr-title': t.title,
+        'pr-title-en': t.title_en,
+        'pr-title-jp': t.title_jp,
+        'pr-body-no': t.body_no,
+        'pr-body-en': t.body_en,
+        'pr-body-jp': t.body_jp,
+      };
+      Object.entries(fields).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el) (el as HTMLInputElement | HTMLTextAreaElement).value = value;
+      });
+      document.getElementById('pr-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    (window as any).loadPressTemplate = loadPressTemplate;
 
     // ─────────────────────────────────────────────────────────────────
     //  PRODUSENTER
