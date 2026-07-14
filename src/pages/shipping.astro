@@ -1,0 +1,115 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Shipping Information — ScandiJapandi" description="Shipping rates, delivery times, and customs information for Japan, Norway, and international orders.">
+  <main class="min-h-screen bg-paper px-6 py-32 pt-40">
+    <div class="max-w-2xl mx-auto">
+
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-6">Shipping</p>
+      <h1 class="font-serif text-4xl text-ink font-light mb-4">Delivery Information</h1>
+      <p class="text-base text-stone font-light leading-relaxed mb-16">
+        Every order is carefully packed and shipped directly from the producer in Scandinavia.
+        Delivery times vary by destination and producer.
+      </p>
+
+      <!-- Japan -->
+      <div class="mb-12 pb-12 border-b border-ink/8">
+        <div class="flex items-baseline gap-4 mb-6">
+          <span class="text-2xl">🇯🇵</span>
+          <h2 class="font-serif text-2xl text-ink font-light">Japan</h2>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-6 mb-6">
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Delivery time</p>
+            <p class="font-serif text-xl text-ink">7–14 days</p>
+          </div>
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Shipping cost</p>
+            <p class="font-serif text-xl text-ink">From NOK 299</p>
+          </div>
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Carrier</p>
+            <p class="font-serif text-xl text-ink">DHL Express</p>
+          </div>
+        </div>
+        <div class="space-y-3 text-sm text-stone font-light leading-relaxed">
+          <p>— All shipments to Japan include tracking and door-to-door delivery.</p>
+          <p>— Import duties and Japanese consumption tax (10%) may be charged by customs upon arrival. These fees are the responsibility of the recipient.</p>
+          <p>— For orders over JPY 10,000, customs clearance is handled by DHL on your behalf.</p>
+          <p>— A commercial invoice with accurate product value is included with every shipment as required by Japanese customs law.</p>
+        </div>
+      </div>
+
+      <!-- Norway & Scandinavia -->
+      <div class="mb-12 pb-12 border-b border-ink/8">
+        <div class="flex items-baseline gap-4 mb-6">
+          <span class="text-2xl">🇳🇴</span>
+          <h2 class="font-serif text-2xl text-ink font-light">Norway & Scandinavia</h2>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-6 mb-6">
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Delivery time</p>
+            <p class="font-serif text-xl text-ink">2–5 days</p>
+          </div>
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Shipping cost</p>
+            <p class="font-serif text-xl text-ink">From NOK 99</p>
+          </div>
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Carrier</p>
+            <p class="font-serif text-xl text-ink">Posten / PostNord</p>
+          </div>
+        </div>
+        <div class="space-y-3 text-sm text-stone font-light leading-relaxed">
+          <p>— Free shipping on orders over NOK 2,000 within Norway.</p>
+          <p>— All Norwegian orders include VAT (MVA) at 25%.</p>
+          <p>— Tracking number provided by email upon dispatch.</p>
+        </div>
+      </div>
+
+      <!-- Rest of world -->
+      <div class="mb-12 pb-12 border-b border-ink/8">
+        <div class="flex items-baseline gap-4 mb-6">
+          <span class="text-2xl">🌍</span>
+          <h2 class="font-serif text-2xl text-ink font-light">Rest of world</h2>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-6 mb-6">
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Delivery time</p>
+            <p class="font-serif text-xl text-ink">10–21 days</p>
+          </div>
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Shipping cost</p>
+            <p class="font-serif text-xl text-ink">From NOK 349</p>
+          </div>
+          <div class="bg-oat p-5">
+            <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Carrier</p>
+            <p class="font-serif text-xl text-ink">DHL / PostNord</p>
+          </div>
+        </div>
+        <div class="space-y-3 text-sm text-stone font-light leading-relaxed">
+          <p>— Import duties and local taxes are the responsibility of the recipient.</p>
+          <p>— We currently ship to Norway, Sweden, Denmark, Finland, and Japan. More destinations coming soon.</p>
+          <p>— For special delivery requests, contact us at <a href="mailto:hello@scandijapandi.no" class="text-ink underline">hello@scandijapandi.no</a>.</p>
+        </div>
+      </div>
+
+      <!-- Returns -->
+      <div class="mb-16">
+        <h2 class="font-serif text-2xl text-ink font-light mb-6">Returns & exchanges</h2>
+        <div class="space-y-3 text-sm text-stone font-light leading-relaxed">
+          <p>— We accept returns within 14 days of delivery for unused items in original condition.</p>
+          <p>— To initiate a return, email <a href="mailto:hello@scandijapandi.no" class="text-ink underline">hello@scandijapandi.no</a> with your order number.</p>
+          <p>— Return shipping costs are the responsibility of the customer unless the item is faulty or incorrectly sent.</p>
+          <p>— Refunds are processed within 5–10 business days of receiving the returned item.</p>
+          <p>— Custom or personalised items cannot be returned.</p>
+        </div>
+      </div>
+
+      <a href="/" class="inline-block text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
+        ← Back to collection
+      </a>
+
+    </div>
+  </main>
+</Base>
