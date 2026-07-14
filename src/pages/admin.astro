@@ -375,6 +375,274 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
 
+      <!-- === KURATOR HUB ===================================================
+           Kuratorens verktøy for innhold, relasjoner og kommunikasjon.
+           Fire underseksjoner byttes med samme show/hide-mønster som resten
+           av admin-panelet. -->
+      <div class="mt-16">
+        <div class="flex items-baseline justify-between mb-6">
+          <div>
+            <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Kurator</span>
+            <h2 class="font-serif text-2xl text-ink">Kurator Hub</h2>
+          </div>
+          <button type="button" id="kurator-refresh" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">Oppdater</button>
+        </div>
+
+        <!-- Underseksjons-faner -->
+        <div class="flex flex-wrap gap-6 mb-8 border-b border-ink/10">
+          <button type="button" data-ktab="nyhetsbrev" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-ink text-ink">Nyhetsbrev</button>
+          <button type="button" data-ktab="presse" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-transparent text-stone hover:text-ink transition-colors">Pressemeldinger</button>
+          <button type="button" data-ktab="produsenter" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-transparent text-stone hover:text-ink transition-colors">Produsenter</button>
+          <button type="button" data-ktab="influensere" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-transparent text-stone hover:text-ink transition-colors">Influensere</button>
+        </div>
+
+        <!-- ── NYHETSBREV ────────────────────────────────────────────── -->
+        <div id="ktab-nyhetsbrev" class="k-panel">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-serif text-xl text-ink">Nyhetsbrev</h3>
+            <button type="button" id="nl-new" class="border border-ink/20 px-6 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink transition-colors">Nytt nyhetsbrev</button>
+          </div>
+
+          <form id="nl-form" class="hidden bg-oat/60 p-8 border border-ink/5 mb-10 space-y-6">
+            <input type="hidden" id="nl-id" value="" />
+            <fieldset class="space-y-5">
+              <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 flex items-center justify-between w-full">
+                <span>Emne</span>
+                <button type="button" id="nl-translate" class="flex items-center gap-2 border border-ink/20 px-4 py-2 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">
+                  <span id="nl-translate-icon">✦</span>
+                  <span id="nl-translate-label">Oversett automatisk (NO → EN + JP)</span>
+                </button>
+              </legend>
+              <div class="grid sm:grid-cols-3 gap-5">
+                <label class="block">
+                  <span class="text-[10px] uppercase tracking-widest text-stone">Emne (NO)</span>
+                  <input type="text" id="nl-subject-no" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+                </label>
+                <label class="block">
+                  <span class="text-[10px] uppercase tracking-widest text-stone">Emne (EN)</span>
+                  <input type="text" id="nl-subject-en" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
+                </label>
+                <label class="block">
+                  <span class="text-[10px] uppercase tracking-widest text-stone">Emne (JP 日本語)</span>
+                  <input type="text" id="nl-subject-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
+                </label>
+              </div>
+            </fieldset>
+            <fieldset class="space-y-5">
+              <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Innhold</legend>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Innhold (NO) — HTML tillatt</span>
+                <textarea id="nl-body-no" rows="8" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm"></textarea>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Innhold (EN)</span>
+                <textarea id="nl-body-en" rows="8" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm bg-oat/40"></textarea>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Innhold (JP 日本語)</span>
+                <textarea id="nl-body-jp" rows="8" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm bg-oat/40"></textarea>
+              </label>
+            </fieldset>
+            <div class="grid sm:grid-cols-2 gap-5 items-end">
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Segment</span>
+                <select id="nl-segment" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="all">Alle</option>
+                  <option value="customer">Kunder</option>
+                  <option value="maker">Makers</option>
+                  <option value="curator">Kuratorer</option>
+                </select>
+              </label>
+            </div>
+            <p id="nl-status" class="hidden text-[11px]"></p>
+            <div class="flex flex-wrap gap-4 pt-4 border-t border-ink/8">
+              <button type="button" id="nl-cancel" class="border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Avbryt</button>
+              <button type="button" id="nl-save" class="border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Lagre kladd</button>
+              <button type="button" id="nl-send" class="bg-ink text-paper px-8 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Send nå</button>
+            </div>
+          </form>
+
+          <div id="nl-list" class="overflow-x-auto">
+            <p class="text-sm text-stone">Laster nyhetsbrev …</p>
+          </div>
+        </div>
+
+        <!-- ── PRESSEMELDINGER ───────────────────────────────────────── -->
+        <div id="ktab-presse" class="k-panel hidden">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-serif text-xl text-ink">Pressemeldinger</h3>
+            <button type="button" id="pr-new" class="border border-ink/20 px-6 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink transition-colors">Ny pressemelding</button>
+          </div>
+
+          <form id="pr-form" class="hidden bg-oat/60 p-8 border border-ink/5 mb-10 space-y-6">
+            <input type="hidden" id="pr-id" value="" />
+            <fieldset class="space-y-5">
+              <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 flex items-center justify-between w-full">
+                <span>Tittel</span>
+                <button type="button" id="pr-translate" class="flex items-center gap-2 border border-ink/20 px-4 py-2 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">
+                  <span id="pr-translate-icon">✦</span>
+                  <span id="pr-translate-label">Oversett automatisk (NO → EN + JP)</span>
+                </button>
+              </legend>
+              <div class="grid sm:grid-cols-3 gap-5">
+                <label class="block">
+                  <span class="text-[10px] uppercase tracking-widest text-stone">Tittel (NO)</span>
+                  <input type="text" id="pr-title-no" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+                </label>
+                <label class="block">
+                  <span class="text-[10px] uppercase tracking-widest text-stone">Tittel (EN)</span>
+                  <input type="text" id="pr-title-en" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
+                </label>
+                <label class="block">
+                  <span class="text-[10px] uppercase tracking-widest text-stone">Tittel (JP 日本語)</span>
+                  <input type="text" id="pr-title-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" />
+                </label>
+              </div>
+            </fieldset>
+            <fieldset class="space-y-5">
+              <legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Innhold</legend>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Innhold (NO) — HTML tillatt</span>
+                <textarea id="pr-body-no" rows="8" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm"></textarea>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Innhold (EN)</span>
+                <textarea id="pr-body-en" rows="8" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm bg-oat/40"></textarea>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Innhold (JP 日本語)</span>
+                <textarea id="pr-body-jp" rows="8" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm bg-oat/40"></textarea>
+              </label>
+            </fieldset>
+            <p id="pr-status" class="hidden text-[11px]"></p>
+            <div class="flex flex-wrap gap-4 pt-4 border-t border-ink/8">
+              <button type="button" id="pr-cancel" class="border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Avbryt</button>
+              <button type="button" id="pr-save" class="border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Lagre</button>
+              <button type="button" id="pr-send" class="bg-ink text-paper px-8 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Send til presseliste</button>
+            </div>
+          </form>
+
+          <div id="pr-list" class="overflow-x-auto mb-14">
+            <p class="text-sm text-stone">Laster pressemeldinger …</p>
+          </div>
+
+          <!-- Pressekontakter -->
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-serif text-xl text-ink">Pressekontakter</h3>
+          </div>
+          <form id="pc-form" class="bg-oat/60 p-6 border border-ink/5 mb-8 grid sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Navn *</span>
+              <input type="text" id="pc-name" required class="mt-2 w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Mediehus</span>
+              <input type="text" id="pc-outlet" class="mt-2 w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">E-post *</span>
+              <input type="email" id="pc-email" required class="mt-2 w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" />
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Land</span>
+              <input type="text" id="pc-country" class="mt-2 w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm" />
+            </label>
+            <div class="flex gap-3">
+              <label class="block flex-1">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Språk</span>
+                <select id="pc-language" class="mt-2 w-full bg-paper p-3 border border-ink/10 focus:border-ink outline-none text-sm">
+                  <option value="en">EN</option>
+                  <option value="no">NO</option>
+                  <option value="ja">JA</option>
+                </select>
+              </label>
+              <button type="submit" class="bg-ink text-paper px-5 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay whitespace-nowrap self-end">Legg til</button>
+            </div>
+          </form>
+          <div id="pc-list" class="overflow-x-auto">
+            <p class="text-sm text-stone">Laster kontakter …</p>
+          </div>
+        </div>
+
+        <!-- ── PRODUSENTER ───────────────────────────────────────────── -->
+        <div id="ktab-produsenter" class="k-panel hidden">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="font-serif text-xl text-ink">Produsenter</h3>
+          </div>
+          <p class="text-[11px] text-stone mb-6">Neste automatiske rapport: Mandag 09:00</p>
+          <div id="pdr-list" class="overflow-x-auto">
+            <p class="text-sm text-stone">Laster produsenter …</p>
+          </div>
+        </div>
+
+        <!-- ── INFLUENSERE ───────────────────────────────────────────── -->
+        <div id="ktab-influensere" class="k-panel hidden">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-serif text-xl text-ink">Influensere</h3>
+            <button type="button" id="inf-new" class="border border-ink/20 px-6 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink transition-colors">Legg til influenser</button>
+          </div>
+
+          <form id="inf-form" class="hidden bg-oat/60 p-8 border border-ink/5 mb-10 space-y-6">
+            <div class="grid sm:grid-cols-2 gap-5">
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Navn *</span>
+                <input type="text" id="inf-name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Handle / Instagram</span>
+                <input type="text" id="inf-handle" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="@handle" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Platform</span>
+                <select id="inf-platform" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="instagram">Instagram</option>
+                  <option value="line">LINE</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="blog">Blogg</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+                <input type="email" id="inf-email" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Ref-kode</span>
+                <input type="text" id="inf-ref-code" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm" placeholder="f.eks. yuki-tokyo" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Land</span>
+                <input type="text" id="inf-country" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="JP" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Provisjon %</span>
+                <input type="number" id="inf-commission" min="0" max="100" step="1" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="10" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Status</span>
+                <select id="inf-status" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="prospect">Prospect</option>
+                  <option value="active">Aktiv</option>
+                  <option value="paused">Pauset</option>
+                </select>
+              </label>
+            </div>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Notater</span>
+              <textarea id="inf-notes" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+            </label>
+            <p id="inf-status-msg" class="hidden text-[11px]"></p>
+            <div class="flex flex-wrap gap-4 pt-4 border-t border-ink/8">
+              <button type="button" id="inf-cancel" class="border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Avbryt</button>
+              <button type="submit" class="bg-ink text-paper px-8 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Lagre influenser</button>
+            </div>
+          </form>
+
+          <div id="inf-list" class="overflow-x-auto">
+            <p class="text-sm text-stone">Laster influensere …</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Influencer links -->
       <div class="mt-16 bg-ink text-paper p-8">
         <h2 class="font-serif text-xl">Influenser-lenker</h2>
@@ -950,6 +1218,7 @@ import Base from '../layouts/Base.astro';
       await loadProducts();
       loadOrders();
       loadLeads();
+      loadKurator();
     }
 
     // Logg inn med kodebasert brukernavn + passord.
@@ -1082,6 +1351,7 @@ import Base from '../layouts/Base.astro';
       await loadProducts();
       loadOrders();
       loadLeads();
+      loadKurator();
     }
 
     // On page load, redeem any token in the URL hash (recovery, invite,
@@ -1126,6 +1396,456 @@ import Base from '../layouts/Base.astro';
 
       if (!routed) await boot();
     }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  KURATOR HUB
+    //  Nyhetsbrev · Pressemeldinger · Produsenter · Influensere.
+    //  Bruker samme api()-hjelper, show/hide-mønster og styling som resten
+    //  av admin-panelet.
+    // ══════════════════════════════════════════════════════════════════
+    const nokMinor = (v) => nok.format(Number(v || 0) / 100);
+    const fmtDay = (s) => { try { return new Date(s).toLocaleDateString('nb-NO', { dateStyle: 'medium' }); } catch { return s || ''; } };
+
+    // ── Fane-navigasjon ──────────────────────────────────────────────
+    const K_TABS = ['nyhetsbrev', 'presse', 'produsenter', 'influensere'];
+    function showKuratorTab(tab) {
+      K_TABS.forEach((t) => { const el = $(`ktab-${t}`); if (el) el.classList.toggle('hidden', t !== tab); });
+      document.querySelectorAll('.k-tab').forEach((b) => {
+        const on = b.dataset.ktab === tab;
+        b.classList.toggle('border-ink', on);
+        b.classList.toggle('text-ink', on);
+        b.classList.toggle('border-transparent', !on);
+        b.classList.toggle('text-stone', !on);
+      });
+    }
+    document.querySelectorAll('.k-tab').forEach((b) => b.addEventListener('click', () => showKuratorTab(b.dataset.ktab)));
+
+    function kStatus(id, text, ok) {
+      const el = $(id);
+      if (!el) return;
+      el.textContent = text;
+      el.className = `text-[11px] ${ok ? 'text-moss' : 'text-clay'}`;
+      show(id);
+      setTimeout(() => hide(id), 5000);
+    }
+
+    // Delt statusmerke for kladd/sendt.
+    function sendBadge(status) {
+      return status === 'sent'
+        ? '<span class="text-[10px] uppercase tracking-widest text-moss">Sendt</span>'
+        : '<span class="text-[10px] uppercase tracking-widest text-clay">Kladd</span>';
+    }
+
+    async function loadKurator() {
+      loadNewsletters();
+      loadPress();
+      loadProducers();
+      loadInfluencers();
+    }
+    $('kurator-refresh')?.addEventListener('click', loadKurator);
+
+    // ── Delt AI-oversettelse (gjenbruker /api/admin/translate) ───────
+    // Endepunktet forventer { name, description } og svarer med *_en/*_jp.
+    async function kTranslate(sourceText, sourceBody, btnId, iconId, labelId, apply) {
+      if (!sourceText) { return { error: 'Fyll inn tekst (NO) først.' }; }
+      const btn = $(btnId), icon = $(iconId), label = $(labelId);
+      if (btn) btn.setAttribute('disabled', 'true');
+      if (label) label.textContent = 'Oversetter…';
+      if (icon) icon.textContent = '⟳';
+      try {
+        const res = await fetch('/api/admin/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: sourceText, description: sourceBody }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const { translations: t } = await res.json();
+        apply(t);
+        return { ok: true };
+      } catch (err) {
+        console.error('[kurator-translate]', err);
+        return { error: 'Oversettelse feilet — prøv igjen.' };
+      } finally {
+        if (btn) btn.removeAttribute('disabled');
+        if (label) label.textContent = 'Oversett automatisk (NO → EN + JP)';
+        if (icon) icon.textContent = '✦';
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  NYHETSBREV
+    // ─────────────────────────────────────────────────────────────────
+    function renderNewsletters(rows) {
+      const list = $('nl-list');
+      if (!rows.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen nyhetsbrev ennå.</p>'; return; }
+      const segLabel = { all: 'Alle', customer: 'Kunder', maker: 'Makers', curator: 'Kuratorer' };
+      list.innerHTML = `
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="text-left border-b border-ink/10">
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Emne</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Segment</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Status</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Sendt</th>
+            <th class="py-3 text-[10px] uppercase tracking-widest text-stone font-medium">Mottakere</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((n) => `
+              <tr class="border-b border-ink/5">
+                <td class="py-3 pr-4 text-ink">${escapeHtml(n.subject_no || n.subject_en || '—')}</td>
+                <td class="py-3 pr-4 text-stone">${escapeHtml(segLabel[n.segment] || n.segment || '—')}</td>
+                <td class="py-3 pr-4">${sendBadge(n.status)}</td>
+                <td class="py-3 pr-4 text-stone whitespace-nowrap">${n.sent_at ? escapeHtml(fmtDay(n.sent_at)) : '—'}</td>
+                <td class="py-3 text-stone">${n.recipients || 0}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    async function loadNewsletters() {
+      const list = $('nl-list');
+      try {
+        const res = await api('/api/admin/kurator/newsletters');
+        if (!res.ok) { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste nyhetsbrev.</p>'; return; }
+        const data = await res.json();
+        renderNewsletters(data.newsletters || []);
+      } catch { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste nyhetsbrev.</p>'; }
+    }
+
+    function nlReset() {
+      $('nl-id').value = '';
+      ['nl-subject-no','nl-subject-en','nl-subject-jp','nl-body-no','nl-body-en','nl-body-jp'].forEach((id) => { $(id).value = ''; });
+      $('nl-segment').value = 'all';
+    }
+    $('nl-new')?.addEventListener('click', () => { nlReset(); show('nl-form'); });
+    $('nl-cancel')?.addEventListener('click', () => { hide('nl-form'); nlReset(); });
+
+    $('nl-translate')?.addEventListener('click', async () => {
+      const r = await kTranslate($('nl-subject-no').value.trim(), $('nl-body-no').value.trim(),
+        'nl-translate', 'nl-translate-icon', 'nl-translate-label', (t) => {
+          if (t.name_en) $('nl-subject-en').value = t.name_en;
+          if (t.name_jp) $('nl-subject-jp').value = t.name_jp;
+          if (t.description_en) $('nl-body-en').value = t.description_en;
+          if (t.description_jp) $('nl-body-jp').value = t.description_jp;
+        });
+      if (r.error) kStatus('nl-status', r.error, false);
+      else kStatus('nl-status', '✓ Oversettelse fullført — kontroller og lagre.', true);
+    });
+
+    function nlPayload() {
+      return {
+        subject_no: $('nl-subject-no').value.trim() || null,
+        subject_en: $('nl-subject-en').value.trim() || null,
+        subject_jp: $('nl-subject-jp').value.trim() || null,
+        body_no: $('nl-body-no').value.trim() || null,
+        body_en: $('nl-body-en').value.trim() || null,
+        body_jp: $('nl-body-jp').value.trim() || null,
+        segment: $('nl-segment').value,
+      };
+    }
+
+    // Lagrer en kladd (INSERT) og returnerer raden, eller null ved feil.
+    async function nlSave(silent) {
+      const p = nlPayload();
+      if (!p.subject_no && !p.subject_en) { kStatus('nl-status', 'Skriv inn et emne først.', false); return null; }
+      const res = await api('/api/admin/kurator/newsletters', { method: 'POST', body: JSON.stringify(p) });
+      if (!res.ok) { kStatus('nl-status', 'Kunne ikke lagre.', false); return null; }
+      const data = await res.json();
+      $('nl-id').value = data.newsletter?.id || '';
+      await loadNewsletters();
+      if (!silent) kStatus('nl-status', '✓ Kladd lagret.', true);
+      return data.newsletter;
+    }
+    $('nl-save')?.addEventListener('click', () => nlSave(false));
+
+    $('nl-send')?.addEventListener('click', async () => {
+      if (!confirm('Send nyhetsbrevet nå til valgt segment? Dette kan ikke angres.')) return;
+      let id = $('nl-id').value;
+      if (!id) { const saved = await nlSave(true); if (!saved) return; id = saved.id; }
+      kStatus('nl-status', 'Sender …', true);
+      const res = await api('/api/admin/kurator/send-newsletter', { method: 'POST', body: JSON.stringify({ id: Number(id) }) });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        kStatus('nl-status', `✓ Sendt til ${data.recipients} mottakere.`, true);
+        hide('nl-form'); nlReset(); await loadNewsletters();
+      } else {
+        kStatus('nl-status', `Sending feilet: ${data.error || `HTTP ${res.status}`}`, false);
+      }
+    });
+
+    // ─────────────────────────────────────────────────────────────────
+    //  PRESSEMELDINGER + PRESSEKONTAKTER
+    // ─────────────────────────────────────────────────────────────────
+    function renderReleases(rows) {
+      const list = $('pr-list');
+      if (!rows.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen pressemeldinger ennå.</p>'; return; }
+      list.innerHTML = `
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="text-left border-b border-ink/10">
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Tittel</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Status</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Sendt</th>
+            <th class="py-3 text-[10px] uppercase tracking-widest text-stone font-medium">Mottakere</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((r) => `
+              <tr class="border-b border-ink/5">
+                <td class="py-3 pr-4 text-ink">${escapeHtml(r.title || '—')}</td>
+                <td class="py-3 pr-4">${sendBadge(r.status)}</td>
+                <td class="py-3 pr-4 text-stone whitespace-nowrap">${r.sent_at ? escapeHtml(fmtDay(r.sent_at)) : '—'}</td>
+                <td class="py-3 text-stone">${r.recipients || 0}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    function renderContacts(rows) {
+      const list = $('pc-list');
+      if (!rows.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen pressekontakter ennå.</p>'; return; }
+      list.innerHTML = `
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="text-left border-b border-ink/10">
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Navn</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Mediehus</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">E-post</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Land</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Språk</th>
+            <th class="py-3 text-[10px] uppercase tracking-widest text-stone font-medium"></th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((c) => `
+              <tr class="border-b border-ink/5">
+                <td class="py-3 pr-4 text-ink">${escapeHtml(c.name)}</td>
+                <td class="py-3 pr-4 text-stone">${escapeHtml(c.outlet || '—')}</td>
+                <td class="py-3 pr-4 text-stone break-all">${escapeHtml(c.email)}</td>
+                <td class="py-3 pr-4 text-stone">${escapeHtml(c.country || '—')}</td>
+                <td class="py-3 pr-4 text-stone uppercase">${escapeHtml(c.language || '—')}</td>
+                <td class="py-3 text-right"><button type="button" data-pc-del="${c.id}" class="text-[10px] uppercase tracking-widest text-clay hover:opacity-70">Slett</button></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+      list.querySelectorAll('[data-pc-del]').forEach((b) => b.addEventListener('click', () => pcDelete(b.dataset.pcDel)));
+    }
+
+    async function loadPress() {
+      try {
+        const res = await api('/api/admin/kurator/press');
+        if (!res.ok) { $('pr-list').innerHTML = '<p class="text-sm text-clay">Kunne ikke laste presse.</p>'; return; }
+        const data = await res.json();
+        renderReleases(data.releases || []);
+        renderContacts(data.contacts || []);
+      } catch { $('pr-list').innerHTML = '<p class="text-sm text-clay">Kunne ikke laste presse.</p>'; }
+    }
+
+    function prReset() {
+      $('pr-id').value = '';
+      ['pr-title-no','pr-title-en','pr-title-jp','pr-body-no','pr-body-en','pr-body-jp'].forEach((id) => { $(id).value = ''; });
+    }
+    $('pr-new')?.addEventListener('click', () => { prReset(); show('pr-form'); });
+    $('pr-cancel')?.addEventListener('click', () => { hide('pr-form'); prReset(); });
+
+    $('pr-translate')?.addEventListener('click', async () => {
+      const r = await kTranslate($('pr-title-no').value.trim(), $('pr-body-no').value.trim(),
+        'pr-translate', 'pr-translate-icon', 'pr-translate-label', (t) => {
+          if (t.name_en) $('pr-title-en').value = t.name_en;
+          if (t.name_jp) $('pr-title-jp').value = t.name_jp;
+          if (t.description_en) $('pr-body-en').value = t.description_en;
+          if (t.description_jp) $('pr-body-jp').value = t.description_jp;
+        });
+      if (r.error) kStatus('pr-status', r.error, false);
+      else kStatus('pr-status', '✓ Oversettelse fullført — kontroller og lagre.', true);
+    });
+
+    function prPayload() {
+      return {
+        title: $('pr-title-no').value.trim(),
+        title_en: $('pr-title-en').value.trim() || null,
+        title_jp: $('pr-title-jp').value.trim() || null,
+        body_no: $('pr-body-no').value.trim() || null,
+        body_en: $('pr-body-en').value.trim() || null,
+        body_jp: $('pr-body-jp').value.trim() || null,
+      };
+    }
+
+    async function prSave(silent) {
+      const p = prPayload();
+      if (!p.title) { kStatus('pr-status', 'Skriv inn en tittel først.', false); return null; }
+      const res = await api('/api/admin/kurator/press-releases', { method: 'POST', body: JSON.stringify(p) });
+      if (!res.ok) { kStatus('pr-status', 'Kunne ikke lagre.', false); return null; }
+      const data = await res.json();
+      $('pr-id').value = data.release?.id || '';
+      await loadPress();
+      if (!silent) kStatus('pr-status', '✓ Pressemelding lagret.', true);
+      return data.release;
+    }
+    $('pr-save')?.addEventListener('click', () => prSave(false));
+
+    $('pr-send')?.addEventListener('click', async () => {
+      if (!confirm('Send pressemeldingen til hele presselisten? Dette kan ikke angres.')) return;
+      let id = $('pr-id').value;
+      if (!id) { const saved = await prSave(true); if (!saved) return; id = saved.id; }
+      kStatus('pr-status', 'Sender …', true);
+      const res = await api('/api/admin/kurator/send-press', { method: 'POST', body: JSON.stringify({ id: Number(id) }) });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        kStatus('pr-status', `✓ Sendt til ${data.recipients} pressekontakter.`, true);
+        hide('pr-form'); prReset(); await loadPress();
+      } else {
+        kStatus('pr-status', `Sending feilet: ${data.error || `HTTP ${res.status}`}`, false);
+      }
+    });
+
+    $('pc-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: $('pc-name').value.trim(),
+        outlet: $('pc-outlet').value.trim() || null,
+        email: $('pc-email').value.trim(),
+        country: $('pc-country').value.trim() || null,
+        language: $('pc-language').value,
+      };
+      const res = await api('/api/admin/kurator/press-contacts', { method: 'POST', body: JSON.stringify(payload) });
+      if (res.ok) { $('pc-form').reset(); await loadPress(); }
+      else alert('Kunne ikke legge til kontakt.');
+    });
+
+    async function pcDelete(id) {
+      if (!confirm('Slette denne pressekontakten?')) return;
+      const res = await api(`/api/admin/kurator/press-contacts/${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (res.ok) await loadPress();
+      else alert('Kunne ikke slette.');
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  PRODUSENTER
+    // ─────────────────────────────────────────────────────────────────
+    function renderProducers(rows) {
+      const list = $('pdr-list');
+      if (!rows.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen produsenter med e-post ennå.</p>'; return; }
+      list.innerHTML = `
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="text-left border-b border-ink/10">
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Produsent</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">E-post</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Produkter</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Ordre</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Omsetning</th>
+            <th class="py-3 text-[10px] uppercase tracking-widest text-stone font-medium"></th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((p) => `
+              <tr class="border-b border-ink/5">
+                <td class="py-3 pr-4 text-ink">${escapeHtml(p.producer || '—')}</td>
+                <td class="py-3 pr-4 text-stone break-all">${escapeHtml(p.producer_email)}</td>
+                <td class="py-3 pr-4 text-stone">${p.product_count || 0}</td>
+                <td class="py-3 pr-4 text-stone">${p.order_count || 0}</td>
+                <td class="py-3 pr-4 text-stone whitespace-nowrap">${nokMinor(p.total_revenue_minor)}</td>
+                <td class="py-3 text-right"><button type="button" data-pdr-send="${escapeHtml(p.producer_email)}" class="text-[10px] uppercase tracking-widest text-ink hover:text-clay whitespace-nowrap">Send rapport nå</button></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+      list.querySelectorAll('[data-pdr-send]').forEach((b) => b.addEventListener('click', () => pdrSend(b, b.dataset.pdrSend)));
+    }
+
+    async function loadProducers() {
+      const list = $('pdr-list');
+      try {
+        const res = await api('/api/admin/kurator/producers');
+        if (!res.ok) { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste produsenter.</p>'; return; }
+        const data = await res.json();
+        renderProducers(data.producers || []);
+      } catch { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste produsenter.</p>'; }
+    }
+
+    async function pdrSend(btn, email) {
+      if (!confirm(`Sende ukesrapport nå til ${email}?`)) return;
+      const original = btn.textContent;
+      btn.setAttribute('disabled', 'true'); btn.textContent = 'Sender …';
+      try {
+        const res = await api('/api/admin/kurator/send-producer-report', { method: 'POST', body: JSON.stringify({ producer_email: email }) });
+        const data = await res.json().catch(() => ({}));
+        btn.textContent = res.ok ? '✓ Sendt' : 'Feilet';
+        if (!res.ok) console.error('[producer-report]', data.error);
+      } catch (err) {
+        console.error('[producer-report]', err); btn.textContent = 'Feilet';
+      } finally {
+        setTimeout(() => { btn.removeAttribute('disabled'); btn.textContent = original; }, 3000);
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  INFLUENSERE
+    // ─────────────────────────────────────────────────────────────────
+    function infBadge(status) {
+      if (status === 'active') return '<span class="text-[10px] uppercase tracking-widest text-moss">Aktiv</span>';
+      if (status === 'paused') return '<span class="text-[10px] uppercase tracking-widest text-clay">Pauset</span>';
+      return '<span class="text-[10px] uppercase tracking-widest text-stone">Prospect</span>';
+    }
+
+    function renderInfluencers(rows) {
+      const list = $('inf-list');
+      if (!rows.length) { list.innerHTML = '<p class="text-sm text-stone">Ingen influensere ennå.</p>'; return; }
+      list.innerHTML = `
+        <table class="w-full text-sm border-collapse">
+          <thead><tr class="text-left border-b border-ink/10">
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Navn / Handle</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Platform</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Ref-kode</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Land</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Status</th>
+            <th class="py-3 pr-4 text-[10px] uppercase tracking-widest text-stone font-medium">Ordre</th>
+            <th class="py-3 text-[10px] uppercase tracking-widest text-stone font-medium">Omsetning</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((i) => `
+              <tr class="border-b border-ink/5">
+                <td class="py-3 pr-4 text-ink">${escapeHtml(i.name)}${i.handle ? ` <span class="text-stone">${escapeHtml(i.handle)}</span>` : ''}</td>
+                <td class="py-3 pr-4 text-stone capitalize">${escapeHtml(i.platform || '—')}</td>
+                <td class="py-3 pr-4 text-stone font-mono">${escapeHtml(i.ref_code || '—')}</td>
+                <td class="py-3 pr-4 text-stone">${escapeHtml(i.country || '—')}</td>
+                <td class="py-3 pr-4">${infBadge(i.status)}</td>
+                <td class="py-3 pr-4 text-stone">${i.order_count || 0}</td>
+                <td class="py-3 text-stone whitespace-nowrap">${nokMinor(i.total_revenue)}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    async function loadInfluencers() {
+      const list = $('inf-list');
+      try {
+        const res = await api('/api/admin/kurator/influencers');
+        if (!res.ok) { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste influensere.</p>'; return; }
+        const data = await res.json();
+        renderInfluencers(data.influencers || []);
+      } catch { list.innerHTML = '<p class="text-sm text-clay">Kunne ikke laste influensere.</p>'; }
+    }
+
+    function infReset() {
+      ['inf-name','inf-handle','inf-email','inf-ref-code','inf-country','inf-commission','inf-notes'].forEach((id) => { $(id).value = ''; });
+      $('inf-platform').value = 'instagram';
+      $('inf-status').value = 'prospect';
+    }
+    $('inf-new')?.addEventListener('click', () => { infReset(); show('inf-form'); });
+    $('inf-cancel')?.addEventListener('click', () => { hide('inf-form'); infReset(); });
+
+    $('inf-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const commission = Number($('inf-commission').value);
+      const payload = {
+        name: $('inf-name').value.trim(),
+        handle: $('inf-handle').value.trim() || null,
+        platform: $('inf-platform').value,
+        email: $('inf-email').value.trim() || null,
+        ref_code: $('inf-ref-code').value.trim() || null,
+        country: $('inf-country').value.trim() || 'JP',
+        commission_pct: Number.isFinite(commission) && commission > 0 ? Math.round(commission) : 10,
+        status: $('inf-status').value,
+        notes: $('inf-notes').value.trim() || null,
+      };
+      const res = await api('/api/admin/kurator/influencers', { method: 'POST', body: JSON.stringify(payload) });
+      if (res.ok) { hide('inf-form'); infReset(); await loadInfluencers(); }
+      else kStatus('inf-status-msg', 'Kunne ikke lagre influenser.', false);
+    });
 
     init();
   </script>
