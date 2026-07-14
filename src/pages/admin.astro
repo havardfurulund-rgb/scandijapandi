@@ -688,6 +688,506 @@ import Base from '../layouts/Base.astro';
             <p class="text-sm text-stone">Laster influensere …</p>
           </div>
         </div>
+
+        <!-- Outreach Templates -->
+        <div class="mt-12 pt-12 border-t border-ink/8">
+          <div class="flex items-baseline justify-between mb-8">
+            <div>
+              <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Outreach</span>
+              <h3 class="font-serif text-2xl text-ink">Kommunikasjonsmaler</h3>
+            </div>
+          </div>
+
+          <!-- Template category tabs -->
+          <div class="flex gap-2 mb-8 flex-wrap">
+            <button onclick="showOutreachCategory('producers')" id="ot-tab-producers" class="outreach-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink/20 hover:border-ink transition-colors bg-ink text-paper">
+              Produsenter & Designere
+            </button>
+            <button onclick="showOutreachCategory('influencers')" id="ot-tab-influencers" class="outreach-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink/20 hover:border-ink transition-colors">
+              Influensere & Media
+            </button>
+            <button onclick="showOutreachCategory('onboarding')" id="ot-tab-onboarding" class="outreach-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink/20 hover:border-ink transition-colors">
+              Onboarding
+            </button>
+          </div>
+
+          <!-- Producers & Designers templates -->
+          <div id="ot-producers" class="outreach-category space-y-4">
+            <p class="text-xs text-stone mb-6">Maler for å ta kontakt med norske og skandinaviske produsenter og designere. Erstatt [tekst i hakeparenteser] med faktisk informasjon.</p>
+
+            <!-- Template 1: Cold email NO -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-p1')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">E-post · Norsk</span>
+                  <span class="text-sm text-ink">Kald kontakt — produsent/designer</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-p1" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Emne</span>
+                    <button onclick="copyOutreach('ot-p1-subject')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-p1-subject" class="bg-oat/60 p-3 text-sm text-ink font-light">
+                    ScandiJapandi — vi vil gjerne presentere [Produsentens navn] for det japanske markedet
+                  </div>
+                  <div class="flex justify-between items-center mt-4 mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Melding</span>
+                    <button onclick="copyOutreach('ot-p1-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-p1-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">Hei [Navn],
+
+
+Jeg heter [Kuratorens navn] og jobber med ScandiJapandi Collection — en kuratert plattform som bringer nøye utvalgte skandinaviske håndverksobjekter til Japan og det asiatiske markedet.
+
+
+Jeg kom over arbeidet til [Produsentens navn] gjennom [hvor du fant dem], og ble umiddelbart trukket til [beskriv hva som er spesielt — materialet, håndverket, estetikken].
+
+
+Det japanske markedet har en dyp respekt for nordisk håndverkstradisjon, og jeg tror [Produsentens navn] sine produkter ville resonnere sterkt der. Vi arbeider med et lite, nøye utvalgt antall produsenter — ikke en markedsplass, men et kuratorisk prosjekt.
+
+
+Hva vi tilbyr:
+— En dedikert produktside med din historie fortalt på norsk, engelsk og japansk
+— Direktesal til japanske og asiatiske kunder uten mellomleddet
+— 75–80% av salgsprisen til deg (vi tar 20–25% som kuraterings- og markedsføringshonorar)
+— Ukentlig salgsrapport direkte til din innboks
+— Promotering via vårt influensernett i Japan
+
+
+Ingen eksklusivitet, ingen binding. Du bestemmer selv hvilke produkter du vil liste og til hvilken pris.
+
+
+Jeg hadde gjerne tatt en kort prat om dette passer for dere. Er du tilgjengelig for en 20-minutters samtale denne uken eller neste?
+
+
+Med vennlig hilsen,
+[Kuratorens navn]
+ScandiJapandi Collection
+hello@scandijapandi.no
+scandijapandi.no</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Template 2: Instagram DM NO -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-p2')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">Instagram DM · Norsk</span>
+                  <span class="text-sm text-ink">Første kontakt via Instagram</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-p2" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Melding</span>
+                    <button onclick="copyOutreach('ot-p2-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-p2-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">Hei [Navn] 👋
+
+
+Jeg driver ScandiJapandi Collection — vi bringer skandinavisk håndverk til Japan og Asia. Kom over arbeidet ditt og ble veldig inspirert av [beskriv noe spesifikt].
+
+
+Jeg tror produktene dine ville passe perfekt for det japanske markedet. Japanere har en genuin fascinasjon for nordisk håndverk og kvalitet.
+
+
+Har du 20 min til en rask prat? Sender gjerne mer info på e-post først hvis du foretrekker det 🌿
+
+
+scandijapandi.no</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Template 3: Follow-up -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-p3')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">E-post · Norsk</span>
+                  <span class="text-sm text-ink">Oppfølging — ingen svar etter 7 dager</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-p3" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Emne</span>
+                    <button onclick="copyOutreach('ot-p3-subject')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-p3-subject" class="bg-oat/60 p-3 text-sm text-ink font-light">
+                    Re: ScandiJapandi — bare en rask oppfølging
+                  </div>
+                  <div class="flex justify-between items-center mt-4 mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Melding</span>
+                    <button onclick="copyOutreach('ot-p3-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-p3-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">Hei [Navn],
+
+
+Sender en kort oppfølging på e-posten min fra forrige uke angående ScandiJapandi og det japanske markedet.
+
+
+Jeg forstår at innboksen kan bli full — ingen stress. Jeg ville bare sikre at meldingen min ikke druknet.
+
+
+Kort oppsummert: vi vil gjerne presentere [Produsentens navn] for japanske kunder som aktivt søker etter autentisk nordisk håndverk. Ingen binding, ingen eksklusivitet.
+
+
+Er dette noe du har lyst til å høre mer om?
+
+
+Med vennlig hilsen,
+[Kuratorens navn]
+ScandiJapandi Collection</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Influencers & Media templates -->
+          <div id="ot-influencers" class="outreach-category space-y-4 hidden">
+            <p class="text-xs text-stone mb-6">Maler for japanske influensere, bloggere og medieredaksjoner. Tilpass alltid med spesifikk referanse til deres innhold.</p>
+
+            <!-- Template 4: Japanese influencer email EN -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-i1')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">E-post · Engelsk</span>
+                  <span class="text-sm text-ink">Japansk influenser — første kontakt</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-i1" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Subject</span>
+                    <button onclick="copyOutreach('ot-i1-subject')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Copy</button>
+                  </div>
+                  <div id="ot-i1-subject" class="bg-oat/60 p-3 text-sm text-ink font-light">
+                    Collaboration invitation — ScandiJapandi x [Handle]
+                  </div>
+                  <div class="flex justify-between items-center mt-4 mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Message</span>
+                    <button onclick="copyOutreach('ot-i1-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Copy</button>
+                  </div>
+                  <div id="ot-i1-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">Hi [Name],
+
+
+I came across your work on [platform] and have been following your content on [specific topic — Nordic interior, minimalist living, Japanese craft etc.] with genuine admiration. [Mention one specific post or piece of content that resonated.]
+
+
+I am writing from ScandiJapandi Collection — a curated platform bringing carefully selected Scandinavian craft objects to Japan. We work with a small number of Nordic makers whose objects embody the same quiet principles that define both wabi-sabi and Scandinavian design: honesty of material, purposeful form, and enduring quality.
+
+
+We would love to have you as a curator. Here is what that means in practice:
+
+
+— A unique personal link (scandijapandi.no?ref=[yourhandle]) that tracks every visit and purchase you inspire
+— 10% commission on every sale through your link, paid monthly
+— A complimentary product from our collection sent to you first, no obligation
+— Early access to new arrivals before public release
+— No posting requirements — share only what genuinely resonates with you
+
+
+We are selective about who we work with, and your aesthetic feels genuinely aligned with what we are building.
+
+
+Would you be open to receiving a product and exploring this together?
+
+
+Warm regards,
+[Curator name]
+ScandiJapandi Collection
+scandijapandi.no</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Template 5: Japanese influencer DM JP -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-i2')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">Instagram DM · 日本語</span>
+                  <span class="text-sm text-ink">日本のインフルエンサー — 初回コンタクト</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-i2" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">メッセージ</span>
+                    <button onclick="copyOutreach('ot-i2-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">コピー</button>
+                  </div>
+                  <div id="ot-i2-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">はじめまして、[お名前]さん。
+
+
+ScandiJapandi Collectionの[クレーター名]と申します。北欧のクラフトオブジェクトを日本市場にお届けするキュレーションプラットフォームです。
+
+
+[お名前]さんの[具体的な投稿やコンテンツへの言及]を拝見し、私たちのブランドと深く共鳴するものを感じました。
+
+
+もしよろしければ、コレクションの中から一点、お試しいただけないでしょうか。お気に召していただけた場合、ご自身のオーディエンスにご紹介いただける機会があれば大変光栄です。
+
+
+詳細はメールにてお送りすることも可能です。ご検討いただけますと幸いです 🌿
+
+
+ScandiJapandi Collection
+scandijapandi.no</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Template 6: Press/media pitch EN -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-i3')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">E-post · Engelsk</span>
+                  <span class="text-sm text-ink">Medieredaksjon — story pitch</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-i3" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Subject</span>
+                    <button onclick="copyOutreach('ot-i3-subject')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Copy</button>
+                  </div>
+                  <div id="ot-i3-subject" class="bg-oat/60 p-3 text-sm text-ink font-light">
+                    Story pitch: The Norwegian platform bringing Nordic craft to Japan
+                  </div>
+                  <div class="flex justify-between items-center mt-4 mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Message</span>
+                    <button onclick="copyOutreach('ot-i3-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Copy</button>
+                  </div>
+                  <div id="ot-i3-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">Hi [Editor/Journalist name],
+
+
+I am reaching out with a story I think your readers at [Publication] would find genuinely interesting.
+
+
+THE STORY: A small Norwegian platform is quietly building a bridge between two of the world's most respected design cultures — Scandinavian craft and Japanese aesthetics. ScandiJapandi Collection curates a handful of Nordic makers whose objects embody wabi-sabi principles: honest materials, purposeful form, and enduring quality. Their products are sold exclusively to Japanese and Asian customers who are actively seeking authentic Nordic craft — not mass-produced Scandinavian goods, but the real thing.
+
+
+WHY NOW: The interest in Japandi aesthetics has grown steadily since 2020, but no one has built a serious curation platform specifically for this intersection. ScandiJapandi is filling that gap with a careful, anti-mass-market approach.
+
+
+WHAT I CAN OFFER:
+— Interview with the founder and curator
+— Access to the makers and their workshops
+— Product samples for review
+— Sales and demand data from the Japanese market (available after launch)
+
+
+I would be happy to send a full press kit, product samples, or arrange a call.
+
+
+Best regards,
+[Curator name]
+ScandiJapandi Collection
+hello@scandijapandi.no
+scandijapandi.no</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Onboarding templates -->
+          <div id="ot-onboarding" class="outreach-category space-y-4 hidden">
+            <p class="text-xs text-stone mb-6">Maler for å onboarde nye produsenter og kuratorer etter at de har sagt ja.</p>
+
+            <!-- Template 7: Producer onboarding -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-o1')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">E-post · Norsk</span>
+                  <span class="text-sm text-ink">Velkomst — ny produsent</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-o1" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Emne</span>
+                    <button onclick="copyOutreach('ot-o1-subject')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-o1-subject" class="bg-oat/60 p-3 text-sm text-ink font-light">
+                    Velkommen til ScandiJapandi — her er hva som skjer nå
+                  </div>
+                  <div class="flex justify-between items-center mt-4 mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Melding</span>
+                    <button onclick="copyOutreach('ot-o1-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-o1-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">Hei [Navn],
+
+
+Så glad for at du er med! La oss komme i gang.
+
+
+HVA JEG TRENGER FRA DEG:
+
+
+
+PRODUKTBILDER
+— 1 hovedbilde per produkt: 2:3 format (f.eks. 2000×3000px), hvit eller lys naturlig bakgrunn
+— 1–4 detaljbilder: tekstur, materiale, detaljer
+— 1 portrettbilde av deg i verkstedet (valgfritt men anbefalt)
+Send bildene til hello@scandijapandi.no eller via WeTransfer.
+
+
+
+
+PRODUKTINFORMASJON (per produkt)
+— Produktnavn
+— Kort beskrivelse (2–4 setninger på norsk — vi oversetter til engelsk og japansk)
+— Din historie som produsent (3–5 setninger — hvem du er, hva driver deg)
+— Materiale og dimensjoner
+— Vedlikeholdsinstruksjoner
+— Pris du ønsker å selge for (vi legger til vår margin)
+— Antall tilgjengelig
+
+
+
+
+BETALINGSINFORMASJON
+— Kontonummer for utbetalinger
+— Organisasjonsnummer (hvis du har)
+
+
+
+HVA SKJER VIDERE:
+— Jeg legger produktene inn på scandijapandi.no
+— Du mottar en link til produktsiden din for godkjenning
+— Vi promoterer til våre japanske kuratorer og Circle-members
+— Ukentlig salgsrapport sendes til denne e-postadressen hver mandag
+
+
+Spørsmål? Svar på denne e-posten — jeg er rask til å svare.
+
+
+Med nordisk ro,
+[Kuratorens navn]
+ScandiJapandi Collection</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Template 8: Influencer onboarding EN -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-o2')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">E-post · Engelsk</span>
+                  <span class="text-sm text-ink">Velkomst — ny kurator/influenser</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-o2" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Subject</span>
+                    <button onclick="copyOutreach('ot-o2-subject')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Copy</button>
+                  </div>
+                  <div id="ot-o2-subject" class="bg-oat/60 p-3 text-sm text-ink font-light">
+                    Welcome to ScandiJapandi — your curator link and everything you need
+                  </div>
+                  <div class="flex justify-between items-center mt-4 mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Message</span>
+                    <button onclick="copyOutreach('ot-o2-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Copy</button>
+                  </div>
+                  <div id="ot-o2-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">Hi [Name],
+
+
+Welcome — we are genuinely glad to have you.
+
+
+YOUR CURATOR LINK:
+scandijapandi.no?ref=[refcode]
+
+
+This link tracks every visitor and purchase you inspire. Share it anywhere — Instagram bio, stories, posts, YouTube description, blog. Every sale through your link earns you 10% commission, paid monthly to your PayPal or bank account.
+
+
+WHAT YOU HAVE ACCESS TO:
+— The full ScandiJapandi collection at scandijapandi.no
+— Early access to new arrivals (we will email you 24h before public release)
+— High-resolution product images for your content (reply to request)
+— Your personal sales dashboard (coming soon)
+
+
+HOW IT WORKS:
+
+Share your link with your audience
+When someone buys through your link, we process and ship the order
+You receive a monthly commission statement and payment
+
+
+
+CONTENT GUIDANCE (optional):
+We never tell you what to post. But if it helps — our audience responds best to content that feels quiet and considered. Real spaces, natural light, honest materials. Not unboxing energy, but "I found something I genuinely love" energy.
+
+
+Questions? Reply to this email — I read every one.
+
+
+With Nordic calm,
+[Curator name]
+ScandiJapandi Collection
+scandijapandi.no</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Template 9: Concept overview NO (for design environments/fairs) -->
+            <div class="border border-ink/8 bg-paper">
+              <button onclick="toggleOutreachTemplate('ot-o3')" class="w-full flex items-center justify-between p-5 text-left hover:bg-oat/40 transition-colors">
+                <div>
+                  <span class="text-[10px] uppercase tracking-widest text-stone block mb-1">Presentasjon · Norsk</span>
+                  <span class="text-sm text-ink">Konseptpresentasjon — messer og designmiljøer</span>
+                </div>
+                <span class="text-stone text-lg">↓</span>
+              </button>
+              <div id="ot-o3" class="hidden border-t border-ink/8">
+                <div class="p-5 space-y-3">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-[10px] uppercase tracking-widest text-stone">Tekst</span>
+                    <button onclick="copyOutreach('ot-o3-body')" class="text-[10px] uppercase tracking-widest text-stone/50 hover:text-stone transition-colors">Kopier</button>
+                  </div>
+                  <div id="ot-o3-body" class="bg-oat/60 p-3 text-sm text-ink font-light leading-relaxed whitespace-pre-line">OM SCANDI JAPANDI COLLECTION
+
+
+ScandiJapandi er en kuratert e-handelsplattform som bringer nøye utvalgte skandinaviske håndverksobjekter til Japan og det asiatiske markedet.
+
+
+Vi er ikke en markedsplass. Vi er et kuratorisk prosjekt — vi velger et lite antall produsenter og designere hvis arbeid bærer i seg den samme stille filosofien som forbinder nordisk og japansk designtenkning: respekt for materialet, tro på enkelhet, og overbevisningen om at et objekt laget for å vare er et objekt som betyr noe.
+
+
+HVA VI TILBYR PRODUSENTER:
+— Dedikert produktside med din historie fortalt på norsk, engelsk og japansk
+— Direkte tilgang til japanske kunder uten mellomleddet
+— 75–80% av salgsprisen (vi tar 20–25% som kuraterings- og markedsføringshonorar)
+— Ukentlig salgsrapport til din innboks
+— Promotering via influensernett i Japan
+— Ingen eksklusivitet, ingen binding
+
+
+HVEM VI LETER ETTER:
+Produsenter og designere som lager objekter med sjel — keramikk, tekstiler, glass, møbler, smykker, mat og helse. Norsk eller skandinavisk opprinnelse. Håndlaget eller produsert i begrenset opplag.
+
+
+KOM I KONTAKT:
+hello@scandijapandi.no
+scandijapandi.no/makers</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Influencer links -->
@@ -2256,6 +2756,48 @@ ScandiJapandiについて
       document.getElementById('pr-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     (window as any).loadPressTemplate = loadPressTemplate;
+
+    // ── Outreach templates ────────────────────────────────────────────
+    function showOutreachCategory(cat) {
+      document.querySelectorAll('.outreach-category').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.outreach-tab').forEach(el => {
+        el.classList.remove('bg-ink', 'text-paper');
+      });
+      document.getElementById(`ot-${cat}`)?.classList.remove('hidden');
+      document.getElementById(`ot-tab-${cat}`)?.classList.add('bg-ink', 'text-paper');
+    }
+
+    function toggleOutreachTemplate(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden');
+    }
+
+    async function copyOutreach(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const text = (el as HTMLElement).innerText || el.textContent || '';
+      try {
+        await navigator.clipboard.writeText(text);
+        // Brief visual feedback
+        const btn = el.previousElementSibling?.querySelector('button');
+        if (btn) {
+          const orig = btn.textContent;
+          btn.textContent = '✓ Kopiert';
+          setTimeout(() => { btn.textContent = orig; }, 2000);
+        }
+      } catch {
+        // Fallback
+        const range = document.createRange();
+        range.selectNode(el);
+        window.getSelection()?.removeAllRanges();
+        window.getSelection()?.addRange(range);
+      }
+    }
+
+    // Expose globally for inline onclick handlers
+    (window as any).showOutreachCategory = showOutreachCategory;
+    (window as any).toggleOutreachTemplate = toggleOutreachTemplate;
+    (window as any).copyOutreach = copyOutreach;
 
     // ─────────────────────────────────────────────────────────────────
     //  PRODUSENTER
