@@ -7,15 +7,25 @@
 //
 // 👉 Brukernavn og passord endres i ../lib/temp-admin.mts
 //    (ADMIN_USERNAME / ADMIN_PASSWORD).
+import { timingSafeEqual } from "node:crypto";
 import type { Config, Context } from "@netlify/functions";
 import {
   ADMIN_PASSWORD,
   ADMIN_USERNAME,
   hasTempAdmin,
+  isAdminAuthConfigured,
   isSecure,
   loginCookie,
   logoutCookie,
 } from "../lib/temp-admin.mts";
+
+/** Tidskonstant strengsammenligning som ikke lekker lengde via tidsbruk. */
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a, "utf8");
+  const bufB = Buffer.from(b, "utf8");
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
 
 export default async (req: Request, _context: Context) => {
   const { pathname } = new URL(req.url);
@@ -37,6 +47,15 @@ export default async (req: Request, _context: Context) => {
   // POST /api/admin/login — sjekk brukernavn + passord og sett øktcookie.
   if (req.method !== "POST") return new Response("Method not allowed", { status: 405 });
 
+  // Uten konfigurert passord/token er innlogging deaktivert – aldri fall tilbake
+  // på en standardverdi.
+  if (!isAdminAuthConfigured()) {
+    return Response.json(
+      { error: "Admin-innlogging er ikke konfigurert. Sett ADMIN_PASSWORD og ADMIN_SESSION_TOKEN i Netlify." },
+      { status: 503 },
+    );
+  }
+
   let username = "";
   let password = "";
   try {
@@ -47,7 +66,7 @@ export default async (req: Request, _context: Context) => {
     return Response.json({ error: "invalid body" }, { status: 400 });
   }
 
-  if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
+  if (!safeEqual(username, ADMIN_USERNAME) || !safeEqual(password, ADMIN_PASSWORD)) {
     return Response.json({ error: "Feil brukernavn eller passord." }, { status: 401 });
   }
 
