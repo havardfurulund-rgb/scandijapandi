@@ -28,8 +28,8 @@ const checkoutHref = (product) =>
     <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
       <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
       <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
-        <a href="#collection" class="transition-colors hover:text-ink" data-i18n="nav_collection">Collection</a>
-        <a href="/about" class="transition-colors hover:text-ink" data-i18n="nav_about">About</a>
+        <a href="#collection" class="transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
+        <a href="/about" class="transition-colors hover:text-ink" data-i18n="nav_about">Om oss</a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -115,12 +115,12 @@ const checkoutHref = (product) =>
 
       <!-- Step 1: Email only -->
       <div id="circle-step-1">
-        <p class="text-[10px] uppercase tracking-widest text-paper/40 mb-6" data-i18n="circle_eyebrow">Private Circle</p>
+        <p class="text-[10px] uppercase tracking-widest text-paper/40 mb-6" data-i18n="circle_eyebrow">Privat sirkel</p>
         <h2 class="font-serif text-3xl sm:text-4xl text-paper font-light mb-4" data-i18n="circle_heading">
-          First to know. Always.
+          Alltid først.
         </h2>
         <p class="text-sm text-paper/60 font-light mb-10 leading-relaxed" data-i18n="circle_sub">
-          New arrivals, maker stories, and exclusive previews — before anyone else.
+          Nye ankomster, håndverkshistorier og eksklusive forhåndsvisninger — før alle andre.
         </p>
         <form id="circle-email-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
           <input
@@ -131,7 +131,7 @@ const checkoutHref = (product) =>
             class="flex-1 bg-paper/10 border border-paper/20 text-paper placeholder-paper/30 px-5 py-4 text-sm outline-none focus:border-paper/60 transition-colors"
           />
           <button type="submit" class="bg-paper text-ink px-8 py-4 text-[10px] uppercase tracking-widest font-medium hover:bg-oat transition-colors whitespace-nowrap" data-i18n="circle_join">
-            Join
+            Bli med
           </button>
         </form>
         <p id="circle-email-error" class="hidden mt-3 text-xs text-clay"></p>
@@ -139,20 +139,20 @@ const checkoutHref = (product) =>
 
       <!-- Step 2: Segment selection (shown after email submit) -->
       <div id="circle-step-2" class="hidden">
-        <p class="text-[10px] uppercase tracking-widest text-paper/40 mb-8" data-i18n="circle_thanks_eyebrow">Welcome</p>
+        <p class="text-[10px] uppercase tracking-widest text-paper/40 mb-8" data-i18n="circle_thanks_eyebrow">Velkommen</p>
         <h2 class="font-serif text-3xl text-paper font-light mb-10" data-i18n="circle_thanks_heading">
-          One quick thing —
+          Én ting til —
         </h2>
-        <p class="text-sm text-paper/60 mb-10" data-i18n="circle_thanks_sub">What best describes you?</p>
+        <p class="text-sm text-paper/60 mb-10" data-i18n="circle_thanks_sub">Hva beskriver deg best?</p>
         <div class="grid grid-cols-1 gap-3 max-w-xs mx-auto">
           <button onclick="submitSegment('customer')" class="segment-btn border border-paper/20 text-paper px-6 py-5 text-sm font-light hover:border-paper hover:bg-paper/5 transition-all" data-i18n="segment_customer">
-            I collect beautiful objects
+            Jeg samler vakre objekter
           </button>
           <button onclick="submitSegment('maker')" class="segment-btn border border-paper/20 text-paper px-6 py-5 text-sm font-light hover:border-paper hover:bg-paper/5 transition-all" data-i18n="segment_maker">
-            I design or make things
+            Jeg designer eller lager ting
           </button>
           <button onclick="submitSegment('curator')" class="segment-btn border border-paper/20 text-paper px-6 py-5 text-sm font-light hover:border-paper hover:bg-paper/5 transition-all" data-i18n="segment_curator">
-            I share what inspires me
+            Jeg deler det som inspirerer meg
           </button>
         </div>
       </div>
@@ -162,8 +162,8 @@ const checkoutHref = (product) =>
         <div class="w-12 h-12 border border-paper/30 rounded-full flex items-center justify-center mx-auto mb-8">
           <svg width="20" height="14" viewBox="0 0 20 14" fill="none"><path d="M1 7L7 13L19 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="text-paper"/></svg>
         </div>
-        <p class="font-serif text-2xl text-paper font-light mb-3" data-i18n="circle_done_heading">You're in.</p>
-        <p class="text-sm text-paper/50" data-i18n="circle_done_sub">We'll be in touch when something worthy of your attention arrives.</p>
+        <p class="font-serif text-2xl text-paper font-light mb-3" data-i18n="circle_done_heading">Du er med.</p>
+        <p class="text-sm text-paper/50" data-i18n="circle_done_sub">Vi tar kontakt når noe verdig din oppmerksomhet ankommer.</p>
       </div>
 
     </div>
@@ -395,7 +395,7 @@ const checkoutHref = (product) =>
         partner_persona_both: '両方',
         partner_message: '制作されているものを簡単に',
         partner_submit: '登録する',
-        footer_rights: '© 2026 ScandiJapandi. 無断複製禁止。',
+        footer_rights: '© 2026 ScandiJapandi. 無断転載禁止。',
         footer_privacy: 'プライバシー',
         footer_shipping: '配送',
         footer_terms: '利用規約',
