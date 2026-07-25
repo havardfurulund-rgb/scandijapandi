@@ -318,6 +318,10 @@ import Base from '../layouts/Base.astro';
           </label>
           <div class="flex gap-4">
             <button type="button" id="cancel-edit" class="hidden border border-ink/20 px-8 py-3 uppercase text-[10px] font-medium tracking-widest hover:border-ink">Avbryt</button>
+            <button type="button" id="btn-translate-publish" class="border border-ink/20 px-6 py-3 text-[10px] uppercase tracking-widest hover:border-ink transition-colors flex items-center gap-2">
+              <span>✦</span>
+              <span>Oversett og publiser</span>
+            </button>
             <button type="submit" class="bg-ink text-paper px-8 py-3 uppercase text-[10px] font-medium tracking-widest transition-colors hover:bg-clay">Lagre produkt</button>
           </div>
         </div>
@@ -687,7 +691,6 @@ import Base from '../layouts/Base.astro';
           <div id="inf-list" class="overflow-x-auto">
             <p class="text-sm text-stone">Laster influensere …</p>
           </div>
-        </div>
 
         <!-- Outreach Templates -->
         <div class="mt-12 pt-12 border-t border-ink/8">
@@ -1188,21 +1191,6 @@ scandijapandi.no/makers</div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Influencer links -->
-      <div class="mt-16 bg-ink text-paper p-8">
-        <h2 class="font-serif text-xl">Influenser-lenker</h2>
-        <p class="mt-2 text-sm text-paper/70 font-light">
-          Lag en delbar lenke til en influenser. Salg via lenken merkes med deres navn (curator) i Stripe.
-        </p>
-        <div class="mt-6 flex flex-col sm:flex-row gap-3">
-          <input type="text" id="ref-name" placeholder="influenser-navn" class="flex-1 bg-paper/10 border border-paper/20 p-4 text-paper placeholder:text-paper/40 outline-none focus:border-paper" />
-          <button type="button" id="ref-make" class="bg-paper text-ink px-8 py-4 uppercase text-[10px] font-medium tracking-widest hover:bg-clay hover:text-paper transition-colors">Lag lenke</button>
-        </div>
-        <div id="ref-result" class="hidden mt-4 flex items-center gap-3 bg-paper/10 p-4">
-          <code id="ref-link" class="flex-1 break-all text-sm text-paper/90"></code>
-          <button type="button" id="ref-copy" class="text-[10px] uppercase tracking-widest text-paper/70 hover:text-paper">Kopier</button>
         </div>
       </div>
 
@@ -1668,6 +1656,32 @@ scandijapandi.no/makers</div>
       }
     });
 
+    // ── Oversett og publiser: oversett, sett aktiv og lagre i én handling ──
+    document.getElementById('btn-translate-publish')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-translate-publish') as HTMLButtonElement;
+      const label = btn.querySelector('span:last-child');
+      btn.disabled = true;
+      if (label) label.textContent = 'Oversetter…';
+
+      // Trigger translation
+      document.getElementById('btn-translate')?.click();
+
+      // Wait for translation to complete
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
+      if (label) label.textContent = 'Publiserer…';
+
+      // Ensure product is set to active
+      const activeCheck = document.getElementById('p-active') as HTMLInputElement;
+      if (activeCheck) activeCheck.checked = true;
+
+      // Submit the form
+      document.getElementById('product-form')?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+      btn.disabled = false;
+      if (label) label.textContent = 'Oversett og publiser';
+    });
+
     function showTranslateStatus(msg: string, ok: boolean) {
       const el = document.getElementById('translate-status');
       if (!el) return;
@@ -1736,16 +1750,6 @@ scandijapandi.no/makers</div>
     ['dragleave', 'drop'].forEach((evt) =>
       drop.addEventListener(evt, (e) => { e.preventDefault(); drop.classList.remove('border-ink', 'bg-oat/60'); }));
     drop.addEventListener('drop', (e) => uploadFile(e.dataTransfer?.files?.[0]));
-
-    // Influencer link generator
-    $('ref-make').addEventListener('click', () => {
-      const name = $('ref-name').value.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      if (!name) return;
-      const link = `${window.location.origin}/?ref=${encodeURIComponent(name)}`;
-      $('ref-link').textContent = link;
-      show('ref-result');
-    });
-    $('ref-copy').addEventListener('click', () => navigator.clipboard?.writeText($('ref-link').textContent || ''));
 
     // Oppdater ordrehistorikken på forespørsel.
     $('orders-refresh').addEventListener('click', () => loadOrders());
