@@ -379,6 +379,213 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
 
+      <!-- === PRODUCER CRM ==================================================
+           Pipeline over potensielle og aktive produsent-partnere. Tre visninger
+           (kanban / liste / skjema) byttes med samme show/hide-mønster som
+           resten av admin-panelet. -->
+      <section id="crm-section" class="px-6 sm:px-12 py-20 border-t border-ink/5">
+        <div class="mx-auto max-w-6xl">
+
+          <!-- Header -->
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between mb-8 gap-4">
+            <div>
+              <span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Producer CRM</span>
+              <h2 class="font-serif text-2xl sm:text-3xl text-ink">Lead Pipeline</h2>
+            </div>
+            <div class="flex gap-3 flex-wrap">
+              <button type="button" onclick="crmShowView('pipeline')" id="crm-tab-pipeline" class="crm-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink bg-ink text-paper transition-colors">Pipeline</button>
+              <button type="button" onclick="crmShowView('list')" id="crm-tab-list" class="crm-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink/20 hover:border-ink transition-colors">Liste</button>
+              <button type="button" onclick="crmShowView('add')" id="crm-tab-add" class="crm-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink/20 hover:border-ink transition-colors">+ Legg til</button>
+            </div>
+          </div>
+
+          <!-- Summary stats -->
+          <div id="crm-summary" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"></div>
+
+          <!-- Pipeline view -->
+          <div id="crm-view-pipeline">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="crm-pipeline-cols"></div>
+          </div>
+
+          <!-- List view -->
+          <div id="crm-view-list" class="hidden">
+            <!-- Filters -->
+            <div class="flex gap-3 mb-6 flex-wrap">
+              <select id="crm-filter-status" onchange="loadCRM()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+                <option value="">Alle statuser</option>
+                <option value="prospect">Prospect</option>
+                <option value="contacted">Kontaktet</option>
+                <option value="replied">Svart</option>
+                <option value="meeting">Møte</option>
+                <option value="agreement_sent">Avtale sendt</option>
+                <option value="active">Aktiv partner</option>
+                <option value="declined">Avslått</option>
+              </select>
+              <select id="crm-filter-priority" onchange="loadCRM()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+                <option value="">Alle prioriteter</option>
+                <option value="1">Prioritet 1</option>
+                <option value="2">Prioritet 2</option>
+                <option value="3">Prioritet 3</option>
+              </select>
+              <select id="crm-filter-country" onchange="loadCRM()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+                <option value="">Alle land</option>
+                <option value="Norway">Norge</option>
+                <option value="Denmark">Danmark</option>
+                <option value="Sweden">Sverige</option>
+                <option value="Finland">Finland</option>
+                <option value="Iceland">Island</option>
+                <option value="Latvia">Latvia</option>
+                <option value="Lithuania">Litauen</option>
+                <option value="Estonia">Estland</option>
+                <option value="Poland">Polen</option>
+              </select>
+              <input type="text" id="crm-search" placeholder="Søk..." oninput="loadCRM()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none flex-1 min-w-32" />
+            </div>
+            <div id="crm-list-table"></div>
+          </div>
+
+          <!-- Add/Edit form -->
+          <div id="crm-view-add" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="font-serif text-xl text-ink" id="crm-form-title">Ny produsent-lead</h3>
+              <button type="button" onclick="crmShowView('list')" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">← Tilbake</button>
+            </div>
+
+            <!-- AI Research assistant -->
+            <div class="bg-oat/60 border border-ink/8 p-5 mb-6">
+              <p class="text-[10px] uppercase tracking-widest text-stone mb-3">✦ AI Research-assistent</p>
+              <p class="text-xs text-stone mb-3">Lim inn nettside eller Instagram-URL, så analyserer AI-en og fyller ut feltene automatisk.</p>
+              <div class="flex gap-3">
+                <input type="url" id="crm-research-url" placeholder="https://produsent.no eller @instagram" class="flex-1 bg-paper border border-ink/10 px-4 py-3 text-sm focus:border-ink outline-none" />
+                <button type="button" onclick="crmRunResearch()" class="bg-ink text-paper px-6 py-3 text-[10px] uppercase tracking-widest hover:bg-clay transition-colors whitespace-nowrap" id="crm-research-btn">
+                  Analyser
+                </button>
+              </div>
+              <p id="crm-research-status" class="hidden text-xs mt-2 text-stone"></p>
+            </div>
+
+            <input type="hidden" id="crm-edit-id" value="" />
+            <div class="grid sm:grid-cols-2 gap-5">
+              <label class="block sm:col-span-2">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Navn / Studio *</span>
+                <input type="text" id="crm-name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Land</span>
+                <select id="crm-country" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="">Velg land</option>
+                  <option>Norway</option><option>Sweden</option><option>Denmark</option>
+                  <option>Finland</option><option>Iceland</option><option>Latvia</option>
+                  <option>Lithuania</option><option>Estonia</option><option>Poland</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Region</span>
+                <input type="text" id="crm-region" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="f.eks. Oslo / Eastern Norway" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Kategori</span>
+                <select id="crm-category" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="">Velg kategori</option>
+                  <option>Ceramics</option><option>Textiles</option><option>Furniture &amp; Wood</option>
+                  <option>Glass</option><option>Jewellery</option><option>Clothing</option>
+                  <option>Homeware &amp; Lighting</option><option>Food &amp; Pantry</option>
+                  <option>Collective</option><option>Mixed</option><option>Other</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Produkter</span>
+                <input type="text" id="crm-products" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="f.eks. Keramikkskåler, fat, vaser" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Nettside</span>
+                <input type="url" id="crm-website" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="https://" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Instagram</span>
+                <input type="text" id="crm-instagram" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="@handle" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Kontaktperson</span>
+                <input type="text" id="crm-contact-name" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+                <input type="email" id="crm-contact-email" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Japandi Score (1-5)</span>
+                <select id="crm-score" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="5">5 — Perfekt match</option>
+                  <option value="4">4 — Sterk match</option>
+                  <option value="3" selected>3 — God match</option>
+                  <option value="2">2 — Delvis match</option>
+                  <option value="1">1 — Svak match</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Prioritet</span>
+                <select id="crm-priority" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="1">1 — Kontakt først</option>
+                  <option value="2" selected>2 — Sekundær</option>
+                  <option value="3">3 — Overvåk</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Status</span>
+                <select id="crm-status" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="prospect">Prospect</option>
+                  <option value="contacted">Kontaktet</option>
+                  <option value="replied">Svart</option>
+                  <option value="meeting">Møte avtalt</option>
+                  <option value="agreement_sent">Avtale sendt</option>
+                  <option value="active">Aktiv partner</option>
+                  <option value="declined">Avslått</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Outreach-kanal</span>
+                <select id="crm-channel" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                  <option value="email">E-post</option>
+                  <option value="instagram">Instagram DM</option>
+                  <option value="email+instagram">E-post + Instagram</option>
+                  <option value="agent">Via agent</option>
+                  <option value="phone">Telefon</option>
+                  <option value="cultural_org">Via kulturorganisasjon</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Sist kontaktet</span>
+                <input type="date" id="crm-last-contacted" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+              </label>
+              <label class="block">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Neste handling dato</span>
+                <input type="date" id="crm-next-date" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Neste handling</span>
+                <input type="text" id="crm-next-action" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="f.eks. Send oppfølging-e-post" />
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-[10px] uppercase tracking-widest text-stone">AI-analyse</span>
+                <textarea id="crm-ai-summary" rows="3" class="mt-2 w-full bg-oat/30 p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-[10px] uppercase tracking-widest text-stone">Notater</span>
+                <textarea id="crm-notes" rows="4" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+              </label>
+            </div>
+            <div class="flex gap-4 mt-6">
+              <button type="button" onclick="crmSave()" class="bg-ink text-paper px-8 py-3 text-[10px] uppercase tracking-widest hover:bg-clay transition-colors">Lagre</button>
+              <button type="button" onclick="crmReset()" class="border border-ink/20 px-8 py-3 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">Avbryt</button>
+            </div>
+            <p id="crm-msg" class="hidden text-sm mt-3"></p>
+          </div>
+
+        </div>
+      </section>
+
       <!-- === KURATOR HUB ===================================================
            Kuratorens verktøy for innhold, relasjoner og kommunikasjon.
            Fire underseksjoner byttes med samme show/hide-mønster som resten
@@ -1783,6 +1990,7 @@ scandijapandi.no/makers</div>
       loadOrders();
       loadLeads();
       loadKurator();
+      loadCRM();
     }
 
     // Logg inn med kodebasert brukernavn + passord.
@@ -1916,6 +2124,7 @@ scandijapandi.no/makers</div>
       loadOrders();
       loadLeads();
       loadKurator();
+      loadCRM();
     }
 
     // On page load, redeem any token in the URL hash (recovery, invite,
@@ -2934,6 +3143,327 @@ ScandiJapandiについて
       if (res.ok) { hide('inf-form'); infReset(); await loadInfluencers(); }
       else kStatus('inf-status-msg', 'Kunne ikke lagre influenser.', false);
     });
+
+    // ── Producer CRM ──────────────────────────────────────────────────────
+
+    const CRM_STATUSES = {
+      prospect:        { label: 'Prospect',       color: 'bg-stone/20 text-stone' },
+      contacted:       { label: 'Kontaktet',      color: 'bg-clay/20 text-clay' },
+      replied:         { label: 'Svart',          color: 'bg-yellow-100 text-yellow-800' },
+      meeting:         { label: 'Møte',           color: 'bg-blue-100 text-blue-800' },
+      agreement_sent:  { label: 'Avtale sendt',   color: 'bg-purple-100 text-purple-800' },
+      active:          { label: 'Aktiv partner',  color: 'bg-moss/20 text-moss' },
+      declined:        { label: 'Avslått',        color: 'bg-red-100 text-red-800' },
+    };
+
+    const CRM_STATUS_ORDER = ['prospect','contacted','replied','meeting','agreement_sent','active','declined'];
+
+    let crmCurrentView = 'pipeline';
+    let crmAllLeads = [];
+
+    function crmShowView(view) {
+      crmCurrentView = view;
+      ['pipeline','list','add'].forEach((v) => {
+        const el = document.getElementById(`crm-view-${v}`);
+        if (el) el.classList.toggle('hidden', v !== view);
+        const tab = document.getElementById(`crm-tab-${v}`);
+        if (tab) {
+          tab.classList.toggle('bg-ink', v === view);
+          tab.classList.toggle('text-paper', v === view);
+          tab.classList.toggle('border-ink', v === view);
+          tab.classList.toggle('border-ink/20', v !== view);
+        }
+      });
+      if (view !== 'add') loadCRM();
+    }
+
+    async function loadCRM() {
+      const status = $('crm-filter-status')?.value || '';
+      const priority = $('crm-filter-priority')?.value || '';
+      const country = $('crm-filter-country')?.value || '';
+      const search = $('crm-search')?.value || '';
+
+      const params = new URLSearchParams();
+      if (status) params.set('status', status);
+      if (priority) params.set('priority', priority);
+      if (country) params.set('country', country);
+      if (search) params.set('search', search);
+
+      const res = await api(`/api/admin/crm?${params}`);
+      if (!res.ok) return;
+      const { leads, summary } = await res.json();
+      crmAllLeads = leads || [];
+
+      renderCRMSummary(summary || []);
+      if (crmCurrentView === 'pipeline') renderCRMPipeline(crmAllLeads);
+      if (crmCurrentView === 'list') renderCRMList(crmAllLeads);
+    }
+
+    function renderCRMSummary(summary) {
+      const total = summary.reduce((s, r) => s + Number(r.count), 0);
+      const active = summary.find((r) => r.status === 'active')?.count || 0;
+      const prospect = summary.find((r) => r.status === 'prospect')?.count || 0;
+      const contacted = summary.reduce((s, r) =>
+        ['contacted','replied','meeting','agreement_sent'].includes(r.status) ? s + Number(r.count) : s, 0);
+
+      const el = $('crm-summary');
+      if (!el) return;
+      el.innerHTML = [
+        ['Totalt', total, 'text-ink'],
+        ['Prospects', prospect, 'text-ink'],
+        ['I prosess', contacted, 'text-ink'],
+        ['Aktive partnere', active, 'text-moss'],
+      ].map(([label, count, cls]) => `
+        <div class="bg-oat/60 border border-ink/5 p-5 text-center">
+          <div class="font-serif text-3xl ${cls}">${count}</div>
+          <div class="text-[10px] uppercase tracking-widest text-stone mt-1">${label}</div>
+        </div>
+      `).join('');
+    }
+
+    // Japandi-score som stjerner: fylte først, resten dempet.
+    function crmStars(score) {
+      const n = Math.max(0, Math.min(5, Number(score) || 0));
+      return `${'★'.repeat(n)}<span class="text-stone/30">${'★'.repeat(5 - n)}</span>`;
+    }
+
+    function renderCRMPipeline(leads) {
+      const el = $('crm-pipeline-cols');
+      if (!el) return;
+
+      const grouped = {};
+      CRM_STATUS_ORDER.forEach((s) => { grouped[s] = []; });
+      leads.forEach((l) => {
+        if (grouped[l.status]) grouped[l.status].push(l);
+      });
+
+      el.innerHTML = CRM_STATUS_ORDER.map((status) => {
+        const { label } = CRM_STATUSES[status];
+        const items = grouped[status];
+        return `
+          <div class="border border-ink/8 bg-oat/30 p-3 min-h-32">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[9px] uppercase tracking-widest text-stone">${label}</span>
+              <span class="text-xs text-stone/50">${items.length}</span>
+            </div>
+            <div class="space-y-2">
+              ${items.map((l) => `
+                <div data-crm-edit="${l.id}" class="bg-paper border border-ink/8 p-2 cursor-pointer hover:border-ink/30 transition-colors">
+                  <div class="text-xs text-ink font-medium leading-tight">${escapeHtml(l.name)}</div>
+                  <div class="text-[10px] text-stone mt-1">${escapeHtml(l.country || '')} · ${escapeHtml(l.category || '')}</div>
+                  <div class="flex items-center gap-1 mt-1 text-[10px]">${crmStars(l.japandi_score)}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      el.querySelectorAll('[data-crm-edit]').forEach((c) => c.addEventListener('click', () => crmEdit(Number(c.dataset.crmEdit))));
+    }
+
+    function renderCRMList(leads) {
+      const el = $('crm-list-table');
+      if (!el) return;
+
+      if (!leads.length) {
+        el.innerHTML = '<p class="text-sm text-stone">Ingen leads funnet.</p>';
+        return;
+      }
+
+      el.innerHTML = `
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-ink/10">
+                <th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Navn</th>
+                <th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Land</th>
+                <th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Kategori</th>
+                <th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Score</th>
+                <th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Status</th>
+                <th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Neste handling</th>
+                <th class="pb-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              ${leads.map((l) => {
+                const st = CRM_STATUSES[l.status] || { label: l.status, color: '' };
+                const overdue = l.next_action_date && new Date(l.next_action_date) < new Date();
+                const href = l.website ? `https://${String(l.website).replace(/^https?:\/\//i, '')}` : '';
+                return `
+                  <tr class="border-b border-ink/5 hover:bg-oat/30 transition-colors">
+                    <td class="py-3 pr-4">
+                      <div class="font-medium text-ink">${escapeHtml(l.name)}</div>
+                      ${l.website ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-stone/50 hover:text-stone">${escapeHtml(l.website)}</a>` : ''}
+                    </td>
+                    <td class="py-3 pr-4 text-stone text-xs">${escapeHtml(l.country || '—')}</td>
+                    <td class="py-3 pr-4 text-stone text-xs">${escapeHtml(l.category || '—')}</td>
+                    <td class="py-3 pr-4 text-stone text-xs">${'★'.repeat(Math.max(0, Math.min(5, Number(l.japandi_score) || 0)))}</td>
+                    <td class="py-3 pr-4">
+                      <span class="px-2 py-1 text-[9px] uppercase tracking-widest rounded-sm ${st.color}">${escapeHtml(st.label)}</span>
+                    </td>
+                    <td class="py-3 pr-4 text-xs ${overdue ? 'text-red-500 font-medium' : 'text-stone'}">
+                      ${escapeHtml(l.next_action || '—')}
+                      ${l.next_action_date ? `<div class="text-[10px] ${overdue ? 'text-red-400' : 'text-stone/50'}">${new Date(l.next_action_date).toLocaleDateString('nb-NO')}</div>` : ''}
+                    </td>
+                    <td class="py-3">
+                      <button type="button" data-crm-edit="${l.id}" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">Rediger</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      el.querySelectorAll('[data-crm-edit]').forEach((b) => b.addEventListener('click', () => crmEdit(Number(b.dataset.crmEdit))));
+    }
+
+    function crmEdit(id) {
+      const lead = crmAllLeads.find((l) => Number(l.id) === id);
+      if (!lead) return;
+
+      crmShowView('add');
+      $('crm-form-title').textContent = 'Rediger lead';
+      const fields = {
+        'crm-edit-id': String(id),
+        'crm-name': lead.name || '',
+        'crm-country': lead.country || '',
+        'crm-region': lead.region || '',
+        'crm-category': lead.category || '',
+        'crm-products': lead.main_products || '',
+        'crm-website': lead.website || '',
+        'crm-instagram': lead.instagram || '',
+        'crm-contact-name': lead.contact_name || '',
+        'crm-contact-email': lead.contact_email || '',
+        'crm-score': String(lead.japandi_score || 3),
+        'crm-priority': String(lead.priority || 2),
+        'crm-status': lead.status || 'prospect',
+        'crm-channel': lead.outreach_channel || 'email',
+        'crm-last-contacted': lead.last_contacted?.slice(0, 10) || '',
+        'crm-next-date': lead.next_action_date?.slice(0, 10) || '',
+        'crm-next-action': lead.next_action || '',
+        'crm-ai-summary': lead.ai_summary || '',
+        'crm-notes': lead.notes || '',
+      };
+      Object.entries(fields).forEach(([id, value]) => { if ($(id)) $(id).value = value; });
+      hide('crm-msg');
+      $('crm-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function crmReset() {
+      $('crm-edit-id').value = '';
+      $('crm-form-title').textContent = 'Ny produsent-lead';
+      ['crm-name','crm-region','crm-products','crm-website','crm-instagram',
+       'crm-contact-name','crm-contact-email','crm-last-contacted','crm-next-date',
+       'crm-next-action','crm-ai-summary','crm-notes','crm-research-url'].forEach((id) => {
+        if ($(id)) $(id).value = '';
+      });
+      $('crm-country').value = '';
+      $('crm-category').value = '';
+      $('crm-score').value = '3';
+      $('crm-priority').value = '2';
+      $('crm-status').value = 'prospect';
+      $('crm-channel').value = 'email';
+      hide('crm-msg');
+      hide('crm-research-status');
+      crmShowView('list');
+    }
+
+    function crmMsg(text, ok) {
+      const msg = $('crm-msg');
+      if (!msg) return;
+      msg.textContent = text;
+      msg.className = ok ? 'text-sm text-moss' : 'text-sm text-clay';
+    }
+
+    async function crmSave() {
+      const id = $('crm-edit-id').value;
+      const payload = {
+        name:             $('crm-name').value.trim(),
+        country:          $('crm-country').value,
+        region:           $('crm-region').value.trim(),
+        category:         $('crm-category').value,
+        main_products:    $('crm-products').value.trim(),
+        website:          $('crm-website').value.trim(),
+        instagram:        $('crm-instagram').value.trim(),
+        contact_name:     $('crm-contact-name').value.trim(),
+        contact_email:    $('crm-contact-email').value.trim(),
+        japandi_score:    Number($('crm-score').value),
+        priority:         Number($('crm-priority').value),
+        status:           $('crm-status').value,
+        outreach_channel: $('crm-channel').value,
+        last_contacted:   $('crm-last-contacted').value || null,
+        next_action:      $('crm-next-action').value.trim(),
+        next_action_date: $('crm-next-date').value || null,
+        ai_summary:       $('crm-ai-summary').value.trim(),
+        notes:            $('crm-notes').value.trim(),
+      };
+
+      if (!payload.name) { crmMsg('Navn er påkrevd.', false); return; }
+
+      const res = id
+        ? await api(`/api/admin/crm/${id}`, { method: 'PUT', body: JSON.stringify(payload) })
+        : await api('/api/admin/crm', { method: 'POST', body: JSON.stringify(payload) });
+
+      if (res.ok) crmReset();
+      else crmMsg('Kunne ikke lagre.', false);
+    }
+
+    async function crmRunResearch() {
+      const btn = $('crm-research-btn');
+      const status = $('crm-research-status');
+
+      const url = $('crm-research-url').value.trim();
+      const name = $('crm-name').value.trim();
+      if (!url && !name) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Analyserer…';
+      if (status) { status.textContent = 'AI analyserer produsenten…'; status.className = 'text-xs mt-2 text-stone'; }
+
+      try {
+        const res = await api('/api/admin/crm/research', {
+          method: 'POST',
+          body: JSON.stringify({ url, name }),
+        });
+
+        if (!res.ok) throw new Error('Research failed');
+        const { assessment: a } = await res.json();
+
+        // Fill in form fields with AI assessment
+        if (a.japandi_score) $('crm-score').value = String(a.japandi_score);
+        if (a.category) $('crm-category').value = a.category;
+        if (a.main_products) $('crm-products').value = a.main_products;
+        if (a.outreach_channel) $('crm-channel').value = a.outreach_channel;
+        if (a.ai_summary) $('crm-ai-summary').value = a.ai_summary;
+        if (a.suggested_priority) $('crm-priority').value = String(a.suggested_priority);
+        if (a.contact_approach) {
+          const notes = $('crm-notes');
+          notes.value = (notes.value ? notes.value + '\n\n' : '') + 'AI outreach-tips: ' + a.contact_approach;
+        }
+
+        if (status) {
+          const fit = a.fits_japandi === 'yes' ? 'Sterk match' : a.fits_japandi === 'partial' ? 'Delvis match' : 'Svak match';
+          status.textContent = `✓ Japandi-score: ${a.japandi_score}/5 · ${fit} · ${a.japandi_notes || ''}`;
+          status.className = 'text-xs mt-2 text-moss';
+        }
+      } catch {
+        if (status) { status.textContent = 'Analyse feilet — prøv igjen.'; status.className = 'text-xs mt-2 text-clay'; }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Analyser';
+      }
+    }
+
+    // Eksponer for inline onclick/onchange i markupen.
+    (window as any).crmShowView = crmShowView;
+    (window as any).loadCRM = loadCRM;
+    (window as any).crmEdit = crmEdit;
+    (window as any).crmReset = crmReset;
+    (window as any).crmSave = crmSave;
+    (window as any).crmRunResearch = crmRunResearch;
 
     init();
   </script>
