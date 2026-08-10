@@ -7,9 +7,9 @@
   <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div class="flex-1">
       <p class="text-xs font-light leading-relaxed text-paper/80 max-w-2xl">
-        <span class="text-paper font-medium">ScandiJapandi</span> uses cookies to improve your experience and analyse site traffic.
-        By continuing, you accept our use of cookies.
-        <a href="/privacy" class="underline text-paper/60 hover:text-paper transition-colors ml-1">Privacy policy</a>
+        <span class="text-paper font-medium">ScandiJapandi</span>
+        <span id="cookie-body"> bruker informasjonskapsler for å forbedre din opplevelse. Ved å fortsette godtar du vår bruk av cookies.</span>
+        <a href="/privacy" id="cookie-privacy-link" class="underline text-paper/60 hover:text-paper transition-colors ml-1">Personvernerklæring</a>
       </p>
     </div>
     <div class="flex items-center gap-3 shrink-0">
@@ -17,13 +17,13 @@
         id="cookie-reject"
         class="text-[10px] uppercase tracking-widest text-paper/50 hover:text-paper transition-colors px-2 py-1"
       >
-        Reject
+        <span id="cookie-reject-text">Avvis</span>
       </button>
       <button
         id="cookie-accept"
         class="bg-paper text-ink px-6 py-3 text-[10px] uppercase tracking-widest font-medium hover:bg-oat transition-colors"
       >
-        Accept
+        <span id="cookie-accept-text">Godta</span>
       </button>
     </div>
   </div>
@@ -37,6 +37,31 @@
   if (!consent) {
     banner?.classList.remove('hidden');
   }
+
+  // The banner is a static island — it has no access to the front page's I18N
+  // dictionary, so it carries its own copies of the four strings it renders.
+  const COOKIE_T = {
+    no: { body: ' bruker informasjonskapsler for å forbedre din opplevelse. Ved å fortsette godtar du vår bruk av cookies.', privacy: 'Personvernerklæring', reject: 'Avvis', accept: 'Godta' },
+    en: { body: ' uses cookies to improve your experience and analyse site traffic. By continuing, you accept our use of cookies.', privacy: 'Privacy policy', reject: 'Reject', accept: 'Accept' },
+    jp: { body: ' はクッキーを使用して体験を向上させます。続行することで、クッキーの使用に同意したことになります。', privacy: 'プライバシーポリシー', reject: '拒否', accept: '承認' },
+  };
+
+  function applyCookieLang() {
+    let lang = 'no';
+    try { lang = localStorage.getItem('sj-lang') || 'no'; } catch {}
+    const t = COOKIE_T[lang as keyof typeof COOKIE_T] || COOKIE_T.no;
+    const body = document.getElementById('cookie-body');
+    const privacy = document.getElementById('cookie-privacy-link');
+    const reject = document.getElementById('cookie-reject-text');
+    const accept = document.getElementById('cookie-accept-text');
+    if (body) body.textContent = t.body;
+    if (privacy) privacy.textContent = t.privacy;
+    if (reject) reject.textContent = t.reject;
+    if (accept) accept.textContent = t.accept;
+  }
+
+  applyCookieLang();
+  window.addEventListener('storage', applyCookieLang);
 
   document.getElementById('cookie-accept')?.addEventListener('click', () => {
     localStorage.setItem('sj-cookie-consent', 'accepted');
