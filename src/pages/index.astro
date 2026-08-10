@@ -27,7 +27,7 @@ const checkoutHref = (product) =>
   <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
     <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
       <a href="#top" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
-      <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
+      <nav class="hidden sm:flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
         <a href="#collection" class="transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
         <a href="/about" class="transition-colors hover:text-ink" data-i18n="nav_about">Om oss</a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
@@ -36,8 +36,72 @@ const checkoutHref = (product) =>
           <button type="button" class="lang-btn" data-lang="jp">日本語</button>
         </div>
       </nav>
+
+      <!-- Hamburgerknapp: erstatter navigasjonen under sm-bruddpunktet, der
+           lenkene og de tre språkknappene ikke får plass på én linje. -->
+      <button
+        type="button"
+        id="mobile-menu-btn"
+        class="sm:hidden -mr-2 inline-flex h-10 w-10 items-center justify-center text-ink transition-opacity hover:opacity-70"
+        aria-label="Meny"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <svg id="mobile-menu-icon-open" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" />
+        </svg>
+        <svg id="mobile-menu-icon-close" class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M5 5l14 14M19 5L5 19" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="hidden sm:hidden border-t border-ink/5 bg-paper/95 backdrop-blur-md">
+      <nav class="mx-auto flex max-w-6xl flex-col px-6 py-2 text-[11px] font-medium uppercase tracking-widest text-stone">
+        <a href="#collection" class="py-3 transition-colors hover:text-ink" data-i18n="nav_collection" data-mobile-nav-link>Kolleksjon</a>
+        <a href="/about" class="py-3 transition-colors hover:text-ink" data-i18n="nav_about" data-mobile-nav-link>Om oss</a>
+        <div class="mt-1 flex items-center gap-5 border-t border-ink/10 py-4">
+          <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="jp">日本語</button>
+        </div>
+      </nav>
     </div>
   </header>
+
+  <script is:inline>
+    // Mobilmeny: dropdown under headeren på små skjermer. Språkknappene i
+    // panelet bærer samme .lang-btn/data-lang som skrivebordsnavigasjonen, så
+    // applyLang() plukker dem opp av seg selv — ingen egen språklogikk her.
+    (() => {
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      if (!btn || !menu) return;
+      const iconOpen = document.getElementById('mobile-menu-icon-open');
+      const iconClose = document.getElementById('mobile-menu-icon-close');
+
+      function setOpen(open) {
+        menu.classList.toggle('hidden', !open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (iconOpen) iconOpen.classList.toggle('hidden', open);
+        if (iconClose) iconClose.classList.toggle('hidden', !open);
+      }
+
+      btn.addEventListener('click', () => setOpen(menu.classList.contains('hidden')));
+      // Ankerlenkene ruller videre på samme side; uten dette blir panelet
+      // stående åpent oppå innholdet brukeren nettopp hoppet til.
+      menu.querySelectorAll('[data-mobile-nav-link]').forEach((link) => {
+        link.addEventListener('click', () => setOpen(false));
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setOpen(false);
+      });
+      // Rydder opp hvis vinduet vokser forbi sm mens panelet står åpent.
+      window.matchMedia('(min-width: 640px)').addEventListener('change', (e) => {
+        if (e.matches) setOpen(false);
+      });
+    })();
+  </script>
 
   <!-- Checkout status banner -->
   <div id="checkout-banner" class="hidden fixed top-20 inset-x-0 z-40 px-6 sm:px-12"></div>
