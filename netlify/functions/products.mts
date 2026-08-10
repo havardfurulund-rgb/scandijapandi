@@ -8,7 +8,7 @@ import { db } from "../lib/db.mts";
 export default async (_req: Request) => {
   try {
     const rows = await db.sql`
-      SELECT slug, name, producer, description, price_nok, image_url
+      SELECT slug, name, producer, description, price_nok, image_url, stock_quantity
       FROM products
       WHERE active = TRUE
       ORDER BY created_at DESC, id DESC
@@ -21,6 +21,9 @@ export default async (_req: Request) => {
       description: r.description,
       price: Number(r.price_nok),
       image: r.image_url,
+      // A null/absent quantity means stock isn't tracked for this product, so
+      // treat it as available; only an explicit 0 (or less) marks it sold out.
+      in_stock: r.stock_quantity === null || r.stock_quantity === undefined || Number(r.stock_quantity) > 0,
       product_page: `/products/${r.slug}`,
     }));
 

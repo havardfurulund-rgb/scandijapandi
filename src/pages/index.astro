@@ -281,6 +281,7 @@ const checkoutHref = (product) =>
         footer_terms: 'Vilkår',
         footer_admin: 'Admin',
         product_buy: 'Kjøp nå →',
+        product_sold_out: 'Utsolgt',
         designer_cta: 'Søk som designer',
         designer_eyebrow: 'For designere',
         designer_title: 'Søk som designer',
@@ -343,6 +344,7 @@ const checkoutHref = (product) =>
         footer_terms: 'Terms',
         footer_admin: 'Admin',
         product_buy: 'Buy now →',
+        product_sold_out: 'Sold out',
         designer_cta: 'Apply as a designer',
         designer_eyebrow: 'For designers',
         designer_title: 'Apply as a designer',
@@ -405,6 +407,7 @@ const checkoutHref = (product) =>
         footer_terms: '利用規約',
         footer_admin: '管理',
         product_buy: '購入する →',
+        product_sold_out: '売り切れ',
         designer_cta: 'デザイナーとして応募',
         designer_eyebrow: 'デザイナーの方へ',
         designer_title: 'デザイナーとして応募',
@@ -494,9 +497,10 @@ const checkoutHref = (product) =>
               <span class="text-base font-light text-ink">${nokFmt.format(p.price || 0)}</span>
             </div>
           </div>
-          <a href="${checkoutHref(p)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm" data-i18n="product_buy">
-            Kjøp nå →
-          </a>
+          ${p.in_stock === false
+            ? `<span class="mt-8 block w-full bg-stone/20 text-stone py-4 text-[10px] font-medium uppercase tracking-widest text-center cursor-not-allowed" data-i18n="product_sold_out">Utsolgt</span>`
+            : `<a href="${checkoutHref(p)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm" data-i18n="product_buy">Kjøp nå →</a>`
+          }
         </article>`).join('');
 
       // Oversett de nyrendrede «Kjøp nå»-knappene til gjeldende språk.
