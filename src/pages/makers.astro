@@ -2,7 +2,22 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="For Makers — ScandiJapandi">
-  <main class="min-h-screen bg-paper flex items-center justify-center px-6 py-32">
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
+    <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
+      <a href="/" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
+      <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
+        <a href="/#collection" class="transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
+        <a href="/about" class="transition-colors hover:text-ink" data-i18n="nav_about">Om oss</a>
+        <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
+          <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="jp">日本語</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="min-h-screen bg-paper flex items-center justify-center px-6 py-32 pt-40">
     <div class="max-w-lg text-center">
       <p class="text-[10px] uppercase tracking-widest text-stone mb-6">ScandiJapandi · Makers</p>
       <h1 class="font-serif text-4xl sm:text-5xl text-ink font-light leading-tight mb-6">
@@ -20,4 +35,76 @@ import Base from '../layouts/Base.astro';
       </p>
     </div>
   </main>
+
+  <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
+    <p data-i18n="footer_rights">© 2026 ScandiJapandi. Alle rettigheter reservert.</p>
+    <p class="mt-3 text-[10px] uppercase tracking-widest text-stone/40">
+      <a href="/privacy" class="transition-colors hover:text-stone" data-i18n="footer_privacy">Personvern</a>
+      <a href="/shipping" class="text-[10px] uppercase tracking-widest text-stone/40 hover:text-stone transition-colors" data-i18n="footer_shipping">Shipping</a>
+      <a href="/terms" class="text-[10px] uppercase tracking-widest text-stone/40 hover:text-stone transition-colors" data-i18n="footer_terms">Terms</a>
+    </p>
+  </footer>
+
+  <script is:inline>
+    // ---- Flerspråklig støtte for header og footer på /makers ----
+    // Samme mønster som forsiden: statiske tekster byttes via data-i18n, og
+    // valget deles med resten av siden gjennom localStorage-nøkkelen sj-lang.
+    // Kun nøklene som faktisk brukes på denne siden er tatt med.
+    const I18N = {
+      no: {
+        nav_collection: 'Kolleksjon',
+        nav_about: 'Om oss',
+        footer_rights: '© 2026 ScandiJapandi. Alle rettigheter reservert.',
+        footer_privacy: 'Personvern',
+        footer_shipping: 'Frakt',
+        footer_terms: 'Vilkår',
+      },
+      en: {
+        nav_collection: 'Collection',
+        nav_about: 'About',
+        footer_rights: '© 2026 ScandiJapandi. All rights reserved.',
+        footer_privacy: 'Privacy',
+        footer_shipping: 'Shipping',
+        footer_terms: 'Terms',
+      },
+      jp: {
+        nav_collection: 'コレクション',
+        nav_about: '私たちについて',
+        footer_rights: '© 2026 ScandiJapandi. 無断転載禁止。',
+        footer_privacy: 'プライバシー',
+        footer_shipping: '配送',
+        footer_terms: '利用規約',
+      },
+    };
+
+    const LANGS = ['no', 'en', 'jp'];
+    const HTML_LANG = { no: 'no', en: 'en', jp: 'ja' };
+
+    function applyLang(lang) {
+      if (!LANGS.includes(lang)) lang = 'no';
+      const dict = I18N[lang];
+
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key] != null) el.textContent = dict[key];
+      });
+
+      document.documentElement.setAttribute('lang', HTML_LANG[lang]);
+      document.querySelectorAll('.lang-btn').forEach((b) => {
+        b.setAttribute('aria-current', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+      });
+
+      window.__sjLang = lang;
+      try { localStorage.setItem('sj-lang', lang); } catch (e) {}
+    }
+
+    try { window.__sjLang = localStorage.getItem('sj-lang') || 'no'; } catch (e) { window.__sjLang = 'no'; }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      applyLang(window.__sjLang || 'no');
+      document.querySelectorAll('.lang-btn').forEach((btn) => {
+        btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+      });
+    });
+  </script>
 </Base>
