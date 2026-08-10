@@ -2,33 +2,190 @@
 import Base from '../layouts/Base.astro';
 ---
 <Base title="About — ScandiJapandi">
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
+    <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
+      <a href="/" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
+      <nav class="hidden sm:flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
+        <a href="/#collection" class="transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
+        <a href="/about" class="transition-colors hover:text-ink" data-i18n="nav_about">Om oss</a>
+        <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
+          <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="jp">日本語</button>
+        </div>
+      </nav>
+
+      <!-- Hamburgerknapp: erstatter navigasjonen under sm-bruddpunktet, der
+           lenkene og de tre språkknappene ikke får plass på én linje. -->
+      <button
+        type="button"
+        id="mobile-menu-btn"
+        class="sm:hidden -mr-2 inline-flex h-10 w-10 items-center justify-center text-ink transition-opacity hover:opacity-70"
+        aria-label="Meny"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+      >
+        <svg id="mobile-menu-icon-open" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round" />
+        </svg>
+        <svg id="mobile-menu-icon-close" class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M5 5l14 14M19 5L5 19" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="hidden sm:hidden border-t border-ink/5 bg-paper/95 backdrop-blur-md">
+      <nav class="mx-auto flex max-w-6xl flex-col px-6 py-2 text-[11px] font-medium uppercase tracking-widest text-stone">
+        <a href="/#collection" class="py-3 transition-colors hover:text-ink" data-i18n="nav_collection" data-mobile-nav-link>Kolleksjon</a>
+        <a href="/about" class="py-3 transition-colors hover:text-ink" data-i18n="nav_about" data-mobile-nav-link>Om oss</a>
+        <div class="mt-1 flex items-center gap-5 border-t border-ink/10 py-4">
+          <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="jp">日本語</button>
+        </div>
+      </nav>
+    </div>
+  </header>
+
   <main class="min-h-screen bg-paper flex items-center justify-center px-6 py-32 pt-40">
     <div class="max-w-2xl">
-      <p class="text-[10px] uppercase tracking-widest text-stone mb-6">About ScandiJapandi</p>
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-6" data-i18n="about_eyebrow">Om ScandiJapandi</p>
       <h1 class="font-serif text-4xl sm:text-5xl text-ink font-light leading-tight mb-10">
-        Where Nordic craft<br/>meets Japanese sensibility.
+        <span class="block" data-i18n="about_title_1">Der nordisk håndverk</span>
+        <span class="block" data-i18n="about_title_2">møter japansk sensibilitet.</span>
       </h1>
       <div class="space-y-6 text-base text-stone font-light leading-relaxed">
-        <p>
-          ScandiJapandi is a curated bridge between two of the world's most refined design traditions —
-          Scandinavian craftsmanship and Japanese aesthetic philosophy.
+        <p data-i18n="about_p1">
+          ScandiJapandi er en kuratert bro mellom to av verdens mest foredlede designtradisjoner —
+          skandinavisk håndverk og japansk estetisk filosofi.
         </p>
-        <p>
-          We work with a small number of Nordic makers whose objects embody the same quiet principles
-          that define wabi-sabi and hygge: honesty of material, purposeful form, and enduring quality.
+        <p data-i18n="about_p2">
+          Vi samarbeider med et lite utvalg nordiske produsenter hvis objekter bærer de samme stille
+          prinsippene som definerer wabi-sabi og hygge: ærlige materialer, bevisst form og varig kvalitet.
         </p>
-        <p>
-          Each piece in our collection is chosen not for trend, but for its ability to bring stillness
-          into a room — and into a life.
+        <p data-i18n="about_p3">
+          Hver gjenstand i kolleksjonen er valgt ikke for trend, men for evnen til å bringe ro
+          inn i et rom — og inn i et liv.
         </p>
       </div>
       <div class="mt-16 pt-10 border-t border-ink/8">
-        <p class="text-[10px] uppercase tracking-widest text-stone mb-4">Based in</p>
+        <p class="text-[10px] uppercase tracking-widest text-stone mb-4" data-i18n="about_based_in">Basert i</p>
         <p class="text-sm text-ink">Lågendalsveien 1732A, 3282 Kvelde, Norway</p>
       </div>
-      <a href="/" class="inline-block mt-12 text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">
-        ← Back to collection
+      <a href="/" class="inline-block mt-12 text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors" data-i18n="about_back">
+        ← Tilbake til kolleksjonen
       </a>
     </div>
   </main>
+
+  <script is:inline>
+    // Flerspråklig støtte for Om-siden. Samme mønster som forsiden: statiske
+    // tekster byttes via data-i18n, og valget deles med resten av nettstedet
+    // gjennom localStorage-nøkkelen 'sj-lang'. Ordlisten er lokal fordi hver
+    // side bærer sine egne tekster — bare nav-nøklene overlapper med forsiden.
+    (() => {
+      const I18N = {
+        no: {
+          nav_collection: 'Kolleksjon',
+          nav_about: 'Om oss',
+          about_eyebrow: 'Om ScandiJapandi',
+          about_title_1: 'Der nordisk håndverk',
+          about_title_2: 'møter japansk sensibilitet.',
+          about_p1: 'ScandiJapandi er en kuratert bro mellom to av verdens mest foredlede designtradisjoner — skandinavisk håndverk og japansk estetisk filosofi.',
+          about_p2: 'Vi samarbeider med et lite utvalg nordiske produsenter hvis objekter bærer de samme stille prinsippene som definerer wabi-sabi og hygge: ærlige materialer, bevisst form og varig kvalitet.',
+          about_p3: 'Hver gjenstand i kolleksjonen er valgt ikke for trend, men for evnen til å bringe ro inn i et rom — og inn i et liv.',
+          about_based_in: 'Basert i',
+          about_back: '← Tilbake til kolleksjonen',
+        },
+        en: {
+          nav_collection: 'Collection',
+          nav_about: 'About',
+          about_eyebrow: 'About ScandiJapandi',
+          about_title_1: 'Where Nordic craft',
+          about_title_2: 'meets Japanese sensibility.',
+          about_p1: "ScandiJapandi is a curated bridge between two of the world's most refined design traditions — Scandinavian craftsmanship and Japanese aesthetic philosophy.",
+          about_p2: 'We work with a small number of Nordic makers whose objects embody the same quiet principles that define wabi-sabi and hygge: honesty of material, purposeful form, and enduring quality.',
+          about_p3: 'Each piece in our collection is chosen not for trend, but for its ability to bring stillness into a room — and into a life.',
+          about_based_in: 'Based in',
+          about_back: '← Back to collection',
+        },
+        jp: {
+          nav_collection: 'コレクション',
+          nav_about: '私たちについて',
+          about_eyebrow: 'ScandiJapandiについて',
+          about_title_1: '北欧の職人技が',
+          about_title_2: '日本の感性と出会う場所。',
+          about_p1: 'ScandiJapandiは、世界で最も洗練された二つのデザイン伝統——スカンジナビアの職人技と日本の美学——を結ぶ、キュレーションされた架け橋です。',
+          about_p2: '私たちは、侘び寂びとヒュッゲに通じる静かな原則——素材への誠実さ、目的のある造形、そして長く続く品質——を体現する、少数の北欧の作り手とともに仕事をしています。',
+          about_p3: 'コレクションの一つひとつは、流行ではなく、部屋に、そして暮らしに静けさをもたらす力によって選ばれています。',
+          about_based_in: '所在地',
+          about_back: '← コレクションへ戻る',
+        },
+      };
+
+      const LANGS = ['no', 'en', 'jp'];
+      const HTML_LANG = { no: 'no', en: 'en', jp: 'ja' };
+
+      function applyLang(lang) {
+        if (!LANGS.includes(lang)) lang = 'no';
+        const dict = I18N[lang];
+
+        document.querySelectorAll('[data-i18n]').forEach((el) => {
+          const key = el.getAttribute('data-i18n');
+          if (dict[key] != null) el.textContent = dict[key];
+        });
+
+        document.documentElement.setAttribute('lang', HTML_LANG[lang]);
+        document.querySelectorAll('.lang-btn').forEach((b) => {
+          b.setAttribute('aria-current', b.getAttribute('data-lang') === lang ? 'true' : 'false');
+        });
+
+        window.__sjLang = lang;
+        try { localStorage.setItem('sj-lang', lang); } catch (e) {}
+      }
+
+      let saved = 'no';
+      try { saved = localStorage.getItem('sj-lang') || 'no'; } catch (e) {}
+      window.__sjLang = saved;
+
+      document.addEventListener('DOMContentLoaded', () => {
+        applyLang(window.__sjLang || 'no');
+        document.querySelectorAll('.lang-btn').forEach((btn) => {
+          btn.addEventListener('click', () => applyLang(btn.getAttribute('data-lang')));
+        });
+      });
+    })();
+  </script>
+
+  <script is:inline>
+    // Mobilmeny: dropdown under headeren på små skjermer. Språkknappene i
+    // panelet bærer samme .lang-btn/data-lang som skrivebordsnavigasjonen, så
+    // applyLang() plukker dem opp av seg selv — ingen egen språklogikk her.
+    (() => {
+      const btn = document.getElementById('mobile-menu-btn');
+      const menu = document.getElementById('mobile-menu');
+      if (!btn || !menu) return;
+      const iconOpen = document.getElementById('mobile-menu-icon-open');
+      const iconClose = document.getElementById('mobile-menu-icon-close');
+
+      function setOpen(open) {
+        menu.classList.toggle('hidden', !open);
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (iconOpen) iconOpen.classList.toggle('hidden', open);
+        if (iconClose) iconClose.classList.toggle('hidden', !open);
+      }
+
+      btn.addEventListener('click', () => setOpen(menu.classList.contains('hidden')));
+      menu.querySelectorAll('[data-mobile-nav-link]').forEach((link) => {
+        link.addEventListener('click', () => setOpen(false));
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setOpen(false);
+      });
+      // Rydder opp hvis vinduet vokser forbi sm mens panelet står åpent.
+      window.matchMedia('(min-width: 640px)').addEventListener('change', (e) => {
+        if (e.matches) setOpen(false);
+      });
+    })();
+  </script>
 </Base>
