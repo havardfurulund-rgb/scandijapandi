@@ -36,9 +36,43 @@ const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NO
 const jpyFmt = new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
 
 const gallery = Array.isArray(product.gallery_urls) ? product.gallery_urls : [];
+
+// Schema.org Product markup so Google can show price and availability in
+// results. Escaping "<" keeps a stray "</script>" inside any product copy from
+// closing the tag early.
+const productJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  description: product.description || product.name,
+  image: product.image_url,
+  brand: {
+    '@type': 'Brand',
+    name: 'ScandiJapandi Collection',
+  },
+  offers: {
+    '@type': 'Offer',
+    price: product.price_nok,
+    priceCurrency: 'NOK',
+    availability: 'https://schema.org/InStock',
+    url: `https://scandijapandi.no/products/${product.slug}`,
+    seller: {
+      '@type': 'Organization',
+      name: 'ScandiJapandi Collection',
+    },
+  },
+  manufacturer: {
+    '@type': 'Organization',
+    name: product.producer || 'ScandiJapandi',
+  },
+}).replace(/</g, '\\u003c');
 ---
 
 <Base title={`${product.name} — ScandiJapandi`} description={product.description || product.name}>
+
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={productJsonLd} />
+  </Fragment>
 
   <!-- Back navigation -->
   <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-5 flex items-center justify-between bg-paper/95 backdrop-blur-sm border-b border-ink/5">

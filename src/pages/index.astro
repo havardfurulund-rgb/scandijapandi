@@ -517,10 +517,16 @@ const checkoutHref = (product) =>
     }
 
     // Replace the fallback grid with the live collection from the database.
+    // Dim the grid while the request is in flight so the swap reads as a
+    // deliberate refresh rather than a flash of replaced content.
+    const productGrid = document.getElementById('product-grid');
+    if (productGrid) productGrid.style.opacity = '0.5';
+
     fetch('/api/products')
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => { if (Array.isArray(data?.products) && data.products.length) renderProducts(data.products); })
-      .catch(() => { /* keep the embedded fallback */ });
+      .catch(() => { /* keep the embedded fallback */ })
+      .finally(() => { if (productGrid) productGrid.style.opacity = '1'; });
 
     // Checkout status banner driven by the ?checkout= query the function sets.
     const status = new URLSearchParams(window.location.search).get('checkout');
