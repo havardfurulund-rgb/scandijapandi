@@ -1,0 +1,120 @@
+---
+// Personal, password-free dashboard for each curator/influencer at /kurator/:ref.
+// Deliberately unauthenticated — the ref code is the only thing needed, so the
+// page shows performance figures but never customer names or contact details.
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+
+const { ref } = Astro.params;
+if (!ref) return Astro.redirect('/');
+
+// Ref codes are short slugs. Anything else is a probe, not a curator.
+if (!/^[A-Za-z0-9._-]{1,64}$/.test(ref)) return Astro.redirect('/');
+
+// Fetch curator stats from API. Resolve against the origin this request came in
+// on so deploy previews and branch deploys read their own data, with
+// PUBLIC_SITE_URL and the production domain as fallbacks — same approach as the
+// product detail page.
+const origin = Astro.url.origin || import.meta.env.PUBLIC_SITE_URL || 'https://scandijapandi.no';
+const apiUrl = `${origin}/api/kurator/${encodeURIComponent(ref)}`;
+let data: any = null;
+let notFound = false;
+
+try {
+  const res = await fetch(apiUrl);
+  if (res.status === 404) { notFound = true; }
+  else if (res.ok) { data = await res.json(); }
+} catch { notFound = true; }
+
+if (notFound || !data) return Astro.redirect('/');
+
+const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+
+const orders: any[] = Array.isArray(data.orders) ? data.orders : [];
+const commissionPct = Number(data.commission_pct) || 10;
+const shareUrl = `https://scandijapandi.no?ref=${ref}`;
+
+const stats = [
+  { label: 'Totalt salg', value: nokFmt.format(Number(data.total_revenue || 0) / 100) },
+  { label: 'Antall ordre', value: String(Number(data.order_count || 0)) },
+  { label: `Provisjon (${commissionPct}%)`, value: nokFmt.format(Number(data.commission || 0) / 100) },
+  { label: 'Denne måneden', value: nokFmt.format(Number(data.this_month_revenue || 0) / 100) },
+];
+---
+
+<Base title={`${data.name} — ScandiJapandi Kurator`} description="Personlig kurator-oversikt for ScandiJapandi Collection.">
+
+  <Fragment slot="head">
+    <!-- Personal figures: keep this page out of search results entirely. -->
+    <meta name="robots" content="noindex, nofollow" />
+  </Fragment>
+
+  <main class="min-h-screen bg-paper pt-20 px-6 py-16">
+    <div class="max-w-3xl mx-auto">
+
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-2">ScandiJapandi · Kurator</p>
+      <h1 class="font-serif text-4xl text-ink font-light mb-2">{data.name}</h1>
+      <p class="text-sm text-stone mb-12">Din personlige kurator-link: <span class="text-ink">scandijapandi.no?ref={ref}</span></p>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16">
+        {stats.map(({ label, value }) => (
+          <div class="bg-oat p-5 text-center">
+            <div class="font-serif text-2xl text-ink">{value}</div>
+            <div class="text-[10px] uppercase tracking-widest text-stone mt-1">{label}</div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Recent orders -->
+      <h2 class="font-serif text-2xl text-ink font-light mb-6">Dine siste ordrer</h2>
+      {orders.length === 0 ? (
+        <p class="text-stone text-sm">Ingen ordrer ennå. Del din link for å komme i gang.</p>
+      ) : (
+        <div class="space-y-3">
+          {orders.map((o: any) => (
+            <div class="border border-ink/8 p-4 flex justify-between items-center">
+              <div>
+                <p class="text-sm text-ink">{o.product}</p>
+                <p class="text-xs text-stone">{o.created_at ? new Date(o.created_at).toLocaleDateString('nb-NO') : '—'}</p>
+              </div>
+              <span class="font-serif text-ink">{nokFmt.format(Number(o.amount_total || 0) / 100)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <!-- Link sharing -->
+      <div class="mt-16 bg-ink text-paper p-8">
+        <p class="text-[10px] uppercase tracking-widest text-paper/40 mb-3">Din kurator-link</p>
+        <p class="font-serif text-xl mb-6">scandijapandi.no?ref={ref}</p>
+        <button
+          id="copy-btn"
+          type="button"
+          data-share-url={shareUrl}
+          class="bg-paper text-ink px-6 py-3 text-[10px] uppercase tracking-widest hover:bg-oat transition-colors"
+        >
+          Kopier link
+        </button>
+      </div>
+
+    </div>
+  </main>
+</Base>
+
+<script>
+  // The link lives in a data attribute rather than an inline handler so the ref
+  // from the URL is never interpolated into executable markup.
+  const btn = document.getElementById('copy-btn');
+  btn?.addEventListener('click', async () => {
+    const url = btn.getAttribute('data-share-url') || '';
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = '✓ Kopiert';
+    } catch {
+      btn.textContent = 'Kopier manuelt';
+    }
+    setTimeout(() => { btn.textContent = 'Kopier link'; }, 2000);
+  });
+</script>

@@ -65,6 +65,16 @@ const {
       .lang-btn[aria-current="true"] { opacity: 1; }
       .lang-btn:hover { opacity: 0.85; }
     </style>
+    <!-- Global rules that have to reach markup rendered by the child page (the
+         scoped <style> above only applies to this component's own elements). -->
+    <style is:global>
+      /* Softens the swap from the embedded fallback grid to the live
+         collection fetched from /api/products on the front page. */
+      #product-grid { transition: opacity 0.4s ease; }
+    </style>
+
+    <!-- Per-page <head> additions (structured data, extra meta). -->
+    <slot name="head" />
   </head>
   <body class="overflow-x-hidden bg-paper text-ink antialiased">
     <slot />
