@@ -23,15 +23,37 @@ function redirect(location: string): Response {
   return new Response(null, { status: 303, headers: { Location: location } });
 }
 
+// Unwrap an error into a single readable line. The database driver reports
+// query failures as a terse "Failed query: <sql>" message and hides the real
+// reason (auth, TLS, missing connection string) on `cause`, so log the whole
+// chain — otherwise every outage looks identical in the function log.
+function describeError(err: unknown): string {
+  if (!(err instanceof Error)) return String(err);
+  const parts = [`${err.name}: ${err.message}`];
+  let cause: unknown = (err as { cause?: unknown }).cause;
+  while (cause instanceof Error) {
+    const code = (cause as { code?: string }).code;
+    parts.push(`caused by ${cause.name}: ${cause.message}${code ? ` (code=${code})` : ""}`);
+    cause = (cause as { cause?: unknown }).cause;
+  }
+  if (cause !== undefined && !(cause instanceof Error)) parts.push(`caused by ${String(cause)}`);
+  return parts.join(" | ");
+}
+
 async function fetchProduct(
   slug: string,
 ): Promise<{ name?: string; price_nok?: number } | null> {
+  console.log(`[checkout] product lookup: slug=${JSON.stringify(slug)}`);
   const rows = await db.sql`
     SELECT name, price_nok FROM products
     WHERE slug = ${slug} AND active = TRUE
     LIMIT 1
   `;
-  return rows[0] ?? null;
+  const row = rows[0] ?? null;
+  console.log(
+    `[checkout] product lookup returned ${rows.length} row(s): ${JSON.stringify(row)}`,
+  );
+  return row;
 }
 
 async function createCheckoutSession(opts: {
@@ -71,26 +93,35 @@ async function createCheckoutSession(opts: {
     body: form.toString(),
   });
 
-  const session = await res.json();
-  if (!res.ok || !session.url) {
-    throw new Error(`Stripe session creation failed: ${res.status}`);
+  const session = await res.json().catch(() => null);
+  if (!res.ok || !session?.url) {
+    // Log Stripe's own explanation — status alone can't distinguish a bad key
+    // from an invalid amount from a rejected shipping country.
+    console.error(
+      `[checkout] Stripe session creation failed: HTTP ${res.status} ${res.statusText} body=${JSON.stringify(session)}`,
+    );
+    const detail = session?.error?.message || `HTTP ${res.status}`;
+    throw new Error(`Stripe session creation failed: ${detail}`);
   }
   return session.url as string;
 }
 
 export default async (req: Request) => {
-  const url = new URL(req.url);
-  const slug = url.searchParams.get("slug") || "";
-  const curator = url.searchParams.get("ref") || url.searchParams.get("client_reference_id") || "";
-  console.log(`[checkout] slug=${slug} locale=${url.searchParams.get("locale")} ref=${curator}`);
-
-  if (!slug || slug === "undefined") {
-    return redirect(`${siteUrl()}/?checkout=error&reason=missing-slug`);
-  }
-
   try {
+    const url = new URL(req.url);
+    const slug = url.searchParams.get("slug") || "";
+    const curator = url.searchParams.get("ref") || url.searchParams.get("client_reference_id") || "";
+    console.log(`[checkout] slug=${slug} locale=${url.searchParams.get("locale")} ref=${curator}`);
+
+    if (!slug || slug === "undefined") {
+      return redirect(`${siteUrl()}/?checkout=error&reason=missing-slug`);
+    }
+
     const product = await fetchProduct(slug);
     if (!product || typeof product.price_nok !== "number") {
+      console.error(
+        `[checkout] no purchasable product for slug=${JSON.stringify(slug)} (row=${JSON.stringify(product)})`,
+      );
       return redirect(`${siteUrl()}/?checkout=error&reason=not-found`);
     }
 
@@ -104,7 +135,8 @@ export default async (req: Request) => {
 
     return redirect(checkoutUrl);
   } catch (err) {
-    console.error("[checkout]", err instanceof Error ? err.message : err);
+    console.error(`[checkout] unhandled failure: ${describeError(err)}`);
+    if (err instanceof Error && err.stack) console.error(err.stack);
     return redirect(`${siteUrl()}/?checkout=error`);
   }
 };
