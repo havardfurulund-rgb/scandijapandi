@@ -124,4 +124,3 @@ INSERT INTO influencer_crm (
   'Fast-growing Japanese interior design Instagram creator. Rapid growth suggests algorithmic momentum. High reach for Japan interior audience. Content verification needed before outreach.',
   'research'
   ) ON CONFLICT DO NOTHING;
-
