@@ -379,7 +379,273 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
 
-      <!-- === PRODUCER CRM ==================================================
+      <!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- INFLUENCER CRM -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section id="influencer-crm-section" class="px-6 sm:px-12 py-20 border-t border-ink/5">
+<div class="mx-auto max-w-6xl">
+
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between mb-8 gap-4">
+<div>
+<span class="text-[10px] font-medium uppercase tracking-widest text-stone block mb-2">Influencer & Media</span>
+<h2 class="font-serif text-2xl sm:text-3xl text-ink">Influenser-database</h2>
+</div>
+<div class="flex gap-3 flex-wrap">
+<button onclick="icrm.showView('list')" id="icrm-tab-list" class="icrm-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink bg-ink text-paper transition-colors">Liste</button>
+<button onclick="icrm.showView('add')" id="icrm-tab-add" class="icrm-tab px-4 py-2 text-[10px] uppercase tracking-widest border border-ink/20 hover:border-ink transition-colors">+ Legg til</button>
+</div>
+</div>
+
+<div id="icrm-summary" class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8"></div>
+
+<div id="icrm-view-list">
+<div class="flex gap-3 mb-6 flex-wrap">
+<select id="icrm-filter-status" onchange="icrm.load()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+<option value="">Alle statuser</option>
+<option value="prospect">Prospect</option>
+<option value="dm_sent">DM sendt</option>
+<option value="replied">Svart</option>
+<option value="product_sent">Produkt sendt</option>
+<option value="post_published">Post publisert</option>
+<option value="active">Aktiv</option>
+<option value="paused">Pauset</option>
+<option value="declined">Avslått</option>
+</select>
+<select id="icrm-filter-tier" onchange="icrm.load()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+<option value="">Alle tier</option>
+<option value="nano">Nano (&lt;10K)</option>
+<option value="micro">Micro (10K-100K)</option>
+<option value="macro">Macro (100K-1M)</option>
+<option value="mega">Mega (1M+)</option>
+</select>
+<select id="icrm-filter-country" onchange="icrm.load()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+<option value="">Alle land</option>
+<option value="JP">Japan</option>
+<option value="NO">Norge</option>
+<option value="SE">Sverige</option>
+<option value="NL">Nederland</option>
+<option value="US">USA</option>
+</select>
+<input type="text" id="icrm-search" placeholder="Søk navn, handle..." oninput="icrm.load()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none flex-1 min-w-32" />
+</div>
+<div id="icrm-list-table"></div>
+</div>
+<div id="icrm-view-add" class="hidden">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-serif text-xl text-ink" id="icrm-form-title">Ny influenser</h3>
+<button type="button" onclick="icrm.showView('list')" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">← Tilbake</button>
+</div>
+<input type="hidden" id="icrm-edit-id" value="" />
+
+<div class="space-y-8">
+<fieldset class="space-y-5">
+<legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Identitet</legend>
+<div class="grid sm:grid-cols-2 gap-5">
+<label class="block sm:col-span-2">
+<span class="text-[10px] uppercase tracking-widest text-stone">Navn / Studio *</span>
+<input type="text" id="icrm-name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Instagram</span>
+<input type="text" id="icrm-instagram" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="@handle" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">TikTok</span>
+<input type="text" id="icrm-tiktok" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="@handle" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">YouTube</span>
+<input type="text" id="icrm-youtube" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="@channel" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">LINE / Blog</span>
+<input type="text" id="icrm-line" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="LINE ID eller blogg-URL" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">E-post</span>
+<input type="email" id="icrm-email" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Manager/Byrå e-post</span>
+<input type="email" id="icrm-manager-email" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Land</span>
+<select id="icrm-country" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="JP">Japan</option>
+<option value="NO">Norge</option>
+<option value="SE">Sverige</option>
+<option value="DK">Danmark</option>
+<option value="FI">Finland</option>
+<option value="NL">Nederland</option>
+<option value="US">USA</option>
+<option value="Other">Annet</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">By</span>
+<input type="text" id="icrm-city" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Tokyo" />
+</label>
+</div>
+</fieldset>
+<fieldset class="space-y-5">
+<legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Rekkevidde & Metrics</legend>
+<div class="grid sm:grid-cols-3 gap-5">
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Instagram følgere</span>
+<input type="number" id="icrm-followers-ig" min="0" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Engagement rate %</span>
+<input type="number" id="icrm-engagement" step="0.01" min="0" max="100" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="3.5" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Tier</span>
+<select id="icrm-tier" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="nano">Nano (&lt;10K)</option>
+<option value="micro" selected>Micro (10K-100K)</option>
+<option value="macro">Macro (100K-1M)</option>
+<option value="mega">Mega (1M+)</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Kategori</span>
+<select id="icrm-category" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="">Velg kategori</option>
+<option value="interior">Interiør</option>
+<option value="lifestyle">Livsstil</option>
+<option value="craft">Håndverk</option>
+<option value="food">Mat</option>
+<option value="fashion">Mote</option>
+<option value="travel">Reise</option>
+<option value="art">Kunst</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Målgruppe alder</span>
+<input type="text" id="icrm-audience-age" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="25-44" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Målgruppe land</span>
+<input type="text" id="icrm-audience-countries" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="JP 80%, US 10%" />
+</label>
+</div>
+</fieldset>
+
+<fieldset class="space-y-5">
+<legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Vurdering & Samarbeid</legend>
+<div class="grid sm:grid-cols-2 gap-5">
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Japandi-match (1-5)</span>
+<select id="icrm-japandi-score" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="5">5 — Perfekt match</option>
+<option value="4">4 — Sterk match</option>
+<option value="3" selected>3 — God match</option>
+<option value="2">2 — Delvis match</option>
+<option value="1">1 — Svak match</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Brand fit</span>
+<select id="icrm-brand-fit" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="perfect">Perfekt</option>
+<option value="good" selected>God</option>
+<option value="partial">Delvis</option>
+<option value="poor">Svak</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Status</span>
+<select id="icrm-status" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="prospect">Prospect</option>
+<option value="dm_sent">DM sendt</option>
+<option value="replied">Svart</option>
+<option value="product_sent">Produkt sendt</option>
+<option value="post_published">Post publisert</option>
+<option value="active">Aktiv</option>
+<option value="paused">Pauset</option>
+<option value="declined">Avslått</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Prioritet</span>
+<select id="icrm-priority" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="1">1 — Kontakt først</option>
+<option value="2" selected>2 — Sekundær</option>
+<option value="3">3 — Overvåk</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Ref-kode</span>
+<input type="text" id="icrm-ref-code" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="kozlife-tokyo" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Provisjon %</span>
+<input type="number" id="icrm-commission" min="0" max="50" value="10" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+</div>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Japandi-match begrunnelse</span>
+<textarea id="icrm-japandi-notes" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+</label>
+</fieldset>
+<fieldset class="space-y-5">
+<legend class="text-[10px] uppercase tracking-widest text-stone mb-2 block">Kampanje & Kontaktlogg</legend>
+<div class="grid sm:grid-cols-2 gap-5">
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Sist kontaktet</span>
+<input type="date" id="icrm-last-contacted" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Kontaktkanal</span>
+<select id="icrm-contact-channel" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+<option value="">Velg kanal</option>
+<option value="instagram_dm">Instagram DM</option>
+<option value="email">E-post</option>
+<option value="line">LINE</option>
+<option value="agent">Via byrå</option>
+</select>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Produkt(er) sendt</span>
+<input type="text" id="icrm-products-sent" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Eikebolle Hardanger" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Antall poster publisert</span>
+<input type="number" id="icrm-posts-published" min="0" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Neste handling dato</span>
+<input type="date" id="icrm-next-date" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Neste handling</span>
+<input type="text" id="icrm-next-action" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Send DM på Instagram" />
+</label>
+</div>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Post-lenker (kommaseparert)</span>
+<textarea id="icrm-post-links" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="https://instagram.com/p/..."></textarea>
+</label>
+<label class="block">
+<span class="text-[10px] uppercase tracking-widest text-stone">Notater</span>
+<textarea id="icrm-notes" rows="4" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
+</label>
+</fieldset>
+</div>
+
+<div class="flex gap-4 mt-6">
+<button type="button" onclick="icrm.save()" class="bg-ink text-paper px-8 py-3 text-[10px] uppercase tracking-widest hover:bg-clay transition-colors">Lagre</button>
+<button type="button" onclick="icrm.reset()" class="border border-ink/20 px-8 py-3 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">Avbryt</button>
+</div>
+<p id="icrm-msg" class="hidden text-sm mt-3"></p>
+</div>
+
+</div>
+</section>
+<!-- END INFLUENCER CRM -->
+
+<!-- === PRODUCER CRM ==================================================
            Pipeline over potensielle og aktive produsent-partnere. Tre visninger
            (kanban / liste / skjema) byttes med samme show/hide-mønster som
            resten av admin-panelet. -->
@@ -1991,6 +2257,7 @@ scandijapandi.no/makers</div>
       loadLeads();
       loadKurator();
       loadCRM();
+icrm.load();
     }
 
     // Logg inn med kodebasert brukernavn + passord.
@@ -3466,5 +3733,268 @@ ScandiJapandiについて
     (window as any).crmRunResearch = crmRunResearch;
 
     init();
-  </script>
+  // ── Influencer CRM ────────────────────────────────────────────────────────
+const ICRM_STATUSES: Record<string, {label: string, color: string}> = {
+prospect: { label: 'Prospect', color: 'bg-stone/20 text-stone' },
+dm_sent: { label: 'DM sendt', color: 'bg-clay/20 text-clay' },
+replied: { label: 'Svart', color: 'bg-yellow-100 text-yellow-800' },
+product_sent: { label: 'Produkt sendt', color: 'bg-blue-100 text-blue-800' },
+post_published: { label: 'Post publisert', color: 'bg-purple-100 text-purple-800' },
+active: { label: 'Aktiv', color: 'bg-moss/20 text-moss' },
+paused: { label: 'Pauset', color: 'bg-stone/10 text-stone' },
+declined: { label: 'Avslått', color: 'bg-red-100 text-red-800' },
+};
+
+const ICRM_TIER_COLORS: Record<string, string> = {
+nano: 'text-stone',
+micro: 'text-clay',
+macro: 'text-ink font-medium',
+mega: 'text-moss font-medium',
+};
+
+let icrmAllData: any[] = [];
+
+const icrm = {
+showView(view: string) {
+['list','add'].forEach(v => {
+const el = document.getElementById(`icrm-view-${v}`);
+if (el) el.classList.toggle('hidden', v !== view);
+const tab = document.getElementById(`icrm-tab-${v}`);
+if (tab) {
+tab.classList.toggle('bg-ink', v === view);
+tab.classList.toggle('text-paper', v === view);
+}
+});
+if (view !== 'add') this.load();
+},
+
+async load() {
+const status = (document.getElementById('icrm-filter-status') as HTMLSelectElement)?.value || '';
+const tier = (document.getElementById('icrm-filter-tier') as HTMLSelectElement)?.value || '';
+const country = (document.getElementById('icrm-filter-country') as HTMLSelectElement)?.value || '';
+const search = (document.getElementById('icrm-search') as HTMLInputElement)?.value || '';
+
+const params = new URLSearchParams();
+if (status) params.set('status', status);
+if (tier) params.set('tier', tier);
+if (country) params.set('country', country);
+if (search) params.set('search', search);
+
+const res = await api(`/api/admin/influencer-crm?${params}`);
+if (!res.ok) return;
+const { influencers, summary } = await res.json();
+icrmAllData = influencers;
+this.renderSummary(summary);
+this.renderList(influencers);
+},
+
+renderSummary(summary: any[]) {
+const total = summary.reduce((s: number, r: any) => s + Number(r.count), 0);
+const active = summary.find((r: any) => r.status === 'active')?.count || 0;
+const prospect = summary.find((r: any) => r.status === 'prospect')?.count || 0;
+const inProgress = summary.reduce((s: number, r: any) =>
+['dm_sent','replied','product_sent'].includes(r.status) ? s + Number(r.count) : s, 0);
+const published = summary.find((r: any) => r.status === 'post_published')?.count || 0;
+
+const el = document.getElementById('icrm-summary');
+if (!el) return;
+el.innerHTML = [
+['Totalt', total],
+['Prospects', prospect],
+['I prosess', inProgress],
+['Post publisert', published],
+['Aktive', active],
+].map(([label, count]) => `
+<div class="bg-oat/60 border border-ink/5 p-4 text-center">
+<div class="font-serif text-2xl text-ink">${count}</div>
+<div class="text-[9px] uppercase tracking-widest text-stone mt-1">${label}</div>
+</div>
+`).join('');
+},
+
+renderList(influencers: any[]) {
+const el = document.getElementById('icrm-list-table');
+if (!el) return;
+if (!influencers.length) {
+el.innerHTML = '<p class="text-sm text-stone">Ingen influensere funnet.</p>';
+return;
+}
+
+const fmtFollowers = (n: number | null) => n ? (n >= 1000 ? (n/1000).toFixed(0)+'K' : String(n)) : '—';
+
+el.innerHTML = `
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead>
+<tr class="border-b border-ink/10">
+<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Navn</th>
+<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Plattform</th>
+<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Følgere</th>
+<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Score</th>
+<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Status</th>
+<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Ordre</th>
+<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal">Neste</th>
+<th class="pb-3"></th>
+</tr>
+</thead>
+<tbody>
+${influencers.map((inf: any) => {
+const st = ICRM_STATUSES[inf.status] || { label: inf.status, color: '' };
+const tierColor = ICRM_TIER_COLORS[inf.tier] || '';
+const overdue = inf.next_action_date && new Date(inf.next_action_date) < new Date();
+return `
+<tr class="border-b border-ink/5 hover:bg-oat/30 transition-colors">
+<td class="py-3 pr-4">
+<div class="font-medium text-ink">${escapeHtml(inf.name)}</div>
+<div class="text-[10px] text-stone">${inf.country || ''} · ${inf.city || ''}</div>
+</td>
+<td class="py-3 pr-4">
+${inf.handle_instagram ? `<div class="text-xs text-stone">${escapeHtml(inf.handle_instagram)}</div>` : ''}
+<div class="text-[9px] uppercase tracking-widest ${tierColor}">${inf.tier || ''}</div>
+</td>
+<td class="py-3 pr-4 text-sm text-ink">${fmtFollowers(inf.followers_instagram)}</td>
+<td class="py-3 pr-4 text-stone text-xs">${'★'.repeat(inf.japandi_fit_score||0)}</td>
+<td class="py-3 pr-4">
+<span class="px-2 py-1 text-[9px] uppercase tracking-widest rounded-sm ${st.color}">${st.label}</span>
+</td>
+<td class="py-3 pr-4 text-sm text-ink">${inf.total_orders || 0}</td>
+<td class="py-3 pr-4 text-xs ${overdue ? 'text-red-500' : 'text-stone'}">
+${inf.next_action ? escapeHtml(inf.next_action).slice(0,30) : '—'}
+${inf.next_action_date ? `<div class="text-[9px] ${overdue ? 'text-red-400' : 'text-stone/50'}">${new Date(inf.next_action_date).toLocaleDateString('nb-NO')}</div>` : ''}
+</td>
+<td class="py-3">
+<button onclick="icrm.edit(${inf.id})" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">Rediger</button>
+</td>
+</tr>
+`;
+}).join('')}
+</tbody>
+</table>
+</div>
+`;
+},
+
+edit(id: number) {
+const inf = icrmAllData.find((i: any) => i.id === id);
+if (!inf) return;
+this.showView('add');
+document.getElementById('icrm-form-title')!.textContent = 'Rediger influenser';
+(document.getElementById('icrm-edit-id') as HTMLInputElement).value = String(id);
+const set = (elId: string, val: any) => {
+const el = document.getElementById(elId) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+if (el) el.value = val ?? '';
+};
+set('icrm-name', inf.name);
+set('icrm-instagram', inf.handle_instagram);
+set('icrm-tiktok', inf.handle_tiktok);
+set('icrm-youtube', inf.handle_youtube);
+set('icrm-line', inf.handle_line);
+set('icrm-email', inf.email);
+set('icrm-manager-email', inf.manager_email);
+set('icrm-country', inf.country);
+set('icrm-city', inf.city);
+set('icrm-followers-ig', inf.followers_instagram);
+set('icrm-engagement', inf.engagement_rate);
+set('icrm-tier', inf.tier);
+set('icrm-category', inf.category);
+set('icrm-audience-age', inf.audience_age_range);
+set('icrm-audience-countries', inf.audience_countries);
+set('icrm-japandi-score', inf.japandi_fit_score);
+set('icrm-japandi-notes', inf.japandi_fit_notes);
+set('icrm-brand-fit', inf.brand_fit);
+set('icrm-status', inf.status);
+set('icrm-priority', inf.priority);
+set('icrm-ref-code', inf.ref_code);
+set('icrm-commission', inf.commission_pct);
+set('icrm-last-contacted', inf.last_contacted_at?.slice(0,10));
+set('icrm-contact-channel', inf.last_contact_channel);
+set('icrm-products-sent', inf.products_sent);
+set('icrm-posts-published', inf.posts_published);
+set('icrm-next-date', inf.next_action_date?.slice(0,10));
+set('icrm-next-action', inf.next_action);
+set('icrm-post-links', inf.post_links);
+set('icrm-notes', inf.notes);
+},
+
+reset() {
+(document.getElementById('icrm-edit-id') as HTMLInputElement).value = '';
+document.getElementById('icrm-form-title')!.textContent = 'Ny influenser';
+['icrm-name','icrm-instagram','icrm-tiktok','icrm-youtube','icrm-line',
+'icrm-email','icrm-manager-email','icrm-city','icrm-followers-ig',
+'icrm-engagement','icrm-audience-age','icrm-audience-countries',
+'icrm-japandi-notes','icrm-ref-code','icrm-last-contacted',
+'icrm-products-sent','icrm-posts-published','icrm-next-date',
+'icrm-next-action','icrm-post-links','icrm-notes'].forEach(id => {
+const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement;
+if (el) el.value = '';
+});
+(document.getElementById('icrm-commission') as HTMLInputElement).value = '10';
+this.showView('list');
+},
+
+async save() {
+const id = (document.getElementById('icrm-edit-id') as HTMLInputElement).value;
+const g = (elId: string) => {
+const el = document.getElementById(elId) as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+return el?.value?.trim() || null;
+};
+const gn = (elId: string) => {
+const v = g(elId);
+return v ? Number(v) : null;
+};
+
+const payload: Record<string, any> = {
+name: g('icrm-name'),
+handle_instagram: g('icrm-instagram'),
+handle_tiktok: g('icrm-tiktok'),
+handle_youtube: g('icrm-youtube'),
+handle_line: g('icrm-line'),
+email: g('icrm-email'),
+manager_email: g('icrm-manager-email'),
+country: g('icrm-country'),
+city: g('icrm-city'),
+followers_instagram: gn('icrm-followers-ig'),
+engagement_rate: gn('icrm-engagement'),
+tier: g('icrm-tier'),
+category: g('icrm-category'),
+audience_age_range: g('icrm-audience-age'),
+audience_countries: g('icrm-audience-countries'),
+japandi_fit_score: gn('icrm-japandi-score'),
+japandi_fit_notes: g('icrm-japandi-notes'),
+brand_fit: g('icrm-brand-fit'),
+status: g('icrm-status'),
+priority: gn('icrm-priority'),
+ref_code: g('icrm-ref-code'),
+commission_pct: gn('icrm-commission'),
+last_contacted_at: g('icrm-last-contacted'),
+last_contact_channel: g('icrm-contact-channel'),
+products_sent: g('icrm-products-sent'),
+posts_published: gn('icrm-posts-published'),
+next_action_date: g('icrm-next-date'),
+next_action: g('icrm-next-action'),
+post_links: g('icrm-post-links'),
+notes: g('icrm-notes'),
+};
+
+if (!payload.name) {
+const msg = document.getElementById('icrm-msg');
+if (msg) { msg.textContent = 'Navn er påkrevd.'; msg.className = 'text-sm text-clay'; msg.classList.remove('hidden'); }
+return;
+}
+
+const res = id
+? await api(`/api/admin/influencer-crm/${id}`, { method: 'PUT', body: JSON.stringify(payload) })
+: await api('/api/admin/influencer-crm', { method: 'POST', body: JSON.stringify(payload) });
+
+if (res.ok) {
+this.reset();
+} else {
+const msg = document.getElementById('icrm-msg');
+if (msg) { msg.textContent = 'Kunne ikke lagre.'; msg.className = 'text-sm text-clay'; msg.classList.remove('hidden'); }
+}
+},
+};
+
+(window as any).icrm = icrm;
+</script>
 </Base>
