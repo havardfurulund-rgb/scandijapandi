@@ -15,6 +15,35 @@
 import type { Config } from "@netlify/functions";
 import { db } from "../lib/db.mts";
 
+// Simple in-memory rate limiter — max 10 checkout attempts per IP per minute.
+// Protects against automated Stripe session creation abuse.
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): boolean {
+const now = Date.now();
+const windowMs = 60_000; // 1 minute
+const maxRequests = 10;
+
+const entry = rateLimitMap.get(ip);
+if (!entry || now > entry.resetAt) {
+rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs });
+return true; // allowed
+}
+if (entry.count >= maxRequests) {
+return false; // blocked
+}
+entry.count++;
+return true; // allowed
+}
+
+// Clean up old entries every 5 minutes to prevent memory leak
+setInterval(() => {
+const now = Date.now();
+for (const [key, val] of rateLimitMap.entries()) {
+if (now > val.resetAt) rateLimitMap.delete(key);
+}
+}, 300_000);
+
 function siteUrl(): string {
   return Netlify.env.get("URL") || "https://scandijapandi.no";
 }
@@ -108,7 +137,22 @@ async function createCheckoutSession(opts: {
 
 export default async (req: Request) => {
   try {
-    const url = new URL(req.url);
+const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+|| req.headers.get('x-nf-client-connection-ip')
+|| 'unknown';
+
+if (!checkRateLimit(ip)) {
+console.warn(`[checkout] rate limit exceeded for IP ${ip}`);
+return new Response(null, {
+status: 429,
+headers: {
+'Retry-After': '60',
+Location: `${siteUrl()}/?checkout=error&reason=rate-limited`,
+},
+});
+}
+
+const url = new URL(req.url);
     const slug = url.searchParams.get("slug") || "";
     const curator = url.searchParams.get("ref") || url.searchParams.get("client_reference_id") || "";
     console.log(`[checkout] slug=${slug} locale=${url.searchParams.get("locale")} ref=${curator}`);
