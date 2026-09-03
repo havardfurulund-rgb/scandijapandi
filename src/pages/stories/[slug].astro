@@ -1,0 +1,156 @@
+---
+// 北の手 / Kita no Te — episode page. SSR via Netlify.
+// Reads /api/stories/:slug at request time; redirects home if not published.
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+
+const { slug } = Astro.params;
+const origin = Astro.url.origin || import.meta.env.PUBLIC_SITE_URL || 'https://scandijapandi.no';
+
+let ep: any = null;
+try {
+  const res = await fetch(`${origin}/api/stories/${encodeURIComponent(slug || '')}`);
+  if (res.ok) ep = (await res.json()).episode;
+} catch {}
+if (!ep) return Astro.redirect('/stories');
+
+const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+const jpyFmt = new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
+const products: any[] = Array.isArray(ep.products) ? ep.products : [];
+
+const videoJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: ep.title_jp || ep.title_en || ep.title_no,
+  description: ep.description_jp || ep.description_en || ep.description_no || ep.title_no,
+  thumbnailUrl: ep.thumbnail_url || undefined,
+  uploadDate: ep.published_at || undefined,
+  embedUrl: ep.video_url_jp || ep.video_url_en || ep.video_url_no || undefined,
+  inLanguage: 'ja',
+  publisher: { '@type': 'Organization', name: 'Scandi Japandi Collection' },
+}).replace(/</g, '\\u003c');
+
+const clientData = JSON.stringify({
+  slug: ep.slug,
+  title: { no: ep.title_no || '', en: ep.title_en || ep.title_no || '', jp: ep.title_jp || ep.title_no || '' },
+  description: { no: ep.description_no || '', en: ep.description_en || ep.description_no || '', jp: ep.description_jp || ep.description_no || '' },
+  video: { no: ep.video_url_no || '', en: ep.video_url_en || '', jp: ep.video_url_jp || '' },
+  products: products.map((p) => ({ slug: p.slug, name: { no: p.name, en: p.name_en || p.name, jp: p.name_jp || p.name } })),
+});
+---
+
+<Base title={`北の手 — ${ep.title_no} — Scandi Japandi`} description={ep.description_no || ep.title_no}>
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet" />
+    <script type="application/ld+json" set:html={videoJsonLd} />
+    <style>
+      .jp-serif { font-family: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', Georgia, serif; }
+      .jp-sans { font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif; }
+    </style>
+  </Fragment>
+
+  <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-5 flex items-center justify-between bg-paper/95 backdrop-blur-sm border-b border-ink/5">
+    <a href="/stories" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors flex items-center gap-2">
+      <svg width="16" height="10" viewBox="0 0 16 10" fill="none"><path d="M1 5h14M1 5L5 1M1 5L5 9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-t="back">Alle historier</span>
+    </a>
+    <a href="/" class="font-serif text-sm text-ink tracking-wide">ScandiJapandi</a>
+    <div class="flex gap-4 text-[10px] uppercase tracking-widest text-stone">
+      <button onclick="setLang('no')" class="lang-btn hover:text-ink transition-colors">NO</button>
+      <button onclick="setLang('en')" class="lang-btn hover:text-ink transition-colors">EN</button>
+      <button onclick="setLang('jp')" class="lang-btn hover:text-ink transition-colors">日本語</button>
+    </div>
+  </nav>
+
+  <main class="pt-20 bg-paper min-h-screen">
+    <section class="max-w-5xl mx-auto px-6 pt-12 pb-8">
+      <img src="/brand/kitanote-wordmark.svg" alt="Kita no Te — 北の手" class="h-10 sm:h-12 mb-3" />
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-10" data-t="by">presentert av Scandi Japandi Collection</p>
+
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-3">{ep.producer_name || ''}{ep.location ? ` · ${ep.location}` : ''}</p>
+      <h1 id="ep-title" class="font-serif text-3xl sm:text-5xl text-ink font-light leading-tight mb-8">{ep.title_no}</h1>
+
+      <div class="aspect-video bg-ink border border-ink/10 overflow-hidden">
+        <iframe id="ep-video" src={ep.video_url_jp || ep.video_url_en || ep.video_url_no || ''} title={ep.title_no} class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+
+      {ep.description_no && (
+        <p id="ep-desc" class="text-base text-stone leading-relaxed mt-8 max-w-2xl">{ep.description_no}</p>
+      )}
+    </section>
+
+    {products.length > 0 && (
+      <section class="max-w-5xl mx-auto px-6 py-16 border-t border-ink/8">
+        <p class="text-[10px] uppercase tracking-widest text-stone mb-8" data-t="objects">Objektene i denne episoden</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          {products.map((p, i) => (
+            <article class="flex flex-col">
+              <a href={`/products/${p.slug}`} class="block aspect-[4/5] bg-oat overflow-hidden">
+                <img src={p.image_url || '/images/placeholder-product.svg'} alt={p.name} class="w-full h-full object-cover" loading="lazy" />
+              </a>
+              <div class="mt-5 flex justify-between items-baseline border-b border-ink/5 pb-2">
+                <div>
+                  <a href={`/products/${p.slug}`} class="font-serif text-xl text-ink hover:text-clay transition-colors" data-pname={i}>{p.name}</a>
+                  <p class="text-[10px] text-stone uppercase tracking-wider mt-1">{p.producer || ''}</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-sm text-ink">{nokFmt.format(p.price_nok || 0)}</div>
+                  {p.price_jpy && <div class="text-xs text-stone">{jpyFmt.format(p.price_jpy)}</div>}
+                </div>
+              </div>
+              <a href={`/api/checkout?slug=${p.slug}&ep=${ep.slug}`} class="ep-buy mt-5 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay" data-slug={p.slug}>
+                <span data-t="buy">Kjøp nå</span>
+              </a>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="border-t border-ink/8 py-16 text-center">
+      <a href="/stories" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">← <span data-t="back">Alle historier</span></a>
+      <div class="mt-8 flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-widest text-stone/40">
+        <a href="/privacy" class="hover:text-stone">Privacy</a>
+        <a href="/shipping" class="hover:text-stone">Shipping</a>
+        <a href="/terms" class="hover:text-stone">Terms</a>
+      </div>
+    </section>
+  </main>
+</Base>
+
+<script type="application/json" id="ep-data" set:html={clientData}></script>
+
+<script>
+  const D = JSON.parse(document.getElementById('ep-data')?.textContent || '{}');
+  const T: Record<string, Record<string, string>> = {
+    no: { back: 'Alle historier', by: 'presentert av Scandi Japandi Collection', objects: 'Objektene i denne episoden', buy: 'Kjøp nå' },
+    en: { back: 'All stories', by: 'presented by Scandi Japandi Collection', objects: 'Objects in this episode', buy: 'Buy now' },
+    jp: { back: 'すべての物語', by: 'Scandi Japandi Collection がお届けします', objects: 'この回の作品', buy: '購入する' },
+  };
+  function setLang(lang: string) {
+    const t = T[lang] || T.no;
+    document.querySelectorAll('[data-t]').forEach((el) => { const k = el.getAttribute('data-t') || ''; if (t[k]) el.textContent = t[k]; });
+    const title = document.getElementById('ep-title'); if (title && D.title) title.textContent = D.title[lang] || D.title.no;
+    const desc = document.getElementById('ep-desc'); if (desc && D.description) desc.textContent = D.description[lang] || D.description.no;
+    const v = document.getElementById('ep-video') as HTMLIFrameElement | null;
+    if (v && D.video) { const want = D.video[lang] || D.video.jp || D.video.en || D.video.no; if (want && v.src !== want) v.src = want; }
+    document.querySelectorAll('[data-pname]').forEach((el) => { const i = Number(el.getAttribute('data-pname')); const p = D.products?.[i]; if (p) el.textContent = p.name[lang] || p.name.no; });
+    const ref = new URLSearchParams(location.search).get('ref');
+    const locale = lang === 'jp' ? 'ja' : lang;
+    document.querySelectorAll('.ep-buy').forEach((a) => {
+      const s = a.getAttribute('data-slug') || '';
+      let href = `/api/checkout?slug=${encodeURIComponent(s)}&locale=${locale}&ep=${encodeURIComponent(D.slug || '')}`;
+      if (ref) href += `&ref=${encodeURIComponent(ref)}`;
+      (a as HTMLAnchorElement).href = href;
+    });
+    document.body.classList.toggle('jp-sans', lang === 'jp');
+    if (title) title.classList.toggle('jp-serif', lang === 'jp');
+    (window as any).__sjLang = lang;
+    try { localStorage.setItem('sj-lang', lang); } catch {}
+    document.querySelectorAll('.lang-btn').forEach((b) => { const l = b.textContent?.trim().toLowerCase(); b.setAttribute('aria-current', l === lang || (l === '日本語' && lang === 'jp') ? 'true' : 'false'); });
+  }
+  (window as any).setLang = setLang;
+  document.addEventListener('DOMContentLoaded', () => { let s = 'no'; try { s = localStorage.getItem('sj-lang') || 'no'; } catch {} setLang(s); });
+</script>
