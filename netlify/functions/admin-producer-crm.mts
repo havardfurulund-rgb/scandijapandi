@@ -1,4 +1,4 @@
-// Producer CRM API — manages producer leads pipeline
+// Producer CRM API — manages producer, brand, organisation and destination leads
 import type { Config } from "@netlify/functions";
 import { db } from "../lib/db.mts";
 import { requireAdmin } from "../lib/require-admin.mts";
@@ -20,13 +20,16 @@ export default async (req: Request) => {
   try {
     // GET all leads
     if (req.method === "GET" && isCollection) {
-      const status = url.searchParams.get("status");
-      const priority = url.searchParams.get("priority");
-      const country = url.searchParams.get("country");
-      const search = url.searchParams.get("search");
+      const q = url.searchParams;
+      const status = q.get("status");
+      const priority = q.get("priority");
+      const country = q.get("country");
+      const search = q.get("search");
+      const leadType = q.get("lead_type");
+      const sourceEvent = q.get("source_event");
 
       let rows;
-      if (status || priority || country || search) {
+      if (status || priority || country || search || leadType || sourceEvent) {
         // Every parameter is explicitly cast: Postgres cannot infer the type of
         // a bare placeholder used in `$1 IS NULL`, and errors out without it.
         rows = await db.sql`
@@ -35,6 +38,8 @@ export default async (req: Request) => {
             (${status}::text IS NULL OR status = ${status}::text)
             AND (${priority}::int IS NULL OR priority = ${priority}::int)
             AND (${country}::text IS NULL OR country ILIKE ${country}::text)
+            AND (${leadType}::text IS NULL OR lead_type = ${leadType}::text)
+            AND (${sourceEvent}::text IS NULL OR source_event = ${sourceEvent}::text)
             AND (${search}::text IS NULL OR
               name ILIKE ${'%' + (search || '') + '%'}::text OR
               category ILIKE ${'%' + (search || '') + '%'}::text OR
@@ -74,7 +79,8 @@ export default async (req: Request) => {
           website, instagram, contact_email, contact_name,
           japandi_score, japandi_notes, priority, status,
           fits_japandi, outreach_channel, notes, next_action,
-          next_action_date, ai_summary, source
+          next_action_date, ai_summary, source,
+          lead_type, source_event, content_status, stand_number, agency_fit
         ) VALUES (
           ${b.name}, ${b.country || null}, ${b.region || null},
           ${b.category || null}, ${b.main_products || null},
@@ -85,7 +91,10 @@ export default async (req: Request) => {
           ${b.fits_japandi || 'yes'}, ${b.outreach_channel || null},
           ${b.notes || null}, ${b.next_action || null},
           ${b.next_action_date || null}, ${b.ai_summary || null},
-          ${'manual'}
+          ${'manual'},
+          ${b.lead_type || 'producer'}, ${b.source_event || 'manual'},
+          ${b.content_status || 'not_planned'}, ${b.stand_number || null},
+          ${b.agency_fit || 'none'}
         ) RETURNING *
       `;
       return Response.json({ lead: row }, { status: 201 });
@@ -116,6 +125,11 @@ export default async (req: Request) => {
           next_action = ${b.next_action ?? null},
           next_action_date = ${b.next_action_date ?? null},
           ai_summary = ${b.ai_summary ?? null},
+          lead_type = COALESCE(${b.lead_type || null}, lead_type),
+          source_event = COALESCE(${b.source_event || null}, source_event),
+          content_status = COALESCE(${b.content_status || null}, content_status),
+          stand_number = ${b.stand_number ?? null},
+          agency_fit = COALESCE(${b.agency_fit || null}, agency_fit),
           updated_at = NOW()
         WHERE id = ${Number(last)}
         RETURNING *
