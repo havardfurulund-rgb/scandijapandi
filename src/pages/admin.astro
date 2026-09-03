@@ -705,6 +705,24 @@ import Base from '../layouts/Base.astro';
                 <option value="Estonia">Estland</option>
                 <option value="Poland">Polen</option>
               </select>
+        <select id="crm-filter-type" onchange="loadCRM()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+          <option value="">Alle typer</option>
+          <option value="producer">Produsent</option>
+          <option value="brand">Merke</option>
+          <option value="organisation">Organisasjon</option>
+          <option value="importer">Importør</option>
+          <option value="destination">Destinasjon</option>
+        </select>
+        <select id="crm-filter-source" onchange="loadCRM()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none">
+          <option value="">Alle kilder</option>
+          <option value="oslo_design_fair_2026">Oslo Design Fair 2026</option>
+          <option value="formex_jan_2026">Formex jan 2026</option>
+          <option value="formex_aug_2024">Formex aug 2024</option>
+          <option value="habitare_2026">Habitare 2026</option>
+          <option value="tallinn_design_festival_2026">Tallinn Design Festival 2026</option>
+          <option value="ecosystem_research">Norge–Japan-økosystem</option>
+          <option value="manual">Manuell</option>
+        </select>
               <input type="text" id="crm-search" placeholder="Søk..." oninput="loadCRM()" class="bg-paper border border-ink/10 px-3 py-2 text-[11px] focus:border-ink outline-none flex-1 min-w-32" />
             </div>
             <div id="crm-list-table"></div>
@@ -821,6 +839,51 @@ import Base from '../layouts/Base.astro';
                   <option value="cultural_org">Via kulturorganisasjon</option>
                 </select>
               </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Type</span>
+          <select id="crm-lead-type" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+            <option value="producer">Produsent</option>
+            <option value="brand">Merke</option>
+            <option value="organisation">Organisasjon</option>
+            <option value="importer">Importør</option>
+            <option value="destination">Destinasjon</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Kilde</span>
+          <select id="crm-source-event" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+            <option value="manual">Manuell</option>
+            <option value="oslo_design_fair_2026">Oslo Design Fair 2026</option>
+            <option value="formex_jan_2026">Formex jan 2026</option>
+            <option value="formex_aug_2024">Formex aug 2024</option>
+            <option value="habitare_2026">Habitare 2026</option>
+            <option value="tallinn_design_festival_2026">Tallinn Design Festival 2026</option>
+            <option value="ecosystem_research">Norge–Japan-økosystem</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Innholdsstatus (北の手)</span>
+          <select id="crm-content-status" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+            <option value="not_planned">Ikke planlagt</option>
+            <option value="planned">Planlagt</option>
+            <option value="scheduled">Opptak avtalt</option>
+            <option value="filmed">Filmet</option>
+            <option value="in_localisation">I lokalisering</option>
+            <option value="published">Publisert</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Byrå-potensial</span>
+          <select id="crm-agency-fit" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+            <option value="none">Ingen</option>
+            <option value="possible">Mulig</option>
+            <option value="strong">Sterk</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-[10px] uppercase tracking-widest text-stone">Stand-nr (messe)</span>
+          <input type="text" id="crm-stand-number" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="D01-30" />
+        </label>
               <label class="block">
                 <span class="text-[10px] uppercase tracking-widest text-stone">Sist kontaktet</span>
                 <input type="date" id="crm-last-contacted" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" />
@@ -871,6 +934,7 @@ import Base from '../layouts/Base.astro';
           <button type="button" data-ktab="presse" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-transparent text-stone hover:text-ink transition-colors">Pressemeldinger</button>
           <button type="button" data-ktab="produsenter" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-transparent text-stone hover:text-ink transition-colors">Produsenter</button>
           <button type="button" data-ktab="influensere" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-transparent text-stone hover:text-ink transition-colors">Influensere</button>
+          <button type="button" data-ktab="innhold" class="k-tab pb-3 -mb-px text-[10px] uppercase tracking-widest border-b-2 border-transparent text-stone hover:text-ink transition-colors">Innhold · 北の手</button>
         </div>
 
         <!-- ── NYHETSBREV ────────────────────────────────────────────── -->
@@ -1097,6 +1161,56 @@ import Base from '../layouts/Base.astro';
           <div id="pdr-list" class="overflow-x-auto">
             <p class="text-sm text-stone">Laster produsenter …</p>
           </div>
+        </div>
+
+        <!-- ── INNHOLD (北の手 episodes) ─────────────────────────────── -->
+        <div id="ktab-innhold" class="k-panel hidden">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h3 class="font-serif text-xl text-ink">Innhold · 北の手</h3>
+              <p class="text-xs text-stone mt-1">Episoder fra Kita no Te. Publisering krever godkjent native QA.</p>
+            </div>
+            <button type="button" onclick="ep.newForm()" class="border border-ink/20 px-4 py-2 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">+ Ny episode</button>
+          </div>
+          <div id="ep-summary" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"></div>
+          <div id="ep-form" class="hidden bg-oat/60 border border-ink/5 p-6 mb-8 space-y-6">
+            <div class="flex items-center justify-between">
+              <h4 id="ep-form-title" class="font-serif text-lg text-ink">Ny episode</h4>
+              <button type="button" onclick="ep.cancel()" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink">Avbryt</button>
+            </div>
+            <input type="hidden" id="ep-id" value="" />
+            <div class="grid sm:grid-cols-2 gap-5">
+              <label class="block sm:col-span-2"><span class="text-[10px] uppercase tracking-widest text-stone">Tittel (NO) *</span><input type="text" id="ep-title-no" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Tittel (EN)</span><input type="text" id="ep-title-en" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Tittel (JP)</span><input type="text" id="ep-title-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Slug (auto)</span><input type="text" id="ep-slug" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-mono text-sm" placeholder="knapstad-glass" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Format</span><select id="ep-format" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"><option value="atelier">Atelier (12–18 min)</option><option value="object">Objekt (45–90 s)</option><option value="material">Materiale</option><option value="live">Open Studio LIVE</option><option value="season">Sesong</option></select></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Produsent (fra CRM)</span><select id="ep-producer" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"><option value="">Velg…</option></select></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Sted</span><input type="text" id="ep-location" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="Bergen, Norge" /></label>
+              <label class="block sm:col-span-2"><span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse (NO)</span><textarea id="ep-desc-no" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse (EN)</span><textarea id="ep-desc-en" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40"></textarea></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Beskrivelse (JP)</span><textarea id="ep-desc-jp" rows="3" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none bg-oat/40"></textarea></label>
+              <div class="sm:col-span-2 flex items-center gap-4">
+                <button type="button" onclick="ep.translate()" id="ep-translate-btn" class="border border-ink/20 px-4 py-2 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">✦ Oversett automatisk (NO → EN + JP)</button>
+                <span id="ep-translate-status" class="text-xs text-stone"></span>
+              </div>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Video-URL (JP master)</span><input type="url" id="ep-video-jp" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="https://www.youtube.com/embed/…" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Video-URL (EN)</span><input type="url" id="ep-video-en" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Video-URL (NO)</span><input type="url" id="ep-video-no" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Reel / Short URL</span><input type="url" id="ep-short" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Miniatyrbilde URL</span><input type="url" id="ep-thumb" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Varighet (sek)</span><input type="number" id="ep-duration" min="0" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Opptaksdato</span><input type="date" id="ep-filmed" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Status</span><select id="ep-status" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"><option value="planned">Planlagt</option><option value="filmed">Filmet</option><option value="in_localisation">I lokalisering</option><option value="qa">Til QA</option><option value="published">Publisert</option><option value="archived">Arkivert</option></select></label>
+              <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Medvert (influenser, LIVE)</span><select id="ep-cohost" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"><option value="">Ingen</option></select></label>
+              <label class="block sm:col-span-2"><span class="text-[10px] uppercase tracking-widest text-stone">Objekter i episoden (hold cmd/ctrl for flere)</span><select id="ep-products" multiple size="5" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></select></label>
+              <label class="flex items-center gap-3 text-sm sm:col-span-2 bg-paper border border-ink/10 p-4"><input type="checkbox" id="ep-qa" class="accent-clay" /> <span><strong>Native QA godkjent</strong> — japansk morsmålsbruker har godkjent tekst og stemme. Publisering er sperret uten.</span></label>
+              <label class="block sm:col-span-2"><span class="text-[10px] uppercase tracking-widest text-stone">Notater</span><textarea id="ep-notes" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea></label>
+            </div>
+            <div class="flex gap-4"><button type="button" onclick="ep.save()" class="bg-ink text-paper px-8 py-3 text-[10px] uppercase tracking-widest hover:bg-clay transition-colors">Lagre episode</button></div>
+            <p id="ep-msg" class="hidden text-sm"></p>
+          </div>
+          <div id="ep-list" class="overflow-x-auto"><p class="text-sm text-stone">Laster episoder …</p></div>
         </div>
 
         <!-- ── INFLUENSERE ───────────────────────────────────────────── -->
@@ -2447,7 +2561,7 @@ icrm.load();
     const fmtDay = (s) => { try { return new Date(s).toLocaleDateString('nb-NO', { dateStyle: 'medium' }); } catch { return s || ''; } };
 
     // ── Fane-navigasjon ──────────────────────────────────────────────
-    const K_TABS = ['nyhetsbrev', 'presse', 'produsenter', 'influensere'];
+    const K_TABS = ['nyhetsbrev', 'presse', 'produsenter', 'influensere', 'innhold'];
     function showKuratorTab(tab) {
       K_TABS.forEach((t) => { const el = $(`ktab-${t}`); if (el) el.classList.toggle('hidden', t !== tab); });
       document.querySelectorAll('.k-tab').forEach((b) => {
@@ -3447,6 +3561,8 @@ ScandiJapandiについて
     async function loadCRM() {
       const status = $('crm-filter-status')?.value || '';
       const priority = $('crm-filter-priority')?.value || '';
+      const leadType = $('crm-filter-type') ? $('crm-filter-type').value : '';
+      const sourceEvent = $('crm-filter-source') ? $('crm-filter-source').value : '';
       const country = $('crm-filter-country')?.value || '';
       const search = $('crm-search')?.value || '';
 
@@ -3454,6 +3570,8 @@ ScandiJapandiについて
       if (status) params.set('status', status);
       if (priority) params.set('priority', priority);
       if (country) params.set('country', country);
+      if (leadType) params.set('lead_type', leadType);
+      if (sourceEvent) params.set('source_event', sourceEvent);
       if (search) params.set('search', search);
 
       const res = await api(`/api/admin/crm?${params}`);
@@ -3613,6 +3731,11 @@ ScandiJapandiについて
         'crm-next-action': lead.next_action || '',
         'crm-ai-summary': lead.ai_summary || '',
         'crm-notes': lead.notes || '',
+        'crm-lead-type': lead.lead_type || 'producer',
+        'crm-source-event': lead.source_event || 'manual',
+        'crm-content-status': lead.content_status || 'not_planned',
+        'crm-agency-fit': lead.agency_fit || 'none',
+        'crm-stand-number': lead.stand_number || '',
       };
       Object.entries(fields).forEach(([id, value]) => { if ($(id)) $(id).value = value; });
       hide('crm-msg');
@@ -3624,7 +3747,7 @@ ScandiJapandiについて
       $('crm-form-title').textContent = 'Ny produsent-lead';
       ['crm-name','crm-region','crm-products','crm-website','crm-instagram',
        'crm-contact-name','crm-contact-email','crm-last-contacted','crm-next-date',
-       'crm-next-action','crm-ai-summary','crm-notes','crm-research-url'].forEach((id) => {
+       'crm-next-action','crm-ai-summary','crm-notes','crm-research-url','crm-stand-number'].forEach((id) => {
         if ($(id)) $(id).value = '';
       });
       $('crm-country').value = '';
@@ -3632,6 +3755,10 @@ ScandiJapandiについて
       $('crm-score').value = '3';
       $('crm-priority').value = '2';
       $('crm-status').value = 'prospect';
+      if ($('crm-lead-type')) $('crm-lead-type').value = 'producer';
+      if ($('crm-source-event')) $('crm-source-event').value = 'manual';
+      if ($('crm-content-status')) $('crm-content-status').value = 'not_planned';
+      if ($('crm-agency-fit')) $('crm-agency-fit').value = 'none';
       $('crm-channel').value = 'email';
       hide('crm-msg');
       hide('crm-research-status');
@@ -3661,6 +3788,11 @@ ScandiJapandiについて
         priority:         Number($('crm-priority').value),
         status:           $('crm-status').value,
         outreach_channel: $('crm-channel').value,
+        lead_type:        $('crm-lead-type').value,
+        source_event:     $('crm-source-event').value,
+        content_status:   $('crm-content-status').value,
+        agency_fit:       $('crm-agency-fit').value,
+        stand_number:     $('crm-stand-number').value.trim() || null,
         last_contacted:   $('crm-last-contacted').value || null,
         next_action:      $('crm-next-action').value.trim(),
         next_action_date: $('crm-next-date').value || null,
@@ -3996,5 +4128,87 @@ if (msg) { msg.textContent = 'Kunne ikke lagre.'; msg.className = 'text-sm text-
 };
 
 (window as any).icrm = icrm;
+
+    // ── INNHOLD · 北の手 episodes ─────────────────────────────────────────
+    const EP_STATUS = { planned:'Planlagt', filmed:'Filmet', in_localisation:'I lokalisering', qa:'Til QA', published:'Publisert', archived:'Arkivert' };
+    let epAll = [];
+    let epRefsLoaded = false;
+    const epv = (id) => ($(id) ? $(id).value : '');
+    const eps = (id, v) => { if ($(id)) $(id).value = v == null ? '' : String(v); };
+    function epSlugify(s) { return String(s || '').toLowerCase().replace(/æ/g,'ae').replace(/ø/g,'o').replace(/å/g,'a').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80); }
+    const ep = {
+      async loadRefs() {
+        if (epRefsLoaded) return; epRefsLoaded = true;
+        try {
+          const [c, i, p] = await Promise.all([api('/api/admin/crm'), api('/api/admin/influencer-crm'), api('/api/admin/products')]);
+          if (c.ok) { const d = await c.json(); const sel = $('ep-producer'); (d.leads||[]).forEach((l) => { const o = document.createElement('option'); o.value = String(l.id); o.textContent = l.name + (l.country ? ' · ' + l.country : ''); sel.appendChild(o); }); }
+          if (i.ok) { const d = await i.json(); const sel = $('ep-cohost'); (d.influencers||[]).forEach((x) => { const o = document.createElement('option'); o.value = String(x.id); o.textContent = x.name + (x.handle_instagram ? ' ' + x.handle_instagram : ''); sel.appendChild(o); }); }
+          if (p.ok) { const d = await p.json(); const sel = $('ep-products'); (d.products||[]).forEach((x) => { const o = document.createElement('option'); o.value = x.slug; o.textContent = x.name + ' — ' + (x.price_nok ?? '') + ' kr'; sel.appendChild(o); }); }
+        } catch (e) { console.error('[ep] refs', e); }
+      },
+      async load() {
+        await this.loadRefs();
+        const r = await api('/api/admin/content');
+        if (!r.ok) { $('ep-list').innerHTML = '<p class="text-sm text-clay">Kunne ikke laste episoder.</p>'; return; }
+        const d = await r.json(); epAll = d.episodes || [];
+        const counts = {}; epAll.forEach((e) => { counts[e.status] = (counts[e.status]||0)+1; });
+        $('ep-summary').innerHTML = [['Planlagt', counts.planned||0], ['Filmet', counts.filmed||0], ['I lokalisering', (counts.in_localisation||0)+(counts.qa||0)], ['Publisert', counts.published||0]].map(([l,n]) => '<div class="bg-oat/60 border border-ink/5 p-4 text-center"><div class="font-serif text-2xl text-ink">'+n+'</div><div class="text-[9px] uppercase tracking-widest text-stone mt-1">'+l+'</div></div>').join('');
+        if (!epAll.length) { $('ep-list').innerHTML = '<p class="text-sm text-stone">Ingen episoder ennå. Klikk «Ny episode».</p>'; return; }
+        $('ep-list').innerHTML = '<table class="w-full text-left text-sm"><thead><tr class="border-b border-ink/10">' + ['Tittel','Format','Produsent','Status','QA','Objekter',''].map((h) => '<th class="pb-3 text-[10px] uppercase tracking-widest text-stone font-normal pr-4">'+h+'</th>').join('') + '</tr></thead><tbody>' + epAll.map((e) => '<tr class="border-b border-ink/5 hover:bg-oat/30"><td class="py-3 pr-4"><div class="text-ink">'+escapeHtml(e.title_no||'')+'</div><div class="text-[10px] text-stone font-mono">/stories/'+escapeHtml(e.slug||'')+'</div></td><td class="py-3 pr-4 text-xs text-stone">'+escapeHtml(e.format||'')+'</td><td class="py-3 pr-4 text-xs text-stone">'+escapeHtml(e.producer_name||'')+'</td><td class="py-3 pr-4"><span class="px-2 py-1 text-[9px] uppercase tracking-widest '+(e.status==='published'?'bg-moss/20 text-moss':'bg-stone/20 text-stone')+'">'+(EP_STATUS[e.status]||e.status)+'</span></td><td class="py-3 pr-4 text-xs">'+(e.native_qa_done?'✓':'—')+'</td><td class="py-3 pr-4 text-xs text-stone">'+((e.product_slugs||[]).length)+'</td><td class="py-3"><button type="button" onclick="ep.edit('+e.id+')" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink">Rediger</button></td></tr>').join('') + '</tbody></table>';
+      },
+      async newForm() { await this.loadRefs(); this.reset(); show('ep-form'); $('ep-form').scrollIntoView({ behavior:'smooth', block:'start' }); },
+      cancel() { this.reset(); hide('ep-form'); },
+      reset() {
+        ['ep-id','ep-title-no','ep-title-en','ep-title-jp','ep-slug','ep-location','ep-desc-no','ep-desc-en','ep-desc-jp','ep-video-jp','ep-video-en','ep-video-no','ep-short','ep-thumb','ep-duration','ep-filmed','ep-notes'].forEach((id) => eps(id,''));
+        eps('ep-format','atelier'); eps('ep-status','planned'); eps('ep-producer',''); eps('ep-cohost','');
+        if ($('ep-qa')) $('ep-qa').checked = false;
+        if ($('ep-products')) Array.from($('ep-products').options).forEach((o) => { o.selected = false; });
+        $('ep-form-title').textContent = 'Ny episode'; hide('ep-msg'); $('ep-translate-status').textContent = '';
+      },
+      async edit(id) {
+        await this.loadRefs(); const e = epAll.find((x) => Number(x.id) === Number(id)); if (!e) return;
+        this.reset(); $('ep-form-title').textContent = 'Rediger episode';
+        eps('ep-id', e.id); eps('ep-title-no', e.title_no); eps('ep-title-en', e.title_en); eps('ep-title-jp', e.title_jp); eps('ep-slug', e.slug);
+        eps('ep-format', e.format || 'atelier'); eps('ep-producer', e.producer_lead_id || ''); eps('ep-location', e.location);
+        eps('ep-desc-no', e.description_no); eps('ep-desc-en', e.description_en); eps('ep-desc-jp', e.description_jp);
+        eps('ep-video-jp', e.video_url_jp); eps('ep-video-en', e.video_url_en); eps('ep-video-no', e.video_url_no); eps('ep-short', e.short_url); eps('ep-thumb', e.thumbnail_url);
+        eps('ep-duration', e.duration_seconds); eps('ep-filmed', e.filmed_at ? String(e.filmed_at).slice(0,10) : ''); eps('ep-status', e.status || 'planned'); eps('ep-cohost', e.co_host_influencer_id || '');
+        if ($('ep-qa')) $('ep-qa').checked = !!e.native_qa_done; eps('ep-notes', e.notes);
+        const want = new Set(e.product_slugs || []); Array.from($('ep-products').options).forEach((o) => { o.selected = want.has(o.value); });
+        show('ep-form'); $('ep-form').scrollIntoView({ behavior:'smooth', block:'start' });
+      },
+      async translate() {
+        const title = epv('ep-title-no').trim(); if (!title) { $('ep-translate-status').textContent = 'Skriv tittel (NO) først.'; return; }
+        $('ep-translate-btn').setAttribute('disabled','true'); $('ep-translate-status').textContent = 'Oversetter …';
+        try {
+          const r = await api('/api/admin/translate', { method:'POST', body: JSON.stringify({ name: title, description: epv('ep-desc-no').trim(), origin_story: '', producer_story: '', material: '', care_instructions: '' }) });
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          const { translations: t } = await r.json();
+          if (t.name_en) eps('ep-title-en', t.name_en); if (t.name_jp) eps('ep-title-jp', t.name_jp);
+          if (t.description_en) eps('ep-desc-en', t.description_en); if (t.description_jp) eps('ep-desc-jp', t.description_jp);
+          $('ep-translate-status').textContent = '✓ Oversatt — kontroller før lagring.';
+        } catch (e) { $('ep-translate-status').textContent = 'Oversettelse feilet.'; }
+        finally { $('ep-translate-btn').removeAttribute('disabled'); }
+      },
+      async save() {
+        const id = epv('ep-id'); const titleNo = epv('ep-title-no').trim();
+        if (!titleNo) { $('ep-msg').textContent = 'Tittel (NO) er påkrevd.'; $('ep-msg').className = 'text-sm text-clay'; show('ep-msg'); return; }
+        const producerSel = $('ep-producer'); const producerName = producerSel && producerSel.selectedIndex > 0 ? producerSel.options[producerSel.selectedIndex].textContent.split(' · ')[0] : null;
+        const payload = {
+          slug: epv('ep-slug').trim() || epSlugify(titleNo), title_no: titleNo, title_en: epv('ep-title-en').trim() || null, title_jp: epv('ep-title-jp').trim() || null,
+          format: epv('ep-format'), producer_lead_id: epv('ep-producer') ? Number(epv('ep-producer')) : null, producer_name: producerName, location: epv('ep-location').trim() || null,
+          description_no: epv('ep-desc-no').trim() || null, description_en: epv('ep-desc-en').trim() || null, description_jp: epv('ep-desc-jp').trim() || null,
+          video_url_jp: epv('ep-video-jp').trim() || null, video_url_en: epv('ep-video-en').trim() || null, video_url_no: epv('ep-video-no').trim() || null, short_url: epv('ep-short').trim() || null, thumbnail_url: epv('ep-thumb').trim() || null,
+          duration_seconds: epv('ep-duration') ? Number(epv('ep-duration')) : null, filmed_at: epv('ep-filmed') || null, status: epv('ep-status'), native_qa_done: !!($('ep-qa') && $('ep-qa').checked),
+          co_host_influencer_id: epv('ep-cohost') ? Number(epv('ep-cohost')) : null, notes: epv('ep-notes').trim() || null,
+          product_slugs: Array.from($('ep-products').selectedOptions).map((o) => o.value),
+        };
+        const r = id ? await api('/api/admin/content/' + id, { method:'PUT', body: JSON.stringify(payload) }) : await api('/api/admin/content', { method:'POST', body: JSON.stringify(payload) });
+        if (r.ok) { this.cancel(); await this.load(); }
+        else { let msg = 'Kunne ikke lagre.'; try { const e = await r.json(); if (e.error) msg = e.error === 'native_qa_done required' ? 'Publisering sperret: native QA må være godkjent.' : e.error; } catch {} $('ep-msg').textContent = msg; $('ep-msg').className = 'text-sm text-clay'; show('ep-msg'); }
+      },
+    };
+    (window as any).ep = ep;
+    document.querySelectorAll('.k-tab').forEach((b) => { if (b.dataset.ktab === 'innhold') b.addEventListener('click', () => ep.load()); });
 </script>
 </Base>
