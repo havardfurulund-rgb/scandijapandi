@@ -1,0 +1,76 @@
+---
+// 北の手 / Kita no Te — all published episodes. SSR so new episodes appear without a rebuild.
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+
+const origin = Astro.url.origin || import.meta.env.PUBLIC_SITE_URL || 'https://scandijapandi.no';
+let episodes: any[] = [];
+try { const r = await fetch(`${origin}/api/stories`); if (r.ok) episodes = (await r.json()).episodes || []; } catch {}
+
+const fmtDur = (s: number | null) => (s ? `${Math.round(s / 60)} min` : '');
+const clientData = JSON.stringify(episodes.map((e) => ({ slug: e.slug, title: { no: e.title_no || '', en: e.title_en || e.title_no || '', jp: e.title_jp || e.title_no || '' } })));
+---
+
+<Base title="北の手 — Kita no Te — Scandi Japandi" description="Nordic makers in their own workshops. Their voices, in Japanese.">
+  <Fragment slot="head">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet" />
+    <style>.jp-serif{font-family:'Noto Serif JP','Hiragino Mincho ProN',Georgia,serif}</style>
+  </Fragment>
+
+  <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-5 flex items-center justify-between bg-paper/95 backdrop-blur-sm border-b border-ink/5">
+    <a href="/" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors" data-t="home">← ScandiJapandi</a>
+    <div class="flex gap-4 text-[10px] uppercase tracking-widest text-stone">
+      <button onclick="setLang('no')" class="lang-btn hover:text-ink transition-colors">NO</button>
+      <button onclick="setLang('en')" class="lang-btn hover:text-ink transition-colors">EN</button>
+      <button onclick="setLang('jp')" class="lang-btn hover:text-ink transition-colors">日本語</button>
+    </div>
+  </nav>
+
+  <main class="pt-20 bg-paper min-h-screen">
+    <section class="max-w-5xl mx-auto px-6 pt-16 pb-12">
+      <img src="/brand/kitanote-wordmark.svg" alt="Kita no Te — 北の手" class="h-12 sm:h-16 mb-4" />
+      <p id="manifesto" class="font-serif text-xl sm:text-2xl text-ink font-light leading-relaxed max-w-2xl" data-t="manifesto">Nordiske håndverkere i egne verksteder. Deres stemme, på japansk.</p>
+      <p class="text-[10px] uppercase tracking-widest text-stone mt-4" data-t="by">presentert av Scandi Japandi Collection</p>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-6 pb-24">
+      {episodes.length === 0 ? (
+        <p class="text-sm text-stone" data-t="soon">Første episode kommer snart.</p>
+      ) : (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          {episodes.map((e, i) => (
+            <a href={`/stories/${e.slug}`} class="group block">
+              <div class="aspect-video bg-ink overflow-hidden relative">
+                {e.thumbnail_url && <img src={e.thumbnail_url} alt={e.title_no} class="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity" loading="lazy" />}
+                <span class="absolute inset-0 flex items-center justify-center"><span class="w-12 h-12 rounded-full border border-paper/70 flex items-center justify-center"><svg width="12" height="14" viewBox="0 0 12 14" fill="none"><path d="M1 1l10 6-10 6z" fill="#FBFBFA"/></svg></span></span>
+              </div>
+              <p class="text-[10px] uppercase tracking-widest text-stone mt-4">{e.producer_name || ''}{e.location ? ` · ${e.location}` : ''}{e.duration_seconds ? ` · ${fmtDur(e.duration_seconds)}` : ''}</p>
+              <h2 class="font-serif text-xl text-ink mt-1 group-hover:text-clay transition-colors" data-ename={i}>{e.title_no}</h2>
+            </a>
+          ))}
+        </div>
+      )}
+    </section>
+  </main>
+</Base>
+
+<script type="application/json" id="ep-list" set:html={clientData}></script>
+<script>
+  const L = JSON.parse(document.getElementById('ep-list')?.textContent || '[]');
+  const T: Record<string, Record<string, string>> = {
+    no: { home: '← ScandiJapandi', manifesto: 'Nordiske håndverkere i egne verksteder. Deres stemme, på japansk.', by: 'presentert av Scandi Japandi Collection', soon: 'Første episode kommer snart.' },
+    en: { home: '← ScandiJapandi', manifesto: 'Nordic makers, in their own workshops. Their voices, in Japanese.', by: 'presented by Scandi Japandi Collection', soon: 'The first episode is coming soon.' },
+    jp: { home: '← ScandiJapandi', manifesto: '北欧の作り手を、その工房で。彼らの声を、日本語で。', by: 'Scandi Japandi Collection がお届けします', soon: '最初のエピソードは近日公開。' },
+  };
+  function setLang(lang: string) {
+    const t = T[lang] || T.no;
+    document.querySelectorAll('[data-t]').forEach((el) => { const k = el.getAttribute('data-t') || ''; if (t[k]) el.textContent = t[k]; });
+    document.querySelectorAll('[data-ename]').forEach((el) => { const e = L[Number(el.getAttribute('data-ename'))]; if (e) el.textContent = e.title[lang] || e.title.no; });
+    document.getElementById('manifesto')?.classList.toggle('jp-serif', lang === 'jp');
+    try { localStorage.setItem('sj-lang', lang); } catch {}
+    document.querySelectorAll('.lang-btn').forEach((b) => { const l = b.textContent?.trim().toLowerCase(); b.setAttribute('aria-current', l === lang || (l === '日本語' && lang === 'jp') ? 'true' : 'false'); });
+  }
+  (window as any).setLang = setLang;
+  document.addEventListener('DOMContentLoaded', () => { let s = 'no'; try { s = localStorage.getItem('sj-lang') || 'no'; } catch {} setLang(s); });
+</script>
