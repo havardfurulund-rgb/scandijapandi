@@ -53,6 +53,30 @@ export default async (_req: Request) => {
         }).join('')
       : `<tr><td colspan="4" style="padding:16px 0;color:#6F6A5F;font-size:13px;">Ingen bestillinger denne uken.</td></tr>`;
 
+    // 北の手 / Kita no Te — episodes featuring this producer (matched via CRM lead email or name)
+    let episodeHtml = '';
+    try {
+      const eps = await db.sql`
+        SELECT e.slug, e.title_no, e.status, e.views_jp, e.views_total, e.published_at,
+               (SELECT COUNT(*) FROM orders o WHERE o.episode_slug = e.slug) AS orders_count
+        FROM content_episodes e
+        LEFT JOIN producer_leads pl ON pl.id = e.producer_lead_id
+        WHERE e.status = 'published'
+          AND (pl.contact_email = ${p.producer_email} OR e.producer_name = ${p.producer} OR pl.name = ${p.producer})
+        ORDER BY e.published_at DESC NULLS LAST
+        LIMIT 5
+      `;
+      if ((eps as any[]).length) {
+        episodeHtml = `<h2 style="font-family:Georgia,serif;font-size:16px;font-weight:normal;color:#2A2723;margin:0 0 12px;">Din episode på 北の手</h2>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid rgba(42,39,35,0.08);margin-bottom:24px;">
+          ${(eps as any[]).map((e: any) => `<tr>
+            <td style="padding:8px 0;color:#2A2723;font-size:13px;"><a href="https://scandijapandi.no/stories/${e.slug}" style="color:#2A2723;">${e.title_no}</a></td>
+            <td style="padding:8px 0;color:#6F6A5F;font-size:13px;text-align:right;">${Number(e.views_jp || 0)} visninger i Japan · ${Number(e.views_total || 0)} totalt · ${Number(e.orders_count || 0)} kjøp</td>
+          </tr>`).join('')}
+          </table>`;
+      }
+    } catch (err) { console.error('[producer-report] episode block failed:', err); }
+
     const productListHtml = (products as any[]).map((prod: any) =>
       `<li style="padding:4px 0;color:#5C5C5C;font-size:13px;">${prod.name} — ${nokFmt.format(prod.price_nok)}</li>`
     ).join('');
@@ -89,7 +113,7 @@ export default async (_req: Request) => {
             ${ordersHtml}
           </table>
 
-          <h2 style="font-family:Georgia,serif;font-size:16px;font-weight:normal;color:#2A2723;margin:0 0 12px;">Dine aktive produkter</h2>
+          ${episodeHtml}<h2 style="font-family:Georgia,serif;font-size:16px;font-weight:normal;color:#2A2723;margin:0 0 12px;">Dine aktive produkter</h2>
           <ul style="margin:0;padding:0 0 0 0;list-style:none;">${productListHtml}</ul>
 
           <p style="margin:32px 0 0;font-size:13px;color:#6F6A5F;line-height:1.6;">
