@@ -1,0 +1,71 @@
+---
+// 北の手 / Kita no Te — maker recording agreement (e-signature).
+// /release/no and /release/en. Stores via /api/maker-release and mirrors to Netlify Forms (maker-release).
+export const prerender = false;
+import Base from '../../layouts/Base.astro';
+const { lang } = Astro.params;
+const L = lang === 'en' ? 'en' : 'no';
+const T = L === 'en' ? {
+  title: 'Recording agreement', eyebrow: 'Kita no Te · Maker release',
+  intro: 'Before we film, we ask every maker to confirm the following. Nothing here transfers ownership of your work — it lets us record, translate and publish the episode, and lets you reuse it freely.',
+  body: `[NAME] grants SKM Nordic AS (Scandi Japandi Collection / Kita no Te) the right to record, edit, translate (including a synthetic Japanese voice based on [NAME]'s own voice), and publish video, audio and photographs from [DATE/PLACE] in all channels, without time limit, to promote [NAME]'s work and Kita no Te. [NAME] retains all rights to their products and may freely reuse published content. No fee for the recording; sales commission follows a separate agreement. [NAME] may request removal of a clip for reasonable cause.`,
+  name: 'Your full name', company: 'Studio / company (optional)', email: 'Email', date: 'Shooting date', place: 'Shooting place',
+  agree: 'I have read and agree to the recording agreement above.', sig: 'Type your full name as signature', submit: 'Sign agreement',
+  done: 'Thank you. A copy has been sent to your email.', err: 'Something went wrong. Please try again or email hello@scandijapandi.no.',
+} : {
+  title: 'Opptaksavtale', eyebrow: 'Kita no Te · Avtale med håndverker',
+  intro: 'Før vi filmer ber vi hver håndverker bekrefte det under. Ingenting her overfører eierskap til arbeidet ditt — det lar oss ta opp, oversette og publisere episoden, og lar deg bruke den fritt selv.',
+  body: `[NAVN] gir SKM Nordic AS (Scandi Japandi Collection / Kita no Te) rett til å ta opp, redigere, oversette (inkludert syntetisk stemme på japansk basert på egen stemme) og publisere video, lyd og foto fra [DATO/STED] i alle kanaler, uten tidsbegrensning, for markedsføring av [NAVN]s produkter og Kita no Te. [NAVN] beholder alle rettigheter til egne produkter og kan bruke publisert innhold fritt selv. Ingen vederlag for opptaket; provisjon ved salg følger egen avtale. [NAVN] kan kreve at et klipp fjernes ved saklig grunn.`,
+  name: 'Fullt navn', company: 'Studio / virksomhet (valgfritt)', email: 'E-post', date: 'Opptaksdato', place: 'Opptakssted',
+  agree: 'Jeg har lest og godtar opptaksavtalen over.', sig: 'Skriv fullt navn som signatur', submit: 'Signer avtalen',
+  done: 'Takk. En kopi er sendt til e-posten din.', err: 'Noe gikk galt. Prøv igjen eller skriv til hello@scandijapandi.no.',
+};
+---
+<Base title={`${T.title} — Kita no Te`} description={T.intro}>
+  <main class="min-h-screen bg-paper px-6 py-24">
+    <div class="max-w-2xl mx-auto">
+      <img src="/brand/kitanote-wordmark.svg" alt="Kita no Te — 北の手" class="h-10 mb-8" />
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-4">{T.eyebrow}</p>
+      <h1 class="font-serif text-4xl text-ink font-light mb-6">{T.title}</h1>
+      <p class="text-base text-stone font-light leading-relaxed mb-8">{T.intro}</p>
+      <div class="bg-oat p-6 text-sm text-ink leading-relaxed mb-10" id="agreement-text">{T.body}</div>
+      <div class="text-[10px] uppercase tracking-widest text-stone mb-6"><a href="/release/no" class={L==='no'?'text-ink':'hover:text-ink'}>Norsk</a> · <a href="/release/en" class={L==='en'?'text-ink':'hover:text-ink'}>English</a></div>
+
+      <form id="release-form" class="space-y-5" novalidate>
+        <input type="hidden" name="form-name" value="maker-release" />
+        <input type="hidden" name="language" value={L} />
+        <p hidden><label>Don't fill this out: <input name="bot-field" /></label></p>
+        <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">{T.name} *</span><input name="maker_name" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+        <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">{T.company}</span><input name="company" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+        <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">{T.email} *</span><input type="email" name="email" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">{T.date}</span><input type="date" name="shoot_date" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+          <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">{T.place}</span><input name="shoot_place" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" /></label>
+        </div>
+        <label class="flex items-start gap-3 text-sm text-ink"><input type="checkbox" name="agreed" required class="mt-1 accent-clay" /> <span>{T.agree}</span></label>
+        <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">{T.sig} *</span><input name="signature_text" required class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none font-serif text-xl" /></label>
+        <button type="submit" class="bg-ink text-paper px-10 py-4 text-[10px] uppercase tracking-widest hover:bg-clay transition-colors">{T.submit}</button>
+        <p id="release-msg" class="hidden text-sm"></p>
+      </form>
+      <div id="release-done" class="hidden bg-oat p-8 text-ink">{T.done}</div>
+      <p class="mt-12 text-xs text-stone/50">Scandi Japandi Collection · SKM Nordic AS · org.nr. 927 215 063 · Lågendalsveien 1732A, 3282 Kvelde, Norway</p>
+    </div>
+  </main>
+</Base>
+<script define:vars={{ ERR: T.err }}>
+  const form = document.getElementById('release-form');
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    const fd = new FormData(form);
+    const payload = Object.fromEntries(fd.entries());
+    payload.agreed = fd.get('agreed') === 'on';
+    const msg = document.getElementById('release-msg');
+    try {
+      await fetch('/__forms.html', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(fd).toString() }).catch(() => {});
+      const r = await fetch('/api/maker-release', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      form.classList.add('hidden'); document.getElementById('release-done').classList.remove('hidden');
+    } catch { msg.textContent = ERR; msg.className = 'text-sm text-clay'; msg.classList.remove('hidden'); }
+  });
+</script>
