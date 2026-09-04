@@ -46,7 +46,7 @@ export async function sendCircleWelcome(email: string, language: string, segment
           <h1 style="margin:0 0 16px;font-family:Georgia,serif;font-size:28px;font-weight:normal;color:#2A2723;">${t.heading}</h1>
           <p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#5C5C5C;">${t.body}</p>
           ${segmentNote}
-          <p style="margin:32px 0 0;font-size:15px;color:#2A2723;">${t.closing}<br/>ScandiJapandi</p>
+          <p style="margin:32px 0 0;font-size:15px;color:#2A2723;">${t.closing}<br/>ScandiJapandi${lang === "jp" && Netlify.env.get("LINE_OFFICIAL_URL") ? `<br/><br/><a href="${Netlify.env.get("LINE_OFFICIAL_URL")}" style="color:#2A2723;">LINEで友だち追加 →</a>` : ""}</p>
         </td></tr>
         <tr><td style="padding:20px 36px 28px;border-top:1px solid rgba(42,39,35,0.08);font-size:12px;color:#6F6A5F;">
           Nordisk og japansk håndverk · ScandiJapandi ·
