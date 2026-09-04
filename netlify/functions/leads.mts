@@ -41,7 +41,9 @@ export default async (req: Request) => {
       console.error("[leads] welcome email failed:", err);
     });
 
-    return Response.json({ ok: true }, { status: 201 });
+    const lang = String(body.language || "");
+    const lineUrl = (lang === "jp" || lang === "ja") ? (Netlify.env.get("LINE_OFFICIAL_URL") || null) : null;
+    return Response.json({ ok: true, line_url: lineUrl }, { status: 201 });
   } catch (err) {
     console.error("[leads]", err instanceof Error ? err.message : err);
     return Response.json({ error: "Failed" }, { status: 500 });
