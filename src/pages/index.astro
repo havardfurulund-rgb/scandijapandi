@@ -30,6 +30,7 @@ const checkoutHref = (product) =>
       <nav class="hidden sm:flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
         <a href="#collection" class="transition-colors hover:text-ink" data-i18n="nav_collection">Kolleksjon</a>
         <a href="/about" class="transition-colors hover:text-ink" data-i18n="nav_about">Om oss</a>
+          <a href="/stories" class="transition-colors hover:text-ink" data-i18n="nav_stories">Historier</a>
         <div class="flex items-center gap-3 border-l border-ink/10 pl-6">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -60,6 +61,7 @@ const checkoutHref = (product) =>
       <nav class="mx-auto flex max-w-6xl flex-col px-6 py-2 text-[11px] font-medium uppercase tracking-widest text-stone">
         <a href="#collection" class="py-3 transition-colors hover:text-ink" data-i18n="nav_collection" data-mobile-nav-link>Kolleksjon</a>
         <a href="/about" class="py-3 transition-colors hover:text-ink" data-i18n="nav_about" data-mobile-nav-link>Om oss</a>
+          <a href="/stories" class="py-3 transition-colors hover:text-ink" data-i18n="nav_stories">Historier</a>
         <div class="mt-1 flex items-center gap-5 border-t border-ink/10 py-4">
           <button type="button" class="lang-btn" data-lang="no" aria-current="true">NO</button>
           <button type="button" class="lang-btn" data-lang="en">EN</button>
@@ -122,6 +124,23 @@ const checkoutHref = (product) =>
             Utforsk kolleksjonen
           </a>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 北の手 · latest episode (hidden until the first episode is published) -->
+  <section id="latest-story" class="hidden px-6 sm:px-12 py-24 bg-ink text-paper">
+    <div class="mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <a id="latest-story-link" href="/stories" class="block aspect-video bg-ink/60 overflow-hidden relative border border-paper/10">
+        <img id="latest-story-thumb" src="" alt="" class="w-full h-full object-cover opacity-90" />
+        <span class="absolute inset-0 flex items-center justify-center"><span class="w-14 h-14 rounded-full border border-paper/70 flex items-center justify-center"><svg width="14" height="16" viewBox="0 0 12 14" fill="none"><path d="M1 1l10 6-10 6z" fill="#FBFBFA"/></svg></span></span>
+      </a>
+      <div>
+        <img src="/brand/kitanote-avatar.svg" alt="北の手" class="h-10 w-10 mb-6" />
+        <span class="text-[10px] font-medium uppercase tracking-widest text-paper/50 block mb-3" data-i18n="stories_eyebrow">Siste episode</span>
+        <p id="latest-story-meta" class="text-[10px] uppercase tracking-widest text-paper/50 mb-2"></p>
+        <h2 id="latest-story-title" class="font-serif text-3xl sm:text-4xl font-light leading-snug mb-8"></h2>
+        <a href="/stories" class="inline-block border border-paper/40 px-8 py-4 text-[10px] font-medium uppercase tracking-widest transition-colors hover:bg-paper hover:text-ink" data-i18n="stories_all">Alle historier</a>
       </div>
     </div>
   </section>
@@ -294,7 +313,8 @@ const checkoutHref = (product) =>
     // produktgridet kan oversettes på nytt etter at det rendres.
     const I18N = {
       no: {
-        nav_collection: 'Kolleksjon', nav_about: 'Om oss', nav_join: 'Bli med', nav_partner: 'Bli Partner', nav_admin: 'Admin',
+        nav_collection: 'Kolleksjon', nav_about: 'Om oss',
+      nav_stories: 'Historier', stories_eyebrow: 'Siste episode', stories_all: 'Alle historier', nav_join: 'Bli med', nav_partner: 'Bli Partner', nav_admin: 'Admin',
         circle_eyebrow: 'Privat sirkel',
         circle_heading: 'Alltid først.',
         circle_sub: 'Nye ankomster, håndverkshistorier og eksklusive forhåndsvisninger — før alle andre.',
@@ -357,7 +377,8 @@ const checkoutHref = (product) =>
         designer_error: 'Noe gikk galt. Prøv igjen, eller send oss en e-post.',
       },
       en: {
-        nav_collection: 'Collection', nav_about: 'About', nav_join: 'Join', nav_partner: 'Become a Partner', nav_admin: 'Admin',
+        nav_collection: 'Collection', nav_about: 'About',
+      nav_stories: 'Stories', stories_eyebrow: 'Latest episode', stories_all: 'All stories', nav_join: 'Join', nav_partner: 'Become a Partner', nav_admin: 'Admin',
         circle_eyebrow: 'Private Circle',
         circle_heading: 'First to know. Always.',
         circle_sub: 'New arrivals, maker stories, and exclusive previews — before anyone else.',
@@ -420,7 +441,8 @@ const checkoutHref = (product) =>
         designer_error: 'Something went wrong. Please try again, or email us.',
       },
       jp: {
-        nav_collection: 'コレクション', nav_about: '私たちについて', nav_join: '参加する', nav_partner: 'パートナー募集', nav_admin: '管理',
+        nav_collection: 'コレクション', nav_about: '私たちについて',
+      nav_stories: '物語', stories_eyebrow: '最新エピソード', stories_all: 'すべての物語', nav_join: '参加する', nav_partner: 'パートナー募集', nav_admin: '管理',
         circle_eyebrow: 'プライベートサークル',
         circle_heading: '誰よりも早く。',
         circle_sub: '新着情報、作り手の物語、限定プレビュー——誰よりも先にお届けします。',
@@ -792,5 +814,18 @@ const checkoutHref = (product) =>
     }
 
     (window as any).submitSegment = submitSegment;
-  </script>
+  
+    // ── 北の手 · latest episode block ────────────────────────────────────
+    fetch('/api/stories').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      const e = d && Array.isArray(d.episodes) ? d.episodes[0] : null; if (!e) return;
+      const sec = document.getElementById('latest-story'); if (!sec) return;
+      const lang = window.__sjLang || 'no';
+      const title = lang === 'jp' ? (e.title_jp || e.title_no) : lang === 'en' ? (e.title_en || e.title_no) : e.title_no;
+      document.getElementById('latest-story-title').textContent = title || '';
+      document.getElementById('latest-story-meta').textContent = [e.producer_name, e.location].filter(Boolean).join(' · ');
+      document.getElementById('latest-story-link').href = '/stories/' + e.slug;
+      const th = document.getElementById('latest-story-thumb'); if (e.thumbnail_url) { th.src = e.thumbnail_url; th.alt = title || ''; } else { th.style.display = 'none'; }
+      sec.classList.remove('hidden');
+    }).catch(() => {});
+</script>
 </Base>
