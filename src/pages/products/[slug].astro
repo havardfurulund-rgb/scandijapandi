@@ -174,7 +174,11 @@ const productJsonLd = JSON.stringify({
             <span data-i18n-buy>Kjøp nå</span>
           </a>
 
-          <!-- Product details accordion -->
+          <a id="story-link" href="/stories" class="hidden text-[10px] uppercase tracking-widest text-clay hover:text-ink transition-colors mb-6 inline-flex items-center gap-2">
+  <img src="/brand/kitanote-avatar.svg" alt="" class="h-5 w-5" /> <span data-i18n-story>Se historien</span> →
+</a>
+
+<!-- Product details accordion -->
           <div class="border-t border-ink/8 mt-10 space-y-0">
             {product.material && (
               <details class="border-b border-ink/8 group">
@@ -391,7 +395,21 @@ const productJsonLd = JSON.stringify({
     });
   }
 
-  // Init: read saved language preference
+  // Kita no Te: link to the episode this product appears in, if any
+fetch('/api/stories').then((r) => (r.ok ? r.json() : null)).then(async (d) => {
+  const eps = d && Array.isArray(d.episodes) ? d.episodes : []; if (!eps.length) return;
+  for (const e of eps.slice(0, 20)) {
+    try { const r = await fetch('/api/stories/' + encodeURIComponent(e.slug)); if (!r.ok) continue; const j = await r.json();
+      if ((j.episode?.products || []).some((p: any) => p.slug === productData.slug)) {
+        const a = document.getElementById('story-link') as HTMLAnchorElement | null; if (!a) return;
+        a.href = '/stories/' + e.slug; a.classList.remove('hidden');
+        const lang = localStorage.getItem('sj-lang') || 'no'; const s = a.querySelector('[data-i18n-story]'); if (s) s.textContent = lang === 'jp' ? '物語を見る' : lang === 'en' ? 'Watch the story' : 'Se historien';
+        return; }
+    } catch {}
+  }
+}).catch(() => {});
+
+// Init: read saved language preference
   document.addEventListener('DOMContentLoaded', () => {
     let saved = 'no';
     try { saved = localStorage.getItem('sj-lang') || 'no'; } catch {}
