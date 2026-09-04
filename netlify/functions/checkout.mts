@@ -91,6 +91,7 @@ async function createCheckoutSession(opts: {
   curator: string;
   slug: string;
   locale: string;
+  episode: string;
 }): Promise<string> {
   const key = Netlify.env.get("STRIPE_SECRET_KEY");
   if (!key) throw new Error("STRIPE_SECRET_KEY is not configured");
@@ -110,6 +111,8 @@ async function createCheckoutSession(opts: {
   form.set("metadata[curator]", opts.curator);
   form.set("metadata[slug]", opts.slug);
   form.set("metadata[locale]", opts.locale);
+  // Kita no Te: which episode drove this purchase (see /stories/[slug]).
+  if (opts.episode) form.set("metadata[episode]", opts.episode);
   form.set("success_url", `${siteUrl()}/order-confirmed?session_id={CHECKOUT_SESSION_ID}`);
   form.set("cancel_url", `${siteUrl()}/?checkout=cancel`);
 
@@ -175,6 +178,7 @@ const url = new URL(req.url);
       curator,
       slug,
       locale: url.searchParams.get("locale") || "en",
+      episode: (url.searchParams.get("ep") || "").slice(0, 80),
     });
 
     return redirect(checkoutUrl);
