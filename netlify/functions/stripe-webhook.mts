@@ -210,13 +210,13 @@ export default async (req: Request) => {
       INSERT INTO orders (
         stripe_session_id, session_id, curator, source,
         customer_email, customer_name, shipping_address, delivery_notes,
-        items, amount_total, currency, routing_status, producer_endpoint
+        items, amount_total, currency, routing_status, producer_endpoint, episode_slug
       ) VALUES (
         ${sessionId}, ${metadata.session_id || null}, ${curator || null}, ${"stripe"},
         ${customer.email || null}, ${customer.name || null}, ${shippingAddress || null},
         ${customer.phone || null},
         ${items}::jsonb, ${String(session.amount_total ?? "")}, ${session.currency || "nok"},
-        ${"pending"}, ${product?.producer_email || null}
+        ${"pending"}, ${product?.producer_email || null}, ${metadata.episode || null}
       )
       ON CONFLICT (stripe_session_id) DO NOTHING
       RETURNING id
