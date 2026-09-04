@@ -248,6 +248,7 @@ const checkoutHref = (product) =>
         </div>
         <p class="font-serif text-2xl text-paper font-light mb-3" data-i18n="circle_done_heading">Du er med.</p>
         <p class="text-sm text-paper/50" data-i18n="circle_done_sub">Vi tar kontakt når noe verdig din oppmerksomhet ankommer.</p>
+      <a id="circle-line-btn" href="#" target="_blank" rel="noopener" class="hidden mt-8 inline-block bg-paper text-ink px-8 py-4 text-[10px] uppercase tracking-widest font-medium hover:bg-oat transition-colors">LINEで友だち追加</a>
       </div>
 
     </div>
@@ -790,7 +791,7 @@ const checkoutHref = (product) =>
         });
 
         // Also submit to our own leads API for DB storage
-        await fetch('/api/leads', {
+        const leadRes = await fetch('/api/leads', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -801,6 +802,7 @@ const checkoutHref = (product) =>
             source: 'homepage_circle',
           }),
         });
+    try { const lj = await leadRes.json(); if (lj && lj.line_url) { const lb = document.getElementById('circle-line-btn'); if (lb) { lb.href = lj.line_url; lb.classList.remove('hidden'); } } } catch { /* ignore */ }
       } catch { /* non-critical */ }
 
       // Move to step 3
