@@ -1,0 +1,62 @@
+---
+// 北の手 / Kita no Te — landing page. Japanese first; EN/NO via switcher.
+import Base from '../layouts/Base.astro';
+---
+<Base title="北の手 — Kita no Te" description="北欧の作り手を、その工房で。彼らの声を、日本語で。">
+  <Fragment slot="head">
+    <meta property="og:image" content="https://scandijapandi.no/images/og-kitanote.svg" />
+    <meta property="og:locale" content="ja_JP" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet" />
+    <style>.jp-serif{font-family:'Noto Serif JP','Hiragino Mincho ProN',Georgia,serif}.jp-sans{font-family:'Noto Sans JP','Hiragino Sans',sans-serif}</style>
+  </Fragment>
+  <nav class="fixed top-0 left-0 right-0 z-50 px-6 py-5 flex items-center justify-between bg-ink/95 backdrop-blur-sm border-b border-paper/10">
+    <a href="/" class="text-[10px] uppercase tracking-widest text-paper/60 hover:text-paper transition-colors">Scandi Japandi Collection</a>
+    <div class="flex gap-4 text-[10px] uppercase tracking-widest text-paper/60">
+      <button onclick="setLang('jp')" class="lang-btn hover:text-paper">日本語</button>
+      <button onclick="setLang('en')" class="lang-btn hover:text-paper">EN</button>
+      <button onclick="setLang('no')" class="lang-btn hover:text-paper">NO</button>
+    </div>
+  </nav>
+  <main class="bg-ink text-paper min-h-screen pt-32 pb-24 px-6" lang="ja">
+    <div class="max-w-4xl mx-auto">
+      <img src="/brand/kitanote-wordmark.svg" alt="Kita no Te — 北の手" class="h-14 sm:h-20 mb-10" style="filter:invert(1) hue-rotate(180deg)" />
+      <p id="m1" class="jp-serif text-2xl sm:text-4xl font-light leading-relaxed" data-t="m1">北欧の作り手を、その工房で。彼らの声を、日本語で。</p>
+      <p id="m2" class="jp-sans text-base sm:text-lg text-paper/60 mt-6 max-w-2xl" data-t="m2">ノルウェーから届く、静かなものづくりの記録。映像の下には、その回で生まれた作品が並びます。</p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <a href="/stories" class="bg-paper text-ink px-8 py-4 text-[10px] uppercase tracking-widest hover:bg-oat transition-colors" data-t="cta">エピソードを見る</a>
+        <a id="line-btn" href="#" class="hidden border border-paper/40 px-8 py-4 text-[10px] uppercase tracking-widest hover:bg-paper hover:text-ink transition-colors">LINEで友だち追加</a>
+      </div>
+    </div>
+    <section id="latest" class="max-w-4xl mx-auto mt-24 hidden">
+      <p class="text-[10px] uppercase tracking-widest text-paper/50 mb-8" data-t="latest">最新エピソード</p>
+      <div id="latest-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-8"></div>
+    </section>
+    <section class="max-w-4xl mx-auto mt-24 grid sm:grid-cols-2 gap-10 border-t border-paper/10 pt-16">
+      <div><p class="text-[10px] uppercase tracking-widest text-paper/50 mb-3" data-t="makers_h">作り手の方へ</p><p class="text-sm text-paper/70 leading-relaxed mb-4" data-t="makers_p">北欧・バルトの作り手で、日本の視聴者に自分の言葉で語りたい方。</p><a href="/makers" class="text-[10px] uppercase tracking-widest text-paper hover:text-clay" data-t="makers_l">詳しく見る →</a></div>
+      <div><p class="text-[10px] uppercase tracking-widest text-paper/50 mb-3" data-t="media_h">メディア・パートナーの方へ</p><p class="text-sm text-paper/70 leading-relaxed mb-4" data-t="media_p">北欧の工房から届く映像を、貴媒体のチャンネルでお届けしませんか。</p><a href="mailto:hello@scandijapandi.no" class="text-[10px] uppercase tracking-widest text-paper hover:text-clay">hello@scandijapandi.no →</a></div>
+    </section>
+    <p class="max-w-4xl mx-auto mt-20 text-[10px] uppercase tracking-widest text-paper/30" data-t="by">北の手 — Scandi Japandi Collection がお届けします</p>
+  </main>
+</Base>
+<script>
+  const T: Record<string, Record<string, string>> = {
+    jp: { m1: '北欧の作り手を、その工房で。彼らの声を、日本語で。', m2: 'ノルウェーから届く、静かなものづくりの記録。映像の下には、その回で生まれた作品が並びます。', cta: 'エピソードを見る', latest: '最新エピソード', makers_h: '作り手の方へ', makers_p: '北欧・バルトの作り手で、日本の視聴者に自分の言葉で語りたい方。', makers_l: '詳しく見る →', media_h: 'メディア・パートナーの方へ', media_p: '北欧の工房から届く映像を、貴媒体のチャンネルでお届けしませんか。', by: '北の手 — Scandi Japandi Collection がお届けします' },
+    en: { m1: 'Nordic makers, in their own workshops. Their voices, in Japanese.', m2: 'Quiet records of craft, sent from Norway. Beneath each episode sit the objects that were made.', cta: 'Watch the episodes', latest: 'Latest episodes', makers_h: 'For makers', makers_p: 'Nordic and Baltic makers who want to speak to Japanese viewers in their own words.', makers_l: 'Read more →', media_h: 'For media partners', media_p: 'Carry film from Nordic workshops in your own channels.', by: 'Kita no Te — presented by Scandi Japandi Collection' },
+    no: { m1: 'Nordiske håndverkere i egne verksteder. Deres stemme, på japansk.', m2: 'Stille opptak av håndverk, sendt fra Norge. Under hver episode ligger objektene som ble laget.', cta: 'Se episodene', latest: 'Siste episoder', makers_h: 'For håndverkere', makers_p: 'Nordiske og baltiske håndverkere som vil snakke til japanske seere med egne ord.', makers_l: 'Les mer →', media_h: 'For mediepartnere', media_p: 'Vis film fra nordiske verksteder i egne kanaler.', by: 'Kita no Te — presentert av Scandi Japandi Collection' },
+  };
+  function setLang(lang: string) {
+    const t = T[lang] || T.jp;
+    document.querySelectorAll('[data-t]').forEach((el) => { const k = el.getAttribute('data-t') || ''; if (t[k]) el.textContent = t[k]; });
+    document.documentElement.lang = lang === 'jp' ? 'ja' : lang;
+    try { localStorage.setItem('sj-lang', lang); } catch {}
+    document.querySelectorAll('.lang-btn').forEach((b) => { const l = (b.textContent || '').trim().toLowerCase(); b.setAttribute('aria-current', l === lang || (l === '日本語' && lang === 'jp') ? 'true' : 'false'); });
+  }
+  (window as any).setLang = setLang;
+  document.addEventListener('DOMContentLoaded', async () => {
+    let s = 'jp'; try { s = localStorage.getItem('sj-lang') || 'jp'; } catch {} setLang(s);
+    try { const c = await fetch('/api/config').then((r) => r.json()); if (c.line_url) { const a = document.getElementById('line-btn') as HTMLAnchorElement; a.href = c.line_url; a.classList.remove('hidden'); } } catch {}
+    try { const d = await fetch('/api/stories').then((r) => r.json()); const eps = (d.episodes || []).slice(0, 3); if (eps.length) {
+      document.getElementById('latest-grid')!.innerHTML = eps.map((e: any) => `<a href="/stories/${e.slug}" class="block"><div class="aspect-video bg-paper/5 border border-paper/10 overflow-hidden">${e.thumbnail_url ? `<img src="${e.thumbnail_url}" alt="" class="w-full h-full object-cover opacity-90">` : ''}</div><p class="text-[10px] uppercase tracking-widest text-paper/50 mt-3">${e.producer_name || ''}</p><p class="jp-serif text-lg mt-1">${(s === 'jp' ? e.title_jp : s === 'en' ? e.title_en : e.title_no) || e.title_no}</p></a>`).join('');
+      document.getElementById('latest')!.classList.remove('hidden'); } } catch {}
+  });
+</script>
