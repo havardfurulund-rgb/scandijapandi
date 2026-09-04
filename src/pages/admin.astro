@@ -904,6 +904,10 @@ import Base from '../layouts/Base.astro';
                 <span class="text-[10px] uppercase tracking-widest text-stone">Notater</span>
                 <textarea id="crm-notes" rows="4" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea>
               </label>
+        <div class="block sm:col-span-2 flex items-center justify-between bg-paper border border-ink/10 p-4">
+          <span class="text-xs text-stone" id="crm-release-status">Opptaksavtale: —</span>
+          <a id="crm-release-link" href="/release/no" target="_blank" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink">Send avtale →</a>
+        </div>
             </div>
             <div class="flex gap-4 mt-6">
               <button type="button" onclick="crmSave()" class="bg-ink text-paper px-8 py-3 text-[10px] uppercase tracking-widest hover:bg-clay transition-colors">Lagre</button>
@@ -1205,6 +1209,16 @@ import Base from '../layouts/Base.astro';
               <label class="block"><span class="text-[10px] uppercase tracking-widest text-stone">Medvert (influenser, LIVE)</span><select id="ep-cohost" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"><option value="">Ingen</option></select></label>
               <label class="block sm:col-span-2"><span class="text-[10px] uppercase tracking-widest text-stone">Objekter i episoden (hold cmd/ctrl for flere)</span><select id="ep-products" multiple size="5" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></select></label>
               <label class="flex items-center gap-3 text-sm sm:col-span-2 bg-paper border border-ink/10 p-4"><input type="checkbox" id="ep-qa" class="accent-clay" /> <span><strong>Native QA godkjent</strong> — japansk morsmålsbruker har godkjent tekst og stemme. Publisering er sperret uten.</span></label>
+              <div class="sm:col-span-2 bg-paper border border-ink/10 p-5">
+                <p class="text-[10px] uppercase tracking-widest text-stone mb-2">Undertekster · NO → JP + EN</p>
+                <p class="text-xs text-stone mb-3">Lim inn norsk SRT (fra Whisper/Descript). Du får JP-undertekst, JP-dubbetekst og EN-undertekst som filer. Husk native QA før publisering.</p>
+                <textarea id="ep-srt" rows="6" class="w-full bg-oat/40 p-3 border border-ink/10 focus:border-ink outline-none font-mono text-xs" placeholder="1&#10;00:00:05,120 --> 00:00:08,900&#10;Det første jeg gjør om morgenen er å sjekke ovnen.&#10;"></textarea>
+                <div class="flex items-center gap-4 mt-3">
+                  <button type="button" onclick="ep.translateSrt()" id="ep-srt-btn" class="border border-ink/20 px-4 py-2 text-[10px] uppercase tracking-widest hover:border-ink transition-colors">✦ Oversett SRT (JP + EN)</button>
+                  <span id="ep-srt-status" class="text-xs text-stone"></span>
+                </div>
+                <div id="ep-srt-downloads" class="hidden mt-3 flex flex-wrap gap-3"></div>
+              </div>
               <label class="block sm:col-span-2"><span class="text-[10px] uppercase tracking-widest text-stone">Notater</span><textarea id="ep-notes" rows="2" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none"></textarea></label>
             </div>
             <div class="flex gap-4"><button type="button" onclick="ep.save()" class="bg-ink text-paper px-8 py-3 text-[10px] uppercase tracking-widest hover:bg-clay transition-colors">Lagre episode</button></div>
@@ -4208,7 +4222,38 @@ if (msg) { msg.textContent = 'Kunne ikke lagre.'; msg.className = 'text-sm text-
         else { let msg = 'Kunne ikke lagre.'; try { const e = await r.json(); if (e.error) msg = e.error === 'native_qa_done required' ? 'Publisering sperret: native QA må være godkjent.' : e.error; } catch {} $('ep-msg').textContent = msg; $('ep-msg').className = 'text-sm text-clay'; show('ep-msg'); }
       },
     };
+    ep.translateSrt = async function () {
+      const raw = epv('ep-srt'); const st = $('ep-srt-status'); const btn = $('ep-srt-btn');
+      const cues = []; const blocks = raw.replace(/\r/g, '').trim().split(/\n\s*\n/);
+      for (const b of blocks) { const lines = b.split('\n').map((s) => s.trim()).filter(Boolean); if (lines.length < 2) continue; let idx = 0; let id = cues.length + 1; if (/^\d+$/.test(lines[0])) { id = Number(lines[0]); idx = 1; } const m = (lines[idx] || '').match(/(\d\d:\d\d:\d\d[,.]\d{3})\s*-->\s*(\d\d:\d\d:\d\d[,.]\d{3})/); if (!m) continue; cues.push({ id, start: m[1].replace('.', ','), end: m[2].replace('.', ','), no: lines.slice(idx + 1).join(' ') }); }
+      if (!cues.length) { st.textContent = 'Fant ingen SRT-blokker.'; return; }
+      btn.setAttribute('disabled', 'true'); st.textContent = 'Oversetter ' + cues.length + ' replikker …';
+      try {
+        const producerSel = $('ep-producer'); const producerName = producerSel && producerSel.selectedIndex > 0 ? producerSel.options[producerSel.selectedIndex].textContent.split(' · ')[0] : '';
+        const objects = Array.from($('ep-products').selectedOptions).map((o) => o.textContent.split(' — ')[0]).join(', ');
+        const r = await api('/api/admin/translate', { method: 'POST', body: JSON.stringify({ mode: 'episode', cues, producer_name: producerName, location: epv('ep-location'), objects }) });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const { cues: out } = await r.json(); if (!Array.isArray(out) || !out.length) throw new Error('empty');
+        const slug = epv('ep-slug').trim() || epSlugify(epv('ep-title-no')) || 'episode';
+        const srt = (key) => out.map((c, i) => (i + 1) + '\n' + c.start + ' --> ' + c.end + '\n' + String(c[key] || '').replace(/\\n/g, '\n') + '\n').join('\n');
+        const dub = out.map((c) => c.start + ' → ' + c.end + '\t' + String(c.jp_dub || '')).join('\n');
+        const files = [[slug + '_JP.srt', srt('jp_sub')], [slug + '_EN.srt', srt('en')], [slug + '_JP_dub.txt', dub], [slug + '_NO.srt', srt('no')]];
+        const box = $('ep-srt-downloads'); box.innerHTML = files.map(([name, content]) => { const url = URL.createObjectURL(new Blob([content], { type: 'text/plain;charset=utf-8' })); return '<a href="' + url + '" download="' + name + '" class="border border-ink/20 px-3 py-2 text-[10px] uppercase tracking-widest hover:border-ink">' + name + '</a>'; }).join(''); box.classList.remove('hidden');
+        st.textContent = '✓ ' + out.length + ' replikker oversatt — last ned og kjør native QA.';
+      } catch (e) { st.textContent = 'Oversettelse feilet.'; } finally { btn.removeAttribute('disabled'); }
+    };
     (window as any).ep = ep;
+
+    // CRM: show maker release status when editing a lead with an email
+    const _crmEditOrig = crmEdit;
+    (window as any).crmEdit = async function (id) {
+      await _crmEditOrig(id);
+      const email = ($('crm-contact-email') && $('crm-contact-email').value || '').trim().toLowerCase();
+      const st = $('crm-release-status'); const link = $('crm-release-link'); if (!st) return;
+      st.textContent = 'Opptaksavtale: —'; if (link) link.classList.remove('hidden');
+      if (!email) return;
+      try { const r = await api('/api/maker-release?email=' + encodeURIComponent(email)); if (r.ok) { const { release } = await r.json(); if (release) { st.textContent = 'Opptaksavtale: signert ' + new Date(release.created_at).toLocaleDateString('nb-NO') + ' av ' + release.maker_name; if (link) link.classList.add('hidden'); } } } catch {}
+    };
     document.querySelectorAll('.k-tab').forEach((b) => { if (b.dataset.ktab === 'innhold') b.addEventListener('click', () => ep.load()); });
 </script>
 </Base>
