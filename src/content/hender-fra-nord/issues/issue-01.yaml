@@ -1,0 +1,70 @@
+number: 1
+title:
+  no: Hender fra Nord
+  en: Hands of the North
+season:
+  no: Høst 2026
+  en: Autumn 2026
+published_at: 2026-10-12
+draft: true
+manifest:
+  no: Et videomagasin om nordiske håndverkere, materialene deres og tiden ting tar.
+  en: A video magazine about Nordic makers, their materials and the time things take.
+og_image: /media/hender-fra-nord/posters/cover-og.jpg
+cover_loop:
+  src: /media/hender-fra-nord/loops/cover.mp4
+  src_mobile: /media/hender-fra-nord/loops/cover-4x5.mp4
+  poster: /media/hender-fra-nord/posters/cover.webp
+  poster_small: /media/hender-fra-nord/posters/cover-800.webp
+  poster_mobile: /media/hender-fra-nord/posters/cover-4x5.webp
+  alt:
+    no: "Strikkede luer i ull, stablet på en benk ved elva, med røde gårdshus og alpakkaer i bakgrunnen."
+    en: "Knitted wool hats stacked on a bench by the river, red farmhouses and alpacas behind."
+  placeholder: true
+editor_letter:
+  draft: true
+  signature: Havard Furulund
+  role:
+    no: Redaktør
+    en: Editor
+  title:
+    no: Om hender, og det de husker
+    en: On hands, and what they remember
+  body:
+    no: |-
+      Dette nummeret begynte med et enkelt spørsmål: hva skjer i rommet før et objekt blir et produkt? Svaret ligger sjelden i en katalog. Det ligger i verksteder, på gårder og ved kjøkkenbord, hos mennesker som har valgt å gjøre ting langsomt.
+
+      Hender fra Nord er et forsøk på å sakke ned sammen med dem. Filmene er korte og rolige, og vi har latt lyden av arbeidet få plass. Hvert kapittel er et besøk hos én maker, i deres eget rom og i deres eget tempo.
+
+      Noe av det du ser her finner etter hvert veien til butikken vår. Det meste er bare ment å bli sett, og kanskje husket.
+
+      Takk til makerne som åpner dørene sine. Og takk til deg som tar deg tid.
+    en: |-
+      This issue began with a simple question: what happens in the room before an object becomes a product? The answer is rarely found in a catalogue. It lives in workshops, on farms and at kitchen tables, with people who have chosen to make things slowly.
+
+      Hands of the North is an attempt to slow down alongside them. The films are short and quiet, and we have let the sound of the work take up space. Each chapter is a visit to one maker, in their own room and at their own pace.
+
+      Some of what you see here will find its way into our shop in time. Most of it is simply meant to be seen, and perhaps remembered.
+
+      Thank you to the makers who open their doors. And thank you for taking the time.
+chapters:
+  - ullvogna
+  - lillavendel
+  - alvadal
+  - moia-form
+  - keli-bijou
+  - dyra-pa-garden
+  - skredderen-fra-damaskus
+colophon:
+  entries:
+    - role: { no: Redaktør, en: Editor }
+      names: [Havard Furulund]
+    - role: { no: Utgiver, en: Published by }
+      names: [Scandi Japandi Collection]
+    - role: { no: Film og foto, en: Film and photography }
+      names: ["Plassholder · Scandi Japandi lookbook"]
+    - role: { no: Tekst, en: Words }
+      names: ["Utkast · redaksjonen"]
+  note:
+    no: Alle filmer og bilder i denne forhåndsvisningen er plassholdere. Ekte opptak fra verkstedene legges inn etter innspillingen i oktober 2026.
+    en: All films and images in this preview are placeholders. Footage from the workshops will be added after filming in October 2026.

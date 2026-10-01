@@ -1,0 +1,17 @@
+# Kommer: filmes ca. 11. oktober 2026.
+slug: skredderen-fra-damaskus
+order: 7
+published: true
+draft: true
+status: coming
+maker_name: Skredderen fra Damaskus
+location: { no: "—", en: "—" }
+craft: { no: Plagg i lin og bomull, en: Linen and cotton garments }
+title:
+  no: Store, luftige plagg
+  en: Large, airy garments
+dek:
+  no: Store, luftige plagg i lin og bomull. Kapitlet filmes i oktober.
+  en: Large, airy garments in linen and cotton. This chapter is filmed in October.
+teaser_image: /media/hender-fra-nord/posters/skredderen-fra-damaskus-4x5.webp
+shoot_date: 2026-10-11

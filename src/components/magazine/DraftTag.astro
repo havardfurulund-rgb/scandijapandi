@@ -1,0 +1,7 @@
+---
+// Quiet «Utkast / Draft» marker. Render it only where the data says draft.
+import { UI, type Lang } from '../../lib/magazine';
+interface Props { lang: Lang; label?: string; class?: string }
+const { lang, label, class: className } = Astro.props;
+---
+<span class:list={['mz-draft', className]} title={lang === 'no' ? 'Utkast, ikke godkjent tekst' : 'Draft, not approved copy'}>{label ?? UI[lang].draft}</span>

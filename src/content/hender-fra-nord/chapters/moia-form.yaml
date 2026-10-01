@@ -1,0 +1,110 @@
+# Kapittel: MOIA form (Ruby Semb). Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
+slug: moia-form
+order: 4
+published: true
+draft: true
+status: published
+maker_name: MOIA form
+maker_person: Ruby Semb
+location: { no: Norge, en: Norway }
+craft: { no: Ull og kjøkkentekstil, en: Wool and kitchen textiles }
+title:
+  no: Hverdagens myke ting
+  en: The soft things of every day
+dek:
+  no: Ruby Semb og MOIA form lager ullpledd, sitteunderlag, emaljekrus og kjøkkentekstiler. Om tingene vi lever tettest på.
+  en: Ruby Semb and MOIA form make wool throws, seat pads, enamel mugs and kitchen textiles. On the things we live closest to.
+body:
+  no: |-
+    Et pledd over sofaryggen. Et krus som alltid står fremme. Et sitteunderlag på trappen en kjølig kveld. Det er de små tingene som gjør et rom til et hjem.
+
+    MOIA form lager nettopp slike ting. I dette kapitlet ser vi på formene, fargene og tanken bak.
+  en: |-
+    A throw over the back of the sofa. A mug that is always left out. A seat pad on the steps on a cool evening. It is the small things that turn a room into a home.
+
+    MOIA form makes exactly these things. In this chapter we look at the shapes, the colours and the thinking behind them.
+interview:
+  - q: { no: Hva var det første du laget?, en: What was the first thing you made? }
+    a:
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om opprinnelsen til MOIA form."
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the origins of MOIA form."
+  - q: { no: Hvordan velger du farger?, en: How do you choose colours? }
+    a:
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om palett, lys og årstider."
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about palette, light and seasons."
+  - q: { no: Hvilket objekt bruker du mest selv?, en: Which object do you use most yourself? }
+    a:
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om favoritten hjemme."
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the favourite at home."
+quotes:
+  - text:
+      no: "[utkast] Det mykeste i et rom er ofte det viktigste."
+      en: "[draft] The softest thing in a room is often the most important."
+    attribution: Plassholdersitat · ikke et ekte sitat
+    after: 1
+    draft: true
+hero_loop:
+  src: /media/hender-fra-nord/loops/moia-form-hero.mp4
+  src_mobile: /media/hender-fra-nord/loops/moia-form-hero-4x5.mp4
+  poster: /media/hender-fra-nord/posters/moia-form-hero.webp
+  poster_small: /media/hender-fra-nord/posters/moia-form-hero-800.webp
+  poster_mobile: /media/hender-fra-nord/posters/moia-form-hero-4x5.webp
+  alt:
+    no: "Person i en kremhvit ullcape med hette ved vannkanten, alpakkaer i bakgrunnen."
+    en: "A person in a cream wool hooded cape at the water’s edge, alpacas in the background."
+  placeholder: true
+og_image: /media/hender-fra-nord/posters/moia-form-og.jpg
+film:
+  src: /media/hender-fra-nord/films/moia-form-film.mp4
+  poster: /media/hender-fra-nord/posters/moia-form-film.webp
+  poster_small: /media/hender-fra-nord/posters/moia-form-film-800.webp
+  duration: 8
+  captions_no: /media/hender-fra-nord/captions/moia-form-no.vtt
+  captions_en: /media/hender-fra-nord/captions/moia-form-en.vtt
+  placeholder: true
+gallery:
+  - src: /media/hender-fra-nord/stills/img_3757.webp
+    src_small: /media/hender-fra-nord/stills/img_3757-sm.webp
+    width: 784
+    height: 1168
+    alt:
+      no: "Kvinne med grått ullsjal og hvite votter på en skogssti, alpakkaer i innhegningen bak."
+      en: "A woman in a grey wool shawl and white mittens on a forest path, alpacas in the paddock behind."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/hender-fra-nord/stills/img_3720.webp
+    src_small: /media/hender-fra-nord/stills/img_3720-sm.webp
+    width: 784
+    height: 1168
+    alt:
+      no: "Kvinne i lin-kimono mellom bjørketrær ved et vann."
+      en: "A woman in a linen robe among birch trees by a lake."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/hender-fra-nord/stills/img_3763.webp
+    src_small: /media/hender-fra-nord/stills/img_3763-sm.webp
+    width: 784
+    height: 1168
+    alt:
+      no: "Kvinne i kremhvit ullgenser og lue i en bjørkeskog, med alpakkaer bak."
+      en: "A woman in a cream wool sweater and hat in a birch wood, alpacas behind."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/hender-fra-nord/stills/zpw10.webp
+    src_small: /media/hender-fra-nord/stills/zpw10-sm.webp
+    width: 1168
+    height: 784
+    alt:
+      no: "Lyst rom med en lenestol i lin, en lampe og et lite sidebord i tre under vinduet."
+      en: "A bright room with a linen armchair, a lamp and a small wooden side table beneath the window."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+product_slugs: []
+producer_name_match: MOIA
+credits:
+  - role: { no: Film, en: Film }
+    name: Plassholder
+  - role: { no: Foto, en: Photography }
+    name: Plassholder · Scandi Japandi lookbook
+  - role: { no: Tekst, en: Words }
+    name: Utkast · redaksjonen

@@ -1,0 +1,110 @@
+# Kapittel: Lillavendel (Guro Rimstad). Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
+slug: lillavendel
+order: 2
+published: true
+draft: true
+status: published
+maker_name: Lillavendel
+maker_person: Guro Rimstad
+location: { no: "Helgeroa, Vestfold", en: "Helgeroa, Vestfold" }
+craft: { no: "Såpe og lys", en: Soap and candles }
+title:
+  no: Lys, såpe og lange dager
+  en: Light, soap and long days
+dek:
+  no: I Helgeroa i Vestfold lager Guro Rimstad såper, lys og gårdsprodukter. Et kapittel om duft, tålmodighet og ting som tar den tiden de tar.
+  en: In Helgeroa, Vestfold, Guro Rimstad makes soaps, candles and farm goods. A chapter about scent, patience and things that take the time they take.
+body:
+  no: |-
+    Noen produkter blir til i en maskin. Andre blir til i et kjøkken, over tid, med hendene og nesen som viktigste redskap.
+
+    Hos Lillavendel er det gården som setter tempoet. Vi følger Guro gjennom en arbeidsdag, fra råvare til ferdig såpe og lys.
+  en: |-
+    Some products are made by a machine. Others are made in a kitchen, over time, with hands and nose as the most important tools.
+
+    At Lillavendel the farm sets the pace. We follow Guro through a working day, from raw material to finished soap and candle.
+interview:
+  - q: { no: Hvordan begynte Lillavendel?, en: How did Lillavendel begin? }
+    a:
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om begynnelsen, og om stedet."
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the beginning, and about the place."
+  - q: { no: Hva gjør en god såpe?, en: What makes a good soap? }
+    a:
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om råvarer, tid og de små valgene som ikke synes."
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about ingredients, time and the small choices that don’t show."
+  - q: { no: Hvordan ser en vanlig dag ut på gården?, en: What does an ordinary day on the farm look like? }
+    a:
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om rytmen gjennom året."
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the rhythm of the year."
+quotes:
+  - text:
+      no: "[utkast] Det som får modne i ro, blir best."
+      en: "[draft] What is allowed to ripen in peace turns out best."
+    attribution: Plassholdersitat · ikke et ekte sitat
+    after: 1
+    draft: true
+hero_loop:
+  src: /media/hender-fra-nord/loops/lillavendel-hero.mp4
+  src_mobile: /media/hender-fra-nord/loops/lillavendel-hero-4x5.mp4
+  poster: /media/hender-fra-nord/posters/lillavendel-hero.webp
+  poster_small: /media/hender-fra-nord/posters/lillavendel-hero-800.webp
+  poster_mobile: /media/hender-fra-nord/posters/lillavendel-hero-4x5.webp
+  alt:
+    no: "Kvinne i linkjole sittende på en trebenk ved siden av en hvit alpakka."
+    en: "A woman in a linen dress seated on a wooden bench beside a white alpaca."
+  placeholder: true
+og_image: /media/hender-fra-nord/posters/lillavendel-og.jpg
+film:
+  src: /media/hender-fra-nord/films/lillavendel-film.mp4
+  poster: /media/hender-fra-nord/posters/lillavendel-film.webp
+  poster_small: /media/hender-fra-nord/posters/lillavendel-film-800.webp
+  duration: 8
+  captions_no: /media/hender-fra-nord/captions/lillavendel-no.vtt
+  captions_en: /media/hender-fra-nord/captions/lillavendel-en.vtt
+  placeholder: true
+gallery:
+  - src: /media/hender-fra-nord/stills/img_3726.webp
+    src_small: /media/hender-fra-nord/stills/img_3726-sm.webp
+    width: 784
+    height: 1168
+    alt:
+      no: "Linskjorte som henger på veggen av en gammel tømmerbu."
+      en: "A linen shirt hanging on the wall of an old timber hut."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/hender-fra-nord/stills/zpw10.webp
+    src_small: /media/hender-fra-nord/stills/zpw10-sm.webp
+    width: 1168
+    height: 784
+    alt:
+      no: "Lyst rom med en lenestol i lin, en lampe og et lite sidebord i tre under vinduet."
+      en: "A bright room with a linen armchair, a lamp and a small wooden side table beneath the window."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/hender-fra-nord/stills/img_3721.webp
+    src_small: /media/hender-fra-nord/stills/img_3721-sm.webp
+    width: 784
+    height: 1168
+    alt:
+      no: "Kvinne i linkjole sittende på en trebenk ved siden av en hvit alpakka."
+      en: "A woman in a linen dress seated on a wooden bench beside a white alpaca."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/hender-fra-nord/stills/img_3720.webp
+    src_small: /media/hender-fra-nord/stills/img_3720-sm.webp
+    width: 784
+    height: 1168
+    alt:
+      no: "Kvinne i lin-kimono mellom bjørketrær ved et vann."
+      en: "A woman in a linen robe among birch trees by a lake."
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+product_slugs: []
+producer_name_match: Lillavendel
+credits:
+  - role: { no: Film, en: Film }
+    name: Plassholder
+  - role: { no: Foto, en: Photography }
+    name: Plassholder · Scandi Japandi lookbook
+  - role: { no: Tekst, en: Words }
+    name: Utkast · redaksjonen

@@ -10,15 +10,29 @@ import CookieBanner from '../components/CookieBanner.astro';
 interface Props {
   title?: string;
   description?: string;
+  /** <html lang>. Pages that render one language statically should set it. */
+  lang?: string;
+  /** Replaces the default hreflang set (all pointing at this URL). */
+  alternates?: { hreflang: string; href: string }[];
+  /** Absolute URL for og:image / twitter:image. */
+  ogImage?: string;
+  ogType?: string;
+  ogLocale?: string;
 }
 const {
   title = "ScandiJapandi — Skandinavisk håndverk, ren nordisk ro",
   description = "A curated collection of timeless Scandinavian objects for the Japanese and Asian market. Nordic craft, uncompromising quality.",
+  lang = 'no',
+  alternates,
+  ogImage = 'https://scandijapandi.no/images/og-image.svg',
+  ogType = 'website',
+  ogLocale,
 } = Astro.props;
+const pageUrl = `https://scandijapandi.no${Astro.url.pathname}`;
 ---
 
 <!doctype html>
-<html lang="no" class="scroll-smooth">
+<html lang={lang} class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -30,27 +44,39 @@ const {
     <link rel="canonical" href={`https://scandijapandi.no${Astro.url.pathname}`} />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="ScandiJapandi Collection" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={`https://scandijapandi.no${Astro.url.pathname}`} />
-    <meta property="og:image" content="https://scandijapandi.no/images/og-image.svg" />
-    <meta property="og:locale" content="en_US" />
-    <meta property="og:locale:alternate" content="ja_JP" />
-    <meta property="og:locale:alternate" content="nb_NO" />
+    <meta property="og:image" content={ogImage} />
+    {ogLocale ? (
+      <meta property="og:locale" content={ogLocale} />
+    ) : (
+      <>
+        <meta property="og:locale" content="en_US" />
+        <meta property="og:locale:alternate" content="ja_JP" />
+        <meta property="og:locale:alternate" content="nb_NO" />
+      </>
+    )}
 
     <!-- Twitter/X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://scandijapandi.no/images/og-image.svg" />
+    <meta name="twitter:image" content={ogImage} />
 
     <!-- Language alternates -->
-    <link rel="alternate" hreflang="no" href={`https://scandijapandi.no${Astro.url.pathname}`} />
-    <link rel="alternate" hreflang="en" href={`https://scandijapandi.no${Astro.url.pathname}`} />
-    <link rel="alternate" hreflang="ja" href={`https://scandijapandi.no${Astro.url.pathname}`} />
-    <link rel="alternate" hreflang="x-default" href={`https://scandijapandi.no${Astro.url.pathname}`} />
+    {alternates ? (
+      alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)
+    ) : (
+      <>
+        <link rel="alternate" hreflang="no" href={pageUrl} />
+        <link rel="alternate" hreflang="en" href={pageUrl} />
+        <link rel="alternate" hreflang="ja" href={pageUrl} />
+        <link rel="alternate" hreflang="x-default" href={pageUrl} />
+      </>
+    )}
 
     <link
       rel="stylesheet"

@@ -1,0 +1,33 @@
+---
+import { UI, issueUrl, type Lang } from '../../lib/magazine';
+
+interface Props {
+  lang: Lang;
+  paths: Record<Lang, string>;
+  issueLabel: string;
+}
+const { lang, paths, issueLabel } = Astro.props;
+const ui = UI[lang];
+const other: Lang = lang === 'no' ? 'en' : 'no';
+---
+
+<footer class="border-t border-ink/10 bg-paper">
+  <div class="mz-wrap mz-grid gap-y-10 py-16 md:py-20">
+    <div class="col-span-4 md:col-span-5">
+      <a href={issueUrl(lang)} class="mz-serif text-[1.75rem] leading-none tracking-[-0.02em]">
+        {lang === 'en' ? 'Hands of the North' : 'Hender fra Nord'}
+      </a>
+      <p class="mz-kicker mz-kicker--sm mz-stone mt-4">{issueLabel}</p>
+    </div>
+    <ul class="mz-kicker mz-kicker--sm col-span-4 flex flex-wrap gap-x-8 gap-y-3 md:col-span-5 md:col-start-6 md:justify-end md:self-end">
+      <li><a href="/" class="mz-link">{ui.shop}</a></li>
+      <li><a href="/makers" class="mz-link">{ui.forMakers}</a></li>
+      <li>
+        <a href={paths[other]} hreflang={other === 'no' ? 'nb' : 'en'} lang={other === 'no' ? 'nb' : 'en'} class="mz-link" data-lang-switch={other}>
+          {ui.otherLangLabel}
+        </a>
+      </li>
+    </ul>
+    <p class="mz-kicker mz-kicker--sm mz-stone col-span-4 md:col-span-2 md:col-start-11 md:self-end md:text-right">© 2026 Scandi Japandi</p>
+  </div>
+</footer>

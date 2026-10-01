@@ -1,0 +1,68 @@
+---
+// «Fra verkstedet» — a quiet link to the maker's objects in the shop.
+// Server render: cards for `product_slugs`, or the «coming to the shop» note.
+// Client (magazine.client.ts): fetches /api/products and swaps in real cards
+// matched on slug or producer name. No match keeps the server render.
+import { UI, type Lang } from '../../lib/magazine';
+
+interface Props {
+  lang: Lang;
+  makerName: string;
+  slugs: string[];
+  producerMatch?: string;
+}
+const { lang, makerName, slugs, producerMatch } = Astro.props;
+const ui = UI[lang];
+const humanize = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+---
+
+<section
+  class="bg-oat mz-section"
+  aria-labelledby="mz-workshop"
+  data-products
+  data-match={producerMatch}
+  data-slugs={JSON.stringify(slugs)}
+  data-lang={lang}
+>
+  <div class="mz-wrap mz-grid gap-y-10">
+    <p class="mz-kicker mz-stone-deep col-span-4 md:col-span-3">{ui.fromWorkshop}</p>
+    <div class="col-span-4 md:col-span-8 md:col-start-5">
+      <h2 id="mz-workshop" class="mz-h2 mz-reveal">{ui.objectsFrom} {makerName}</h2>
+    </div>
+
+    <ul
+      class="col-span-4 mt-6 grid grid-cols-2 gap-x-5 gap-y-12 md:col-span-8 md:col-start-5 md:grid-cols-4 md:gap-x-8"
+      data-products-grid
+      hidden={slugs.length === 0}
+    >
+      {slugs.slice(0, 4).map((slug) => (
+        <li>
+          <a href={`/products/${slug}`} class="mz-product group block">
+            <span class="mz-serif block text-[1.1875rem] leading-snug">{humanize(slug)}</span>
+            <span class="mz-kicker mz-kicker--sm mz-stone-deep mt-3 block">{ui.seeObject} <span class="mz-arrow" aria-hidden="true">→</span></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {slugs.length === 0 && (
+      <div class="col-span-4 md:col-span-6 md:col-start-5" data-products-empty>
+        <p class="mz-serif mz-italic text-[1.5rem] leading-snug md:text-[1.75rem]">{ui.objectsComing}</p>
+        <p class="mt-5 max-w-[46ch] text-[0.9375rem] leading-[1.7] text-ink/80">{ui.objectsComingBody}</p>
+        <a href="/makers" class="mz-kicker mz-kicker--sm mz-link mt-7 inline-block">
+          {ui.forMakers} <span class="mz-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    )}
+  </div>
+
+  <template data-product-template>
+    <li>
+      <a class="mz-product group block" href="/">
+        <span class="mz-media block aspect-[4/5]"><img alt="" width="600" height="750" loading="lazy" decoding="async" /></span>
+        <span class="mz-serif mt-5 block text-[1.1875rem] leading-snug" data-name></span>
+        <span class="mz-kicker mz-kicker--sm mz-stone-deep mt-2 block" data-price></span>
+      </a>
+    </li>
+  </template>
+</section>

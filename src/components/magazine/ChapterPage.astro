@@ -1,0 +1,294 @@
+---
+// Chapter page, shared by /hender-fra-nord/[maker] and /en/hands-of-the-north/[maker].
+import MagazineLayout from './MagazineLayout.astro';
+import LoopVideo from './LoopVideo.astro';
+import Film from './Film.astro';
+import DraftTag from './DraftTag.astro';
+import FromTheWorkshop from './FromTheWorkshop.astro';
+import {
+  UI, abs, chapterUrl, issueUrl, isoDuration, known, loadIssue, pad, paragraphs, splitDraft, t,
+  type Chapter, type Lang,
+} from '../../lib/magazine';
+
+interface Props { lang: Lang; slug: string }
+const { lang, slug } = Astro.props;
+const ui = UI[lang];
+const { issue, chapters } = await loadIssue();
+const index = chapters.findIndex((c) => c.slug === slug);
+const c: Chapter = chapters[index];
+const next: Chapter | undefined = chapters[index + 1];
+
+const issueLabel = `${ui.issueShort} ${pad(issue.number)} · ${t(issue.season, lang)}`;
+const number = pad(index + 1);
+const kicker = [`${ui.chapter} ${number}`, t(c.craft, lang), t(c.location, lang)].filter(known).join(' · ');
+const title = t(c.title, lang);
+const filmTitle = `${c.maker_name} — ${title}`;
+
+// Interview flow: intro text, then Q&A, with pull quotes placed after a given
+// answer (`after`), or straight after the intro when omitted.
+type Block = { kind: 'text'; intro?: string[]; qa: { q: string; a: string }[] } | { kind: 'quote'; quote: Chapter['quotes'][number] };
+const blocks: Block[] = [];
+const quotesAfter = (i: number) => c.quotes.filter((q) => (q.after ?? -1) === i);
+let current: Block = { kind: 'text', intro: c.body ? paragraphs(t(c.body, lang)) : [], qa: [] };
+const flush = () => {
+  if (current.kind === 'text' && ((current.intro?.length ?? 0) > 0 || current.qa.length > 0)) blocks.push(current);
+  current = { kind: 'text', qa: [] };
+};
+quotesAfter(-1).forEach((q) => { flush(); blocks.push({ kind: 'quote', quote: q }); });
+c.interview.forEach((item, i) => {
+  if (current.kind === 'text') current.qa.push({ q: t(item.q, lang), a: t(item.a, lang) });
+  const qs = quotesAfter(i);
+  if (qs.length) { flush(); qs.forEach((q) => blocks.push({ kind: 'quote', quote: q })); }
+});
+flush();
+
+// Asymmetric photo essay, laid out in pairs by orientation so a landscape
+// frame never ends up postage-stamp sized next to a tall portrait.
+const isLandscape = (g: { width: number; height: number }) => g.width > g.height;
+const PAIRS: Record<string, [string, string]> = {
+  PP: ['md:col-span-5', 'md:col-span-4 md:col-start-8 md:mt-[14vw]'],
+  LP: ['md:col-span-7', 'md:col-span-4 md:col-start-9 md:mt-[10vw]'],
+  PL: ['md:col-span-4 md:col-start-2', 'md:col-span-6 md:col-start-7 md:mt-[18vw]'],
+  LL: ['md:col-span-8', 'md:col-span-7 md:col-start-6 md:mt-[6vw]'],
+};
+const MOBILE = ['col-span-4', 'col-span-3 col-start-2'];
+const galleryClass = c.gallery.map((g, i) => {
+  const pairStart = i - (i % 2);
+  const a = c.gallery[pairStart];
+  const b = c.gallery[pairStart + 1];
+  if (!b) return `${MOBILE[0]} md:col-span-8 md:col-start-3 md:mt-[8vw]`;
+  const key = `${isLandscape(a) ? 'L' : 'P'}${isLandscape(b) ? 'L' : 'P'}`;
+  return `${MOBILE[i % 2]} ${PAIRS[key][i % 2]}`;
+});
+
+const ogImage = c.og_image ?? c.hero_loop?.poster ?? issue.og_image;
+const description = t(c.dek, lang);
+const jsonLd: object[] = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `${c.maker_name}: ${title}`,
+    description,
+    inLanguage: ui.htmlLang,
+    url: abs(chapterUrl(lang, c.slug)),
+    image: ogImage ? abs(ogImage) : undefined,
+    datePublished: issue.published_at.toISOString().slice(0, 10),
+    author: { '@type': 'Person', name: issue.editor_letter.signature },
+    publisher: { '@type': 'Organization', name: 'Scandi Japandi Collection', url: 'https://scandijapandi.no' },
+    isPartOf: { '@type': 'PublicationIssue', issueNumber: String(issue.number), name: t(issue.title, lang), url: abs(issueUrl(lang)) },
+  },
+];
+if (c.film) {
+  jsonLd.push({
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: filmTitle,
+    description,
+    thumbnailUrl: [abs(c.film.poster)],
+    uploadDate: issue.published_at.toISOString().slice(0, 10),
+    duration: isoDuration(c.film.duration),
+    contentUrl: abs(c.film.src),
+    inLanguage: ui.htmlLang,
+    publisher: { '@type': 'Organization', name: 'Scandi Japandi Collection', url: 'https://scandijapandi.no' },
+  });
+}
+
+const meta = [
+  { label: ui.maker, value: c.maker_person ? `${c.maker_name}, ${c.maker_person}` : c.maker_name },
+  { label: ui.place, value: t(c.location, lang) },
+  { label: ui.craft, value: t(c.craft, lang) },
+].filter((m) => known(m.value));
+---
+
+<MagazineLayout
+  lang={lang}
+  title={`${c.maker_name}: ${title} — ${t(issue.title, lang)} · Scandi Japandi`}
+  description={description}
+  paths={{ no: chapterUrl('no', c.slug), en: chapterUrl('en', c.slug) }}
+  ogImage={ogImage}
+  ogType="article"
+  issueLabel={issueLabel}
+  jsonLd={jsonLd}
+>
+  <!-- 1 · Hero loop -->
+  {c.hero_loop && (
+    <section class="relative text-paper mz-on-dark" aria-label={c.maker_name}>
+      <LoopVideo loop={c.hero_loop} lang={lang} eager class="aspect-[4/5] md:aspect-auto md:h-[min(94svh,56.25vw)] md:min-h-[560px]">
+        <div class="mz-wrap mz-cover-in absolute inset-x-0 bottom-0 z-[2] pb-7 md:pb-10">
+          <p class="mz-kicker mz-kicker--sm opacity-90">{ui.chapter} {number}</p>
+        </div>
+      </LoopVideo>
+    </section>
+  )}
+
+  <!-- 2 · Title + dek -->
+  <header class="mz-wrap pt-16 md:pt-28 lg:pt-36">
+    <div class="mz-grid gap-y-10">
+      <p class="mz-kicker mz-stone col-span-4 flex flex-wrap items-center gap-x-5 gap-y-3 md:col-span-12">
+        <span>{kicker}</span>
+        {c.draft && <DraftTag lang={lang} />}
+      </p>
+      <h1 class="mz-display col-span-4 max-w-[13ch] md:col-span-11">{title}</h1>
+      <dl class="col-span-4 mt-2 grid grid-cols-2 gap-x-6 gap-y-6 self-start md:col-span-3 md:mt-20 md:grid-cols-1">
+        {meta.map((m) => (
+          <div>
+            <dt class="mz-kicker mz-kicker--sm mz-stone">{m.label}</dt>
+            <dd class="mt-1.5 text-[0.9375rem] leading-snug">{m.value}</dd>
+          </div>
+        ))}
+        {c.website && (
+          <div>
+            <dt class="mz-kicker mz-kicker--sm mz-stone">{ui.website}</dt>
+            <dd class="mt-1.5 text-[0.9375rem]"><a href={c.website} class="mz-link" rel="noopener">{c.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</a></dd>
+          </div>
+        )}
+      </dl>
+      <p class="mz-lede col-span-4 md:col-span-7 md:col-start-6 md:mt-20 lg:col-span-6 lg:col-start-6">{description}</p>
+    </div>
+  </header>
+
+  <!-- 3 · Main film -->
+  {c.film && (
+    <section class="mz-wrap pt-24 md:pt-40" aria-label={`${ui.film}: ${filmTitle}`}>
+      <div class="mz-reveal">
+        <Film film={c.film} title={filmTitle} lang={lang} />
+      </div>
+    </section>
+  )}
+
+  <!-- 4 · Conversation -->
+  <article class="mz-section" aria-label={ui.conversation}>
+    {blocks.map((b, bi) =>
+      b.kind === 'text' ? (
+        <div class="mz-wrap mz-grid gap-y-8">
+          <div class="col-span-4 md:col-span-3">
+            {bi === 0 && <p class="mz-kicker mz-stone">{ui.conversation}</p>}
+          </div>
+          <div class="mz-body col-span-4 md:col-span-7 md:col-start-5 lg:col-span-6 lg:col-start-5">
+            {b.intro?.map((p, pi) => (
+              <p class:list={['mz-reveal', pi === 0 && bi === 0 && 'text-[1.1875rem] text-ink md:text-[1.25rem]']}>{p}</p>
+            ))}
+            {b.qa.map((item) => {
+              const a = splitDraft(item.a);
+              return (
+                <div class="mz-reveal !mt-14 md:!mt-16">
+                  <p class="mz-serif text-[1.375rem] leading-[1.35] tracking-[-0.01em] text-ink md:text-[1.5rem]">{item.q}</p>
+                  <p class="mt-5">
+                    {a.draft && <DraftTag lang={lang} class="mr-3 -translate-y-px" />}
+                    {a.text}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+        (() => {
+          const q = splitDraft(t(b.quote.text, lang));
+          return (
+            <figure class="mz-wrap mz-grid mz-reveal my-24 md:my-40">
+              <blockquote class="mz-quote col-span-4 md:col-span-10 md:col-start-2">
+                <p><span class="mz-quote__mark" aria-hidden="true">«</span>{q.text}<span class="mz-quote__mark" aria-hidden="true">»</span></p>
+              </blockquote>
+              <figcaption class="mz-kicker mz-kicker--sm mz-stone col-span-4 mt-10 flex flex-wrap items-center gap-4 md:col-span-9 md:col-start-2">
+                {(b.quote.draft || q.draft) && <DraftTag lang={lang} />}
+                {b.quote.attribution && <span>{b.quote.attribution}</span>}
+              </figcaption>
+            </figure>
+          );
+        })()
+      ),
+    )}
+  </article>
+
+  <!-- 5 · Photo essay -->
+  {c.gallery.length > 0 && (
+    <section class="pb-[clamp(6rem,13vw,12rem)]" aria-label={ui.gallery}>
+      <div class="mz-wrap">
+        <div class="mz-grid mb-12 md:mb-20">
+          <p class="mz-kicker mz-stone col-span-4 md:col-span-3">{ui.gallery}</p>
+        </div>
+        <div class="mz-grid gap-y-14 md:gap-y-0">
+          {c.gallery.map((g, i) => (
+            <figure class:list={['mz-reveal', galleryClass[i], i >= 2 && i % 2 === 0 && 'md:mt-[8vw]']}>
+              <div class="mz-media" style={`aspect-ratio: ${g.width} / ${g.height}`}>
+                <img
+                  src={g.src}
+                  srcset={g.src_small ? `${g.src_small} ${Math.round(g.width / 2)}w, ${g.src} ${g.width}w` : undefined}
+                  sizes="(min-width: 768px) 50vw, 92vw"
+                  width={g.width}
+                  height={g.height}
+                  alt={t(g.alt, lang)}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <figcaption class="mz-kicker mz-kicker--sm mz-stone mt-4 flex gap-4">
+                <span class="mz-num">{pad(i + 1)}</span>
+                <span>{g.caption ? t(g.caption, lang) : g.credit}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- 6 · From the workshop -->
+  <FromTheWorkshop lang={lang} makerName={c.maker_name} slugs={c.product_slugs} producerMatch={c.producer_name_match} />
+
+  {c.credits.length > 0 && (
+    <section class="mz-wrap mz-grid gap-y-8 py-16 md:py-20" aria-label={ui.credits}>
+      <p class="mz-kicker mz-kicker--sm mz-stone col-span-4 md:col-span-3">{ui.credits}</p>
+      <dl class="col-span-4 grid grid-cols-2 gap-x-8 gap-y-6 md:col-span-8 md:col-start-5 md:grid-cols-3">
+        {c.credits.map((cr) => (
+          <div>
+            <dt class="mz-kicker mz-kicker--sm mz-stone">{t(cr.role, lang)}</dt>
+            <dd class="mt-1.5 text-[0.9375rem]">{cr.name}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )}
+
+  <!-- 7 · Next chapter -->
+  {next ? (
+    <a href={chapterUrl(lang, next.slug)} class="group relative block text-paper mz-on-dark">
+      <div class="mz-media mz-zoom h-[78svh] min-h-[480px] md:h-[88svh]">
+        {next.hero_loop && (
+          <picture>
+            {next.hero_loop.poster_mobile && <source media="(max-width: 767px)" srcset={next.hero_loop.poster_mobile} width="720" height="900" />}
+            <img src={next.hero_loop.poster} width="1600" height="900" alt={t(next.hero_loop.alt, lang)} loading="lazy" decoding="async" />
+          </picture>
+        )}
+        <div class="mz-scrim"></div>
+      </div>
+      <div class="absolute inset-0 flex flex-col justify-end">
+        <div class="mz-wrap pb-16 md:pb-24">
+          <p class="mz-kicker mz-kicker--sm opacity-90">{ui.next} · {pad(index + 2)}</p>
+          <p class="mz-display mt-6">{next.maker_name}</p>
+          <p class="mz-serif mz-italic mt-5 flex items-baseline gap-5 text-[1.25rem] md:text-[1.5rem]">
+            <span>{t(next.title, lang)}</span>
+            <span class="mz-arrow not-italic" aria-hidden="true">→</span>
+          </p>
+        </div>
+      </div>
+    </a>
+  ) : (
+    <a href={`${issueUrl(lang)}#innhold`} class="group relative block text-paper mz-on-dark">
+      <div class="mz-media mz-zoom h-[64svh] min-h-[420px]">
+        <picture>
+          {issue.cover_loop.poster_mobile && <source media="(max-width: 767px)" srcset={issue.cover_loop.poster_mobile} width="720" height="900" />}
+          <img src={issue.cover_loop.poster} width="1600" height="900" alt={t(issue.cover_loop.alt, lang)} loading="lazy" decoding="async" />
+        </picture>
+        <div class="mz-scrim"></div>
+      </div>
+      <div class="absolute inset-0 flex flex-col justify-end">
+        <div class="mz-wrap pb-16 md:pb-24">
+          <p class="mz-kicker mz-kicker--sm opacity-90">{issueLabel}</p>
+          <p class="mz-display mt-6">{ui.backToIssue} <span class="mz-arrow" aria-hidden="true">→</span></p>
+        </div>
+      </div>
+    </a>
+  )}
+</MagazineLayout>

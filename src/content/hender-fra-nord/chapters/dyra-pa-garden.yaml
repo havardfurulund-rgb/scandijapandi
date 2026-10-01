@@ -1,0 +1,17 @@
+# Kommer: filmes ca. 11. oktober 2026.
+slug: dyra-pa-garden
+order: 6
+published: true
+draft: true
+status: coming
+maker_name: Dyra på Gården
+location: { no: "—", en: "—" }
+craft: { no: Ull fra egne dyr, en: Wool from their own animals }
+title:
+  no: Ull fra egne dyr
+  en: Wool from their own animals
+dek:
+  no: Ullprodukter fra dyrene på gården. Kapitlet filmes i oktober.
+  en: Wool goods from the animals on the farm. This chapter is filmed in October.
+teaser_image: /media/hender-fra-nord/posters/dyra-pa-garden-4x5.webp
+shoot_date: 2026-10-11
