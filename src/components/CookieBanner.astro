@@ -47,8 +47,10 @@
   };
 
   function applyCookieLang() {
-    let lang = 'no';
-    try { lang = localStorage.getItem('sj-lang') || 'no'; } catch {}
+    // No saved choice yet: follow the page's own language (北の手 pages are ja/en/nb).
+    const htmlLang = document.documentElement.lang;
+    let lang = htmlLang.startsWith('ja') ? 'jp' : htmlLang.startsWith('en') ? 'en' : 'no';
+    try { lang = localStorage.getItem('sj-lang') || lang; } catch {}
     const t = COOKIE_T[lang as keyof typeof COOKIE_T] || COOKIE_T.no;
     const body = document.getElementById('cookie-body');
     const privacy = document.getElementById('cookie-privacy-link');

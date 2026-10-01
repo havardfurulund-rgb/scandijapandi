@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { loadIssue, issueUrl, chapterUrl } from '../lib/magazine';
+import { HTML_LANG, LANGS, loadIssue, issueUrl, chapterUrl, type Lang } from '../lib/kitanote';
 
 // Sitemap for search engines. Rendered on request (not at build time) so newly
 // published products show up without a rebuild — the same reason the product
@@ -25,10 +25,17 @@ const escapeXml = (value: string) =>
 
 // Element order follows the sitemaps.org schema sequence (loc, lastmod,
 // changefreq, priority) so the output passes strict XSD validators.
-const urlEntry = (loc: string, priority: string, changefreq: string) => `  <url>
+const urlEntry = (
+  loc: string,
+  priority: string,
+  changefreq: string,
+  alternates: { hreflang: string; href: string }[] = [],
+) => `  <url>
     <loc>${escapeXml(loc)}</loc>
     <changefreq>${changefreq}</changefreq>
-    <priority>${priority}</priority>
+    <priority>${priority}</priority>${alternates
+      .map((a) => `\n    <xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${escapeXml(a.href)}"/>`)
+      .join('')}
   </url>`;
 
 export const GET: APIRoute = async ({ url }) => {
@@ -61,20 +68,32 @@ export const GET: APIRoute = async ({ url }) => {
     console.warn('[sitemap] could not fetch products:', err);
   }
 
-  // Hender fra Nord: issue + published chapters in both languages.
+  // 北の手 · Kita no Te: issue + published chapters in ja / en / nb, each with
+  // its hreflang alternates (x-default = ja). Pages whose Japanese has not
+  // been reviewed (jp_qa: false) carry noindex, so they are left out until
+  // the native QA is done.
   let magazineEntries: string[] = [];
   try {
-    const { chapters } = await loadIssue();
-    magazineEntries = (['no', 'en'] as const).flatMap((lang) => [
-      urlEntry(`${SITE}${issueUrl(lang)}`, '0.8', 'monthly'),
-      ...chapters.map((c) => urlEntry(`${SITE}${chapterUrl(lang, c.slug)}`, '0.7', 'monthly')),
-    ]);
+    const { issue, chapters } = await loadIssue();
+    if (issue.jp_qa) {
+      const pages: { path: (l: Lang) => string; priority: string }[] = [
+        { path: issueUrl, priority: '0.8' },
+        ...chapters.filter((c) => c.jp_qa).map((c) => ({ path: (l: Lang) => chapterUrl(l, c.slug), priority: '0.7' })),
+      ];
+      magazineEntries = pages.flatMap((p) => {
+        const alternates = [
+          ...LANGS.map((l) => ({ hreflang: HTML_LANG[l], href: `${SITE}${p.path(l)}` })),
+          { hreflang: 'x-default', href: `${SITE}${p.path('ja')}` },
+        ];
+        return LANGS.map((l) => urlEntry(`${SITE}${p.path(l)}`, p.priority, 'monthly', alternates));
+      });
+    }
   } catch (err) {
     console.warn('[sitemap] could not load magazine:', err);
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${STATIC_PAGES.map((p) => urlEntry(`${SITE}${p.path}`, p.priority, p.changefreq)).join('\n')}
 ${magazineEntries.join('\n')}
 ${productEntries.join('\n')}

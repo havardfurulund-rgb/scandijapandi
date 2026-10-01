@@ -2,6 +2,32 @@
   command = "npm run build"
   publish = "dist"
 
+# 北の手 · Kita no Te: the magazine moved from its first preview URLs to the
+# channel's address on the business card and QR code.
+[[redirects]]
+  from = "/hender-fra-nord"
+  to = "/kitanote/no"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/hender-fra-nord/*"
+  to = "/kitanote/no/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/hands-of-the-north"
+  to = "/kitanote/en"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/hands-of-the-north/*"
+  to = "/kitanote/en/:splat"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
