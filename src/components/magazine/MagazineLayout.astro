@@ -38,11 +38,12 @@ const ld = (o: object) => JSON.stringify(o).replace(/</g, '\\u003c');
   ogImage={ogImage ? abs(ogImage) : undefined}
   ogType={ogType}
   ogLocale={ui.ogLocale}
+  asyncFonts
 >
   <Fragment slot="head">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Fraunces italic for decks, signatures and captions (same host as the base fonts). -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,300&display=swap" /></noscript>
     <script is:inline>document.documentElement.classList.add('mz-js');</script>
     {jsonLd.map((o) => <script type="application/ld+json" set:html={ld(o)} />)}
     <slot name="head" />

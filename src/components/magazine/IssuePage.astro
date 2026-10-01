@@ -49,19 +49,19 @@ const jsonLd = [
     <LoopVideo loop={issue.cover_loop} lang={lang} eager class="!absolute inset-0" />
     <div class="pointer-events-none absolute inset-0 z-[2] flex flex-col justify-end">
       <div class="mz-wrap mz-cover-in pb-20 md:pb-24">
-        <p class="mz-kicker flex items-center gap-4">
+        <p class="mz-kicker flex items-center gap-4 whitespace-nowrap">
           <span>{issueLabel}</span>
           {issue.draft && <DraftTag lang={lang} class="pointer-events-auto" />}
         </p>
         <h1 id="mz-masthead" class="mz-masthead mt-6 md:mt-8">
-          <span class="block">{mastheadLines[0]}</span>
-          <span class="block md:pl-[0.9em]">{mastheadLines[1]}</span>
+          <span class="block whitespace-nowrap">{mastheadLines[0]}</span>
+          <span class="block whitespace-nowrap md:pl-[0.9em]">{mastheadLines[1]}</span>
         </h1>
         <div class="mz-grid mt-8 gap-y-6 md:mt-12">
-          <p class="mz-serif mz-italic col-span-4 max-w-[32ch] text-[1.1875rem] leading-[1.45] md:col-span-5 md:text-[1.5rem]">
+          <p class="mz-serif mz-italic col-span-4 min-h-[4.35em] max-w-[17em] text-[1.1875rem] leading-[1.45] md:col-span-5 md:min-h-[2.9em] md:max-w-[20em] md:text-[1.5rem]">
             {t(issue.manifest, lang)}
           </p>
-          <p class="mz-kicker mz-kicker--sm col-span-4 opacity-80 md:col-span-4 md:col-start-9 md:self-end md:text-right md:pr-28">
+          <p class="mz-kicker mz-kicker--sm col-span-4 min-h-[3.2em] opacity-80 md:col-span-4 md:col-start-9 md:self-end md:text-right md:pr-28">
             {ui.magazineBy}
           </p>
         </div>

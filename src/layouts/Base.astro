@@ -18,6 +18,8 @@ interface Props {
   ogImage?: string;
   ogType?: string;
   ogLocale?: string;
+  /** Load the web fonts without blocking first paint (text swaps in). */
+  asyncFonts?: boolean;
 }
 const {
   title = "ScandiJapandi — Skandinavisk håndverk, ren nordisk ro",
@@ -27,7 +29,9 @@ const {
   ogImage = 'https://scandijapandi.no/images/og-image.svg',
   ogType = 'website',
   ogLocale,
+  asyncFonts = false,
 } = Astro.props;
+const fontsHref = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap';
 const pageUrl = `https://scandijapandi.no${Astro.url.pathname}`;
 ---
 
@@ -78,10 +82,16 @@ const pageUrl = `https://scandijapandi.no${Astro.url.pathname}`;
       </>
     )}
 
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap"
-    />
+    {asyncFonts ? (
+      <>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="stylesheet" href={fontsHref} media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href={fontsHref} /></noscript>
+      </>
+    ) : (
+      <link rel="stylesheet" href={fontsHref} />
+    )}
     <style>
       body { font-family: 'Jost', sans-serif; background-color: #FBFBFA; color: #1A1A1A; }
       .font-serif { font-family: 'Fraunces', serif; }

@@ -195,7 +195,7 @@ a:hover .mz-arrow, a:focus-visible .mz-arrow { transform: translateX(0.3em); }
 }
 .mz-loop > video { opacity: 0; transition: opacity 1.4s var(--ease); }
 .mz-loop.is-playing > video { opacity: 1; }
-.mz-scrim { position: absolute; inset: 0; background: rgba(20, 19, 17, 0.3); pointer-events: none; }
+.mz-scrim { position: absolute; inset: 0; background: rgba(20, 19, 17, 0.34); pointer-events: none; }
 
 .mz-motion-toggle {
   position: absolute;

@@ -105,6 +105,11 @@ function initFilms() {
       if (!src) return;
       if (!video.getAttribute('src')) video.src = src;
       video.controls = true;
+      // Captions on in the page language. Chosen here rather than with
+      // `default` so not even the .vtt loads before the reader presses play.
+      for (const track of Array.from(video.textTracks)) {
+        track.mode = track.language === wrap.dataset.captions ? 'showing' : 'disabled';
+      }
       wrap.classList.add('is-active');
       // Pause ambient loops so the film has the room to itself.
       document.querySelectorAll<HTMLVideoElement>('[data-loop] video').forEach((v) => v.pause());

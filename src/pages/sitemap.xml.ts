@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { loadIssue, issueUrl, chapterUrl } from '../lib/magazine';
 
 // Sitemap for search engines. Rendered on request (not at build time) so newly
 // published products show up without a rebuild — the same reason the product
@@ -60,9 +61,22 @@ export const GET: APIRoute = async ({ url }) => {
     console.warn('[sitemap] could not fetch products:', err);
   }
 
+  // Hender fra Nord: issue + published chapters in both languages.
+  let magazineEntries: string[] = [];
+  try {
+    const { chapters } = await loadIssue();
+    magazineEntries = (['no', 'en'] as const).flatMap((lang) => [
+      urlEntry(`${SITE}${issueUrl(lang)}`, '0.8', 'monthly'),
+      ...chapters.map((c) => urlEntry(`${SITE}${chapterUrl(lang, c.slug)}`, '0.7', 'monthly')),
+    ]);
+  } catch (err) {
+    console.warn('[sitemap] could not load magazine:', err);
+  }
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${STATIC_PAGES.map((p) => urlEntry(`${SITE}${p.path}`, p.priority, p.changefreq)).join('\n')}
+${magazineEntries.join('\n')}
 ${productEntries.join('\n')}
 </urlset>`;
 
