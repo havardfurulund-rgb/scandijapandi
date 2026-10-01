@@ -1,9 +1,11 @@
-// Shared field helpers for the bilingual magazine schemas (NO + EN).
+// Shared field helpers for the 北の手 · Kita no Te magazine schemas.
+// Japanese is the primary language and comes first; NO and EN follow.
 export const localizedString = (name: string, title: string, rows?: number) => ({
   name,
   title,
   type: 'object',
   fields: [
+    { name: 'ja', title: '日本語 (です/ます)', type: rows ? 'text' : 'string', ...(rows ? { rows } : {}) },
     { name: 'no', title: 'Norsk', type: rows ? 'text' : 'string', ...(rows ? { rows } : {}) },
     { name: 'en', title: 'English', type: rows ? 'text' : 'string', ...(rows ? { rows } : {}) },
   ],
@@ -14,6 +16,7 @@ export const localizedBlocks = (name: string, title: string) => ({
   title,
   type: 'object',
   fields: [
+    { name: 'ja', title: '日本語 (です/ます)', type: 'array', of: [{ type: 'block' }] },
     { name: 'no', title: 'Norsk', type: 'array', of: [{ type: 'block' }] },
     { name: 'en', title: 'English', type: 'array', of: [{ type: 'block' }] },
   ],
@@ -36,3 +39,12 @@ export const videoSource = (name: string, title: string, extra: any[] = []) => (
     ...extra,
   ],
 })
+
+/** Japanese reviewed by a native speaker. Unchecked: 「翻訳確認中」 tag and noindex. */
+export const jpQa = {
+  name: 'jpQa',
+  title: 'Japansk kvalitetssikret (native QA)',
+  description: 'Av: siden viser 「翻訳確認中」 og får noindex på alle språk.',
+  type: 'boolean',
+  initialValue: false,
+}

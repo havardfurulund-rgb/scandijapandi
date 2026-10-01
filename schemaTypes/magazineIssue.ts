@@ -1,9 +1,10 @@
-// «Hender fra Nord» issue. Mirrors magazineIssues in src/content.config.ts.
-import { localizedString, localizedBlocks, videoSource } from './localized'
+// 北の手 · Kita no Te issue (Issue 01: «Hender fra Nord»).
+// Mirrors magazineIssues in src/content.config.ts.
+import { jpQa, localizedString, localizedBlocks, videoSource } from './localized'
 
 export default {
   name: 'magazineIssue',
-  title: 'Hender fra Nord · Nummer',
+  title: '北の手 · Nummer',
   type: 'document',
   fields: [
     { name: 'number', title: 'Nummer', type: 'number', validation: (Rule: any) => Rule.required().min(1) },
@@ -11,18 +12,19 @@ export default {
     localizedString('season', 'Sesong'),
     { name: 'publishedAt', title: 'Publiseringsdato', type: 'date' },
     { name: 'draft', title: 'Utkast', type: 'boolean', initialValue: true },
+    jpQa,
     localizedString('manifest', 'Manifest (én linje)'),
     videoSource('coverLoop', 'Cover-loop'),
     { name: 'ogImage', title: 'Delingsbilde', type: 'image' },
     {
-      name: 'editorLetter',
-      title: 'Leder',
+      name: 'letter',
+      title: 'Brev fra Norge / ノルウェーからの手紙',
+      description: 'Kuratoren er usynlig: ingen portrett, signert med rolle.',
       type: 'object',
       fields: [
         localizedString('title', 'Tittel'),
         localizedBlocks('body', 'Tekst (120–180 ord)'),
-        { name: 'signature', title: 'Signatur', type: 'string' },
-        localizedString('role', 'Rolle'),
+        localizedString('signature', 'Signatur (f.eks. キュレーター / Curator / Kurator)'),
         { name: 'draft', title: 'Utkast', type: 'boolean', initialValue: true },
       ],
     },
@@ -45,6 +47,7 @@ export default {
             {
               type: 'object',
               fields: [localizedString('role', 'Rolle'), { name: 'names', title: 'Navn', type: 'array', of: [{ type: 'string' }] }],
+              // Notes such as «Plassholder» are localized in the YAML; Studio keeps plain names.
             },
           ],
         },
@@ -52,5 +55,5 @@ export default {
       ],
     },
   ],
-  preview: { select: { title: 'title.no', subtitle: 'season.no' } },
+  preview: { select: { title: 'title.ja', subtitle: 'season.no' } },
 }

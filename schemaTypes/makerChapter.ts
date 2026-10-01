@@ -1,11 +1,11 @@
-// «Hender fra Nord» chapter, one per maker. Mirrors the Astro content
+// 北の手 · Kita no Te chapter, one per maker. Mirrors the Astro content
 // collection in src/content.config.ts (makerChapters) so Studio can take over
-// the YAML in src/content/hender-fra-nord/chapters without page changes.
-import { localizedBlocks, localizedString, videoSource } from './localized'
+// the YAML in src/content/kitanote/chapters without page changes.
+import { jpQa, localizedBlocks, localizedString, videoSource } from './localized'
 
 export default {
   name: 'makerChapter',
-  title: 'Hender fra Nord · Kapittel',
+  title: '北の手 · Kapittel',
   type: 'document',
   fields: [
     { name: 'makerName', title: 'Maker', type: 'string', validation: (Rule: any) => Rule.required() },
@@ -14,11 +14,14 @@ export default {
       title: 'Slug',
       type: 'slug',
       options: { source: 'makerName', maxLength: 64 },
-      validation: (Rule: any) => Rule.required(),
+      // en / no / ja / jp would collide with the language folders under /kitanote.
+      validation: (Rule: any) =>
+        Rule.required().custom((v: any) => (['en', 'no', 'ja', 'jp'].includes(v?.current) ? 'Slugen er reservert for et språk' : true)),
     },
     { name: 'order', title: 'Rekkefølge', type: 'number' },
     { name: 'published', title: 'Publisert', type: 'boolean', initialValue: true },
     { name: 'draft', title: 'Utkast (viser «Utkast»-merke)', type: 'boolean', initialValue: true },
+    jpQa,
     {
       name: 'status',
       title: 'Status',
@@ -26,11 +29,13 @@ export default {
       options: { list: ['published', 'coming', 'hidden'], layout: 'radio' },
       initialValue: 'published',
     },
+    { name: 'makerNameJa', title: 'Maker på japansk (katakana)', type: 'string' },
     { name: 'makerPerson', title: 'Person', type: 'string' },
     { name: 'website', title: 'Nettsted', type: 'url' },
     localizedString('location', 'Sted'),
     localizedString('craft', 'Håndverk'),
-    localizedString('title', 'Tittel'),
+    localizedString('title', 'Tittel: sted + materiale + person («Helgeroa. Lavendel. Guro.»)'),
+    { name: 'titleDraft', title: 'Arbeidstittel (stedet må bekreftes)', type: 'boolean', initialValue: false },
     localizedString('dek', 'Ingress', 3),
     localizedBlocks('body', 'Brødtekst'),
     {
@@ -58,6 +63,7 @@ export default {
     videoSource('heroLoop', 'Hero-loop (6–12 s, uten lyd)'),
     videoSource('film', 'Hovedfilm', [
       { name: 'duration', title: 'Varighet (sekunder)', type: 'number' },
+      { name: 'captionsJa', title: 'Teksting JA (.vtt)', type: 'file', options: { accept: '.vtt' } },
       { name: 'captionsNo', title: 'Teksting NO (.vtt)', type: 'file', options: { accept: '.vtt' } },
       { name: 'captionsEn', title: 'Teksting EN (.vtt)', type: 'file', options: { accept: '.vtt' } },
     ]),
@@ -82,6 +88,12 @@ export default {
       name: 'producerNameMatch',
       title: 'Produsentnavn i butikken',
       description: 'Matches mot «producer» i /api/products i nettleseren.',
+      type: 'string',
+    },
+    {
+      name: 'storySlug',
+      title: 'Episode-slug (/stories/[slug])',
+      description: 'Når episoden er publisert, lenker kapitlet til episodesiden.',
       type: 'string',
     },
     { name: 'shootDate', title: 'Opptaksdato', type: 'date' },
