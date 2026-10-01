@@ -118,7 +118,7 @@ export default async (_req: Request) => {
 
           <p style="margin:32px 0 0;font-size:13px;color:#6F6A5F;line-height:1.6;">
             Spørsmål? Svar på denne e-posten eller kontakt oss på
-            <a href="mailto:hello@scandijapandi.no" style="color:#2A2723;">hello@scandijapandi.no</a>
+            <a href="mailto:hei@skmnordic.com" style="color:#2A2723;">hei@skmnordic.com</a>
           </p>
         </td></tr>
         <tr><td style="padding:20px 36px;border-top:1px solid rgba(42,39,35,0.08);font-size:11px;color:#6F6A5F;">
