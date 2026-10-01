@@ -20,6 +20,8 @@ interface Props {
   ogLocale?: string;
   /** Load the web fonts without blocking first paint (text swaps in). */
   asyncFonts?: boolean;
+  /** <meta name="robots">. Pages with unreviewed copy pass 'noindex, follow'. */
+  robots?: string;
 }
 const {
   title = "ScandiJapandi — Skandinavisk håndverk, ren nordisk ro",
@@ -30,6 +32,7 @@ const {
   ogType = 'website',
   ogLocale,
   asyncFonts = false,
+  robots = 'index, follow',
 } = Astro.props;
 const fontsHref = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Jost:wght@300;400;500&display=swap';
 const pageUrl = `https://scandijapandi.no${Astro.url.pathname}`;
@@ -44,7 +47,7 @@ const pageUrl = `https://scandijapandi.no${Astro.url.pathname}`;
     <meta name="description" content={description} />
 
     <!-- SEO -->
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
     <link rel="canonical" href={`https://scandijapandi.no${Astro.url.pathname}`} />
 
     <!-- Open Graph -->

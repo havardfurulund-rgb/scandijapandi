@@ -1,9 +1,10 @@
 // Content collections (Astro 5 content layer).
 //
-// «Hender fra Nord» / Hands of the North — the editorial video magazine.
-// Content lives as YAML in src/content/hender-fra-nord/ so it is typed,
-// versioned and prerendered. The Sanity schemas in schemaTypes/magazineIssue.ts
-// and schemaTypes/makerChapter.ts mirror these fields so Studio can take over
+// 北の手 · Kita no Te — the channel's web magazine (Issue 01: «Hender fra Nord»).
+// Content lives as YAML in src/content/kitanote/ so it is typed, versioned and
+// prerendered. Japanese is the primary language; every field carries ja, en
+// and no. The Sanity schemas in schemaTypes/magazineIssue.ts and
+// schemaTypes/makerChapter.ts mirror these fields so Studio can take over
 // later without changing the pages.
 //
 // The older markdown under /content (repo root) is not an Astro collection and
@@ -11,12 +12,15 @@
 import { defineCollection, reference, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-/** A string in both site languages. */
-const localized = z.object({ no: z.string(), en: z.string() });
+/** A string in all three languages. Japanese first. */
+const localized = z.object({ ja: z.string(), en: z.string(), no: z.string() });
+
+/** A proper name as-is, or a note that needs translating («Plassholder»). */
+const nameOrLocalized = z.union([z.string(), localized]);
 
 /** Short looping clip: cover and chapter heroes. Muted, no captions. */
 const loop = z.object({
-  /** 16:9 source (MP4 now; an .m3u8 URL works when type is "hls"). */
+  /** 4:3 source for the image panel (MP4 now; an .m3u8 URL works when type is "hls"). */
   src: z.string(),
   /** Optional 4:5 crop served below 768 px. */
   src_mobile: z.string().optional(),
@@ -39,8 +43,9 @@ const film = z.object({
   poster_small: z.string().optional(),
   /** Length in seconds. */
   duration: z.number().int().positive(),
-  captions_no: z.string().optional(),
+  captions_ja: z.string().optional(),
   captions_en: z.string().optional(),
+  captions_no: z.string().optional(),
   placeholder: z.boolean().default(false),
 });
 
@@ -55,23 +60,36 @@ const galleryImage = z.object({
   placeholder: z.boolean().default(false),
 });
 
+/** Slugs that would collide with the language folders under /kitanote. */
+const RESERVED = ['en', 'no', 'ja', 'jp'];
+
 const makerChapters = defineCollection({
-  loader: glob({ pattern: '*.yaml', base: './src/content/hender-fra-nord/chapters' }),
+  loader: glob({ pattern: '*.yaml', base: './src/content/kitanote/chapters' }),
   schema: z.object({
-    slug: z.string().regex(/^[a-z0-9-]+$/),
+    slug: z
+      .string()
+      .regex(/^[a-z0-9-]+$/)
+      .refine((s) => !RESERVED.includes(s), { message: 'Slug collides with a language folder under /kitanote' }),
     order: z.number(),
     /** Master switch. false keeps the chapter out of every page. */
     published: z.boolean().default(true),
-    /** Copy not yet approved. Shows a quiet «Utkast / Draft» tag. */
+    /** Copy not yet approved. Shows a quiet draft tag. */
     draft: z.boolean().default(false),
+    /** Japanese reviewed by a native speaker. false: 「翻訳確認中」 tag and noindex. */
+    jp_qa: z.boolean().default(false),
     /** published: own page · coming: «Filming October» card · hidden: off. */
     status: z.enum(['published', 'coming', 'hidden']).default('published'),
     maker_name: z.string(),
+    /** Maker name in katakana for Japanese running text. */
+    maker_name_ja: z.string().optional(),
     maker_person: z.string().optional(),
     website: z.string().url().optional(),
     location: localized,
     craft: localized,
+    /** Place + material + person. Japanese is set above and larger. */
     title: localized,
+    /** Draft title; the place still needs confirming. */
+    title_draft: z.boolean().default(false),
     dek: localized,
     /** Running text. Paragraphs separated by a blank line. */
     body: localized.optional(),
@@ -96,34 +114,38 @@ const makerChapters = defineCollection({
     product_slugs: z.array(z.string()).default([]),
     /** Matched (case-insensitive) against `producer` from /api/products on the client. */
     producer_name_match: z.string().optional(),
+    /** Published episode page at /stories/[slug] (YouTube + end card). */
+    story_slug: z.string().optional(),
     shoot_date: z.coerce.date().optional(),
     /** Image for «coming» cards when there is no hero yet. */
     teaser_image: z.string().optional(),
-    credits: z.array(z.object({ role: localized, name: z.string() })).default([]),
+    credits: z.array(z.object({ role: localized, name: nameOrLocalized })).default([]),
   }),
 });
 
 const magazineIssues = defineCollection({
-  loader: glob({ pattern: '*.yaml', base: './src/content/hender-fra-nord/issues' }),
+  loader: glob({ pattern: '*.yaml', base: './src/content/kitanote/issues' }),
   schema: z.object({
     number: z.number().int().positive(),
+    /** The issue's own name: 北欧の作り手 / Hands from the North / Hender fra Nord. */
     title: localized,
     season: localized,
     published_at: z.coerce.date(),
     draft: z.boolean().default(false),
+    jp_qa: z.boolean().default(false),
     manifest: localized,
     cover_loop: loop,
     og_image: z.string().optional(),
-    editor_letter: z.object({
+    /** «Brev fra Norge». Signed by role only; the curator is never shown. */
+    letter: z.object({
       title: localized,
       body: localized,
-      signature: z.string(),
-      role: localized,
+      signature: localized,
       draft: z.boolean().default(false),
     }),
     chapters: z.array(reference('makerChapters')),
     colophon: z.object({
-      entries: z.array(z.object({ role: localized, names: z.array(z.string()) })),
+      entries: z.array(z.object({ role: localized, names: z.array(nameOrLocalized) })),
       note: localized.optional(),
     }),
   }),

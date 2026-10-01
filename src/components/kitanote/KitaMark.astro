@@ -1,0 +1,37 @@
+---
+// 北の手 mark, inlined from public/brand/kitanote/logo_mark_only.svg: two
+// horizontal strokes (the north, the horizon), one hand-drawn vertical stroke
+// (the hand) and the clay dot (the maker's seal, the only colour).
+// Strokes use currentColor, so the mark is ink on paper and paper on ink.
+// Rules: at least 24 px, clear space = dot height × 6, only on ink or paper.
+interface Props {
+  /** Rendered width in px. Never below 24. */
+  size?: number;
+  /** Draw the vertical stroke (0.8 s), dot last. Off under reduced motion. */
+  draw?: boolean;
+  /** Accessible name. Omit when a visible 北の手 / KITA NO TE sits next to it. */
+  label?: string;
+  class?: string;
+}
+const { size = 40, draw = false, label, class: className } = Astro.props;
+const width = Math.max(24, size);
+// viewBox hugs the strokes (round caps included) so `size` is the visible size.
+const height = Math.round((width * 192) / 196);
+---
+<svg
+  class:list={['kt-mark', draw && 'kt-mark--draw', className]}
+  viewBox="-8 -2 196 192"
+  width={width}
+  height={height}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  focusable="false"
+>
+  <g fill="none" stroke="currentColor" stroke-linecap="round">
+    <path d="M0 62 H180" stroke-width="7" />
+    <path d="M0 122 H180" stroke-width="7" />
+    <path class="kt-mark__stroke" d="M118 8 C116 60 114 120 118 178" stroke-width="11" pathLength="1" />
+  </g>
+  <circle class="kt-mark__dot" cx="20" cy="178" r="7" />
+</svg>

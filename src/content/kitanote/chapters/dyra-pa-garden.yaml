@@ -1,0 +1,21 @@
+# Kommer: filmes ca. 11. oktober 2026.
+slug: dyra-pa-garden
+order: 6
+published: true
+draft: true
+jp_qa: false
+status: coming
+maker_name: Dyra på Gården
+location: { ja: "—", en: "—", no: "—" }
+craft: { ja: 牧場の動物のウール, en: Wool from their own animals, no: Ull fra egne dyr }
+title:
+  ja: ウール、牧場の動物
+  en: Wool. The farm’s own animals.
+  no: Ull. Gårdens egne dyr.
+title_draft: true
+dek:
+  ja: 牧場の動物のウールでつくる製品です。この章は10月に撮影します。
+  en: Wool goods from the animals on the farm. This chapter is filmed in October.
+  no: Ullprodukter fra dyrene på gården. Kapitlet filmes i oktober.
+teaser_image: /media/kitanote/stills/hats-v.webp
+shoot_date: 2026-10-11

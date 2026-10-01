@@ -1,0 +1,71 @@
+---
+// Shell for every 北の手 · Kita no Te magazine page: Base (fonts, meta,
+// cookie banner) plus the channel's own nav and footer. Prerendered, no
+// framework JS.
+import Base from '../../layouts/Base.astro';
+import '../../styles/kitanote.css';
+import KitaNav from './KitaNav.astro';
+import KitaFooter from './KitaFooter.astro';
+import { HTML_LANG, LANGS, UI, abs, type Lang } from '../../lib/kitanote';
+
+interface Props {
+  lang: Lang;
+  title: string;
+  description: string;
+  /** This page in each language, for hreflang and the language switch. */
+  paths: Record<Lang, string>;
+  ogImage?: string;
+  ogType?: string;
+  jsonLd?: object[];
+  issueLabel: string;
+  /** Unreviewed Japanese on the page: keep it out of search results. */
+  noindex?: boolean;
+}
+
+const { lang, title, description, paths, ogImage, ogType = 'website', jsonLd = [], issueLabel, noindex = false } = Astro.props;
+const ui = UI[lang];
+const alternates = [
+  ...LANGS.map((l) => ({ hreflang: HTML_LANG[l], href: abs(paths[l]) })),
+  { hreflang: 'x-default', href: abs(paths.ja) },
+];
+// Japanese titles in Noto Serif JP 400/500, text and captions in Noto Sans JP
+// 300/400. Google serves them in unicode-range slices, so only the glyphs on
+// the page are fetched. Loaded without blocking first paint.
+const jpFonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&family=Noto+Serif+JP:wght@400;500&display=swap';
+// "</script>" inside copy must not close the JSON-LD tag early.
+const ld = (o: object) => JSON.stringify(o).replace(/</g, '\\u003c');
+---
+
+<Base
+  title={title}
+  description={description}
+  lang={HTML_LANG[lang]}
+  alternates={alternates}
+  ogImage={ogImage ? abs(ogImage) : undefined}
+  ogType={ogType}
+  ogLocale={ui.ogLocale}
+  asyncFonts
+  robots={noindex ? 'noindex, follow' : undefined}
+>
+  <Fragment slot="head">
+    <link rel="stylesheet" href={jpFonts} media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href={jpFonts} /></noscript>
+    <script is:inline>document.documentElement.classList.add('kt-js');</script>
+    {jsonLd.map((o) => <script type="application/ld+json" set:html={ld(o)} />)}
+    <slot name="head" />
+  </Fragment>
+
+  <div class="kt" data-kt-lang={lang}>
+    <a href="#main" class="kt-skip kt-label">{ui.skip}</a>
+    <KitaNav lang={lang} paths={paths} issueLabel={issueLabel} />
+    <main id="main">
+      <slot />
+    </main>
+    <KitaFooter lang={lang} paths={paths} issueLabel={issueLabel} />
+  </div>
+</Base>
+
+<script>
+  import { initKitanote } from './kitanote.client';
+  initKitanote();
+</script>

@@ -1,0 +1,81 @@
+---
+// 「この回の作品」 — the objects from this episode, as on the video end card.
+// Server render: cards for `product_slugs`, or the «coming to the shop» note.
+// Client (kitanote.client.ts): fetches /api/products and swaps in real cards
+// matched on slug or producer name. No match keeps the server render.
+// When the episode is published, links to /stories/[slug].
+import { OBJECTS, UI, type Lang } from '../../lib/kitanote';
+
+interface Props {
+  lang: Lang;
+  slugs: string[];
+  producerMatch?: string;
+  storySlug?: string;
+}
+const { lang, slugs, producerMatch, storySlug } = Astro.props;
+const ui = UI[lang];
+const humanize = (slug: string) => slug.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+// JA pages repeat the end card's two Latin lines; EN/NO show their own.
+const subline = lang === 'ja' ? `${OBJECTS.en} · ${OBJECTS.no}` : OBJECTS[lang];
+---
+
+<section
+  class="kt-oat kt-section"
+  aria-labelledby="kt-objects"
+  data-products
+  data-match={producerMatch}
+  data-slugs={JSON.stringify(slugs)}
+  data-lang={lang}
+>
+  <div class="kt-wrap kt-grid gap-y-10">
+    <div class="col-span-4 md:col-span-8 md:col-start-5">
+      <h2 id="kt-objects">
+        <span class="kt-jp block text-[clamp(1.75rem,2.6vw,2.5rem)]" lang="ja">{OBJECTS.ja}</span>
+        <span class="kt-label kt-stone-deep mt-4 block">{subline}</span>
+      </h2>
+    </div>
+
+    <ul
+      class="col-span-4 mt-6 grid grid-cols-2 gap-x-5 gap-y-12 md:col-span-8 md:col-start-5 md:grid-cols-3 md:gap-x-8"
+      data-products-grid
+      hidden={slugs.length === 0}
+    >
+      {slugs.slice(0, 3).map((slug) => (
+        <li>
+          <a href={`/products/${slug}`} class="kt-product group block">
+            <span class="kt-latin block text-[1.1875rem] leading-snug">{humanize(slug)}</span>
+            <span class="kt-label kt-label--sm kt-stone-deep mt-3 block">{ui.seeObject} <span class="kt-arrow" aria-hidden="true">→</span></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {slugs.length === 0 && (
+      <div class="col-span-4 md:col-span-6 md:col-start-5" data-products-empty>
+        <p class:list={['text-[1.25rem] leading-snug md:text-[1.4375rem]', lang === 'ja' ? 'kt-jp !tracking-[0.08em]' : 'kt-latin']}>{ui.objectsComing}</p>
+        <p class="kt-body mt-5 max-w-[46ch] !text-[0.9375rem] text-ink/80">{ui.objectsComingBody}</p>
+        <a href="/makers" class="kt-label kt-label--sm kt-link mt-7 inline-block">
+          {ui.forMakers} <span class="kt-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    )}
+
+    {storySlug && (
+      <p class="col-span-4 md:col-span-8 md:col-start-5">
+        <a href={`/stories/${storySlug}`} class="kt-label kt-link">
+          scandijapandi.no/stories/{storySlug} · {ui.episode} <span class="kt-arrow" aria-hidden="true">→</span>
+        </a>
+      </p>
+    )}
+  </div>
+
+  <template data-product-template>
+    <li>
+      <a class="kt-product group block" href="/">
+        <span class="kt-media block aspect-[4/5]"><img alt="" width="600" height="750" loading="lazy" decoding="async" /></span>
+        <span class="kt-latin mt-5 block text-[1.1875rem] leading-snug" data-name></span>
+        <span class="kt-label kt-label--sm kt-stone-deep mt-2 block" data-price></span>
+      </a>
+    </li>
+  </template>
+</section>

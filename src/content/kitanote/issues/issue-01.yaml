@@ -1,0 +1,88 @@
+# 北の手 · Kita no Te — Issue 01 «Hender fra Nord».
+# Alle tekster er UTKAST. Japansk er ikke kvalitetssikret (jp_qa: false).
+number: 1
+title:
+  ja: 北欧の作り手
+  en: Hands from the North
+  no: Hender fra Nord
+season:
+  ja: 2026年 秋
+  en: Autumn 2026
+  no: Høst 2026
+published_at: 2026-10-12
+draft: true
+jp_qa: false
+# Bio-tekstene fra merkevareguiden (docs/brand/kitanote/BRAND_GUIDE.md).
+manifest:
+  ja: 北欧の作り手を、その工房で。彼らの声を、日本語で。
+  en: Nordic makers, in their own workshops. Their voices, in Japanese.
+  no: Nordiske håndverkere i egne verksteder. Deres stemme, på japansk.
+og_image: /media/kitanote/posters/cover-og.jpg
+cover_loop:
+  src: /media/kitanote/loops/cover.mp4
+  src_mobile: /media/kitanote/loops/cover-4x5.mp4
+  poster: /media/kitanote/posters/cover.webp
+  poster_small: /media/kitanote/posters/cover-800.webp
+  poster_mobile: /media/kitanote/posters/cover-4x5.webp
+  alt:
+    ja: 川辺の木のベンチに重ねられた、手編みのウールの帽子。
+    en: Hand-knitted wool hats stacked on a wooden bench by the river.
+    no: Håndstrikkede ullluer stablet på en trebenk ved elva.
+  placeholder: true
+letter:
+  draft: true
+  signature:
+    ja: キュレーター
+    en: Curator
+    no: Kurator
+  title:
+    ja: ノルウェーからの手紙
+    en: Letter from Norway
+    no: Brev fra Norge
+  body:
+    ja: |-
+      日本には、北欧デザインの写真がたくさんあります。けれど、作り手の声はほとんど届いていません。
+
+      北の手は、北欧の作り手をその工房に訪ねる記録です。質問は画面の外からします。話すのは作り手です。その言葉に、日本語の字幕をつけてお届けします。
+
+      第一号では、ノルウェーとスウェーデンの四つの工房を訪ねます。ウール、ラベンダー、木、ホーロー。それぞれの場所で、ものがどのように生まれるのかを記録しました。
+
+      各章の終わりには、その回に登場した作品を載せています。
+    en: |-
+      There are a thousand pictures of Nordic design in Japan. There are almost no voices.
+
+      Kita no Te visits Nordic makers in their own workshops. The questions are asked from behind the camera, and the maker speaks. Their words are subtitled in Japanese.
+
+      This first issue visits four workshops in Norway and Sweden: wool, lavender, wood and enamel. In each place we record how things are made.
+
+      At the end of each chapter are the objects from that episode.
+    no: |-
+      Det finnes tusen bilder av nordisk design i Japan. Det finnes nesten ingen stemmer.
+
+      Kita no Te besøker nordiske håndverkere i deres egne verksteder. Spørsmålene stilles utenfor bildet, og håndverkeren snakker. Ordene tekstes på japansk.
+
+      Dette første nummeret besøker fire verksteder i Norge og Sverige: ull, lavendel, tre og emalje. På hvert sted ser vi hvordan tingene blir til.
+
+      Nederst i hvert kapittel står objektene fra episoden.
+chapters:
+  - ullvogna
+  - lillavendel
+  - alvadal
+  - moia-form
+  - keli-bijou
+  - dyra-pa-garden
+  - skredderen-fra-damaskus
+colophon:
+  entries:
+    - role: { ja: 発行, en: Published by, no: Utgiver }
+      names: [Scandi Japandi Collection]
+    - role: { ja: 映像・写真, en: Film and photography, no: Film og foto }
+      names: [{ ja: "仮 · Scandi Japandi lookbook", en: "Placeholder · Scandi Japandi lookbook", no: "Plassholder · Scandi Japandi lookbook" }]
+    - role: { ja: 文, en: Words, no: Tekst }
+      names: [{ ja: 下書き, en: Draft, no: Utkast }]
+    - role: { ja: 日本語, en: Japanese, no: Japansk }
+      names: [{ ja: 下書き · ネイティブ確認待ち, en: "Draft · awaiting native review", no: "Utkast · venter på native QA" }]
+  note:
+    ja: このプレビューの映像と写真はすべて仮のものです。工房での撮影は2026年10月に行い、その後差し替えます。
+    en: All films and images in this preview are placeholders. Footage from the workshops will be added after filming in October 2026.
+    no: Alle filmer og bilder i denne forhåndsvisningen er plassholdere. Ekte opptak fra verkstedene legges inn etter innspillingen i oktober 2026.

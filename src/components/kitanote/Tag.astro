@@ -1,0 +1,12 @@
+---
+// Quiet status tag: draft copy, working title, placeholder media, or
+// 「翻訳確認中」 (Japanese not yet reviewed). Render only where the data says so.
+import { UI, type Lang } from '../../lib/kitanote';
+interface Props { lang: Lang; kind: 'draft' | 'jpQa' | 'titleDraft' | 'placeholder'; class?: string }
+const { lang, kind, class: className } = Astro.props;
+const ui = UI[lang];
+const text = { draft: ui.draft, jpQa: ui.jpQa, titleDraft: ui.titleDraft, placeholder: ui.placeholderMedia }[kind];
+const title = { draft: ui.draftTitle, jpQa: ui.jpQaTitle, titleDraft: ui.titleDraft, placeholder: ui.placeholderMedia }[kind];
+const tagLang = kind === 'jpQa' || lang === 'ja' ? 'ja' : undefined;
+---
+<span class:list={['kt-tag', className]} lang={tagLang} title={title}>{text}</span>

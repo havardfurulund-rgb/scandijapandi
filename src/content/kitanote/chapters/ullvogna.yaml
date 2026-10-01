@@ -1,0 +1,129 @@
+# Kapittel: Ullvogna AS. Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
+# Japansk er ikke kvalitetssikret (jp_qa: false). Stedet i tittelen må bekreftes.
+slug: ullvogna
+order: 1
+published: true
+draft: true
+jp_qa: false
+status: published
+maker_name: Ullvogna AS
+maker_name_ja: ウルヴォグナ
+website: https://ullvogna.no
+location: { ja: ノルウェー, en: Norway, no: Norge }
+craft: { ja: ウール100％, en: Pure wool, no: Ren ull }
+title:
+  ja: ノルウェー、ウール、ぬくもり
+  en: Norway. Wool. Warmth.
+  no: Norge. Ull. Varme.
+title_draft: true
+dek:
+  ja: ウルヴォグナ（Ullvogna）は、ウール100％の製品をつくっています。掲げている言葉は「私たちが、あなたを暖めます」です。
+  en: Ullvogna makes goods in one hundred per cent pure wool. Their line is “We keep you warm”.
+  no: Ullvogna lager produkter i hundre prosent ren ull. Løftet deres er «Vi holder dere varme».
+body:
+  ja: |-
+    ウールは、もっとも古い素材のひとつです。呼吸をし、湿っていても暖かく、長い年月の使用に耐えます。
+
+    ウルヴォグナが使うのは、純粋なウールだけです。この章では、繊維から一枚の服になるまでを追います。
+  en: |-
+    Wool is one of the oldest materials we have. It breathes, stays warm when damp and lasts for years of use.
+
+    Ullvogna works only in pure wool. This chapter follows the work from fibre to finished piece.
+  no: |-
+    Ull er et av de eldste materialene vi har. Den puster, varmer også når den er fuktig, og tåler mange år med bruk.
+
+    Ullvogna bruker bare ren ull. Kapitlet følger arbeidet fra fiber til ferdig plagg.
+interview:
+  - q:
+      ja: 「私たちが、あなたを暖めます」という言葉には、どんな意味がありますか。
+      en: What does “We keep you warm” mean to you?
+      no: Hva betyr «Vi holder dere varme» for dere?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。言葉の裏にある約束について、二文から四文ほど。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: two to four sentences about the promise behind the words."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: to til fire setninger om løftet bak ordene."
+  - q:
+      ja: なぜ純粋なウールだけを使うのですか。
+      en: Why only pure wool?
+      no: Hvorfor bare ren ull?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。素材の選び方と、ほかに何も混ぜないことについて。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the choice of material, and what happens when nothing else is blended in."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om materialvalget, og hva som skjer når man ikke blander inn noe annet."
+  - q:
+      ja: ウールの服は、どのように手入れをすればよいですか。
+      en: How should a wool piece be cared for?
+      no: Hvordan bør et ullplagg stelles?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。風に当てること、あまり洗わないこと、待つことについて。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: airing, little washing and patience."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: lufting, lite vask og tålmodighet."
+quotes:
+  - text:
+      ja: "［仮］ここに、作り手自身の言葉が一行入ります。"
+      en: "[draft] One line in the maker’s own words goes here."
+      no: "[utkast] Her står én linje med håndverkerens egne ord."
+    attribution: Plassholder · ikke et sitat
+    after: 0
+    draft: true
+hero_loop:
+  src: /media/kitanote/loops/ullvogna-hero.mp4
+  src_mobile: /media/kitanote/loops/ullvogna-hero-4x5.mp4
+  poster: /media/kitanote/posters/ullvogna-hero.webp
+  poster_small: /media/kitanote/posters/ullvogna-hero-800.webp
+  poster_mobile: /media/kitanote/posters/ullvogna-hero-4x5.webp
+  alt:
+    ja: 編み目の太いウールの袖と、ミトンをはめた手。
+    en: A chunky knitted wool sleeve and a mittened hand.
+    no: Et grovstrikket ullerme og en hånd i vott.
+  placeholder: true
+og_image: /media/kitanote/posters/ullvogna-hero-og.jpg
+film:
+  src: /media/kitanote/films/ullvogna-film.mp4
+  poster: /media/kitanote/posters/ullvogna-film.webp
+  poster_small: /media/kitanote/posters/ullvogna-film-800.webp
+  duration: 8
+  captions_ja: /media/kitanote/captions/ullvogna-ja.vtt
+  captions_en: /media/kitanote/captions/ullvogna-en.vtt
+  captions_no: /media/kitanote/captions/ullvogna-no.vtt
+  placeholder: true
+gallery:
+  - src: /media/kitanote/stills/hats.webp
+    src_small: /media/kitanote/stills/hats-sm.webp
+    width: 920
+    height: 690
+    alt:
+      ja: 川辺の木のベンチに重ねられた、手編みのウールの帽子。
+      en: Hand-knitted wool hats stacked on a wooden bench by the river.
+      no: Håndstrikkede ullluer stablet på en trebenk ved elva.
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/kitanote/stills/cape.webp
+    src_small: /media/kitanote/stills/cape-sm.webp
+    width: 600
+    height: 750
+    alt:
+      ja: 水辺で、クリーム色のウールのケープに光が透ける。
+      en: Light through a cream wool cape by the water.
+      no: Lys gjennom en kremhvit ullcape ved vannet.
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/kitanote/stills/bench.webp
+    src_small: /media/kitanote/stills/bench-sm.webp
+    width: 784
+    height: 588
+    alt:
+      ja: 使い込まれた木のベンチと、ウールの帽子の編み目。
+      en: A weathered wooden bench and the rib of a wool hat.
+      no: En værbitt trebenk og vrangborden på en ullue.
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+product_slugs: []
+producer_name_match: Ullvogna
+credits:
+  - role: { ja: 映像, en: Film, no: Film }
+    name: { ja: 仮, en: Placeholder, no: Plassholder }
+  - role: { ja: 写真, en: Photography, no: Foto }
+    name: { ja: "仮 · Scandi Japandi lookbook", en: "Placeholder · Scandi Japandi lookbook", no: "Plassholder · Scandi Japandi lookbook" }
+  - role: { ja: 文, en: Words, no: Tekst }
+    name: { ja: 下書き, en: Draft, no: Utkast }

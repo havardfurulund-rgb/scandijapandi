@@ -1,0 +1,61 @@
+---
+// Muted ambient loop (cover, chapter hero). The poster is a real <picture> so
+// it can be the LCP element and swap to a 4:5 crop on phones. The video has
+// no src until kitanote.client.ts sees it near the viewport, and never plays
+// under prefers-reduced-motion or Save-Data. No text is ever laid over it:
+// titles sit on the ink plate next to it.
+import { UI, t, type Lang, type Localized } from '../../lib/kitanote';
+
+interface Props {
+  loop: {
+    src: string;
+    src_mobile?: string;
+    type: 'mp4' | 'hls';
+    poster: string;
+    poster_small?: string;
+    poster_mobile?: string;
+    alt?: Localized;
+  };
+  lang: Lang;
+  /** Above the fold: load the poster eagerly with high priority. */
+  eager?: boolean;
+  /** `sizes` for the 4:3 poster. */
+  sizes?: string;
+  class?: string;
+}
+
+const { loop, lang, eager = false, sizes = '(min-width: 768px) 67vw, 100vw', class: className } = Astro.props;
+const ui = UI[lang];
+const mime = loop.type === 'hls' ? 'application/vnd.apple.mpegurl' : 'video/mp4';
+---
+
+<div class:list={['kt-media kt-loop', className]} data-loop>
+  <picture>
+    {loop.poster_mobile && <source media="(max-width: 767px)" srcset={loop.poster_mobile} width="720" height="900" />}
+    <img
+      src={loop.poster}
+      srcset={loop.poster_small ? `${loop.poster_small} 800w, ${loop.poster} 1200w` : undefined}
+      sizes={sizes}
+      width="1200"
+      height="900"
+      alt={t(loop.alt, lang)}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'auto'}
+      decoding={eager ? 'sync' : 'async'}
+    />
+  </picture>
+  <video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" disablepictureinpicture>
+    {loop.src_mobile && <source data-src={loop.src_mobile} type={mime} media="(max-width: 767px)" />}
+    <source data-src={loop.src} type={mime} />
+  </video>
+  <button
+    type="button"
+    class="kt-motion-toggle kt-label kt-label--sm"
+    lang={lang === 'ja' ? 'ja' : undefined}
+    data-motion-toggle
+    data-label-pause={ui.pauseMotion}
+    data-label-play={ui.playMotion}
+    aria-pressed="false"
+    hidden
+  >{ui.pauseMotion}</button>
+</div>

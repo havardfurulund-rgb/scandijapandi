@@ -1,0 +1,25 @@
+---
+// Horizontal wordmark: the mark, with 北の手 / KITA NO TE set as HTML text so
+// the real fonts load (the SVG wordmarks use <text>, which can't rely on them).
+// Optional third line: the issue subtitle or the sender line.
+import KitaMark from './KitaMark.astro';
+interface Props {
+  /** Mark width in px. The type scales from it. */
+  size?: number;
+  draw?: boolean;
+  sub?: string;
+  subLang?: string;
+  class?: string;
+}
+const { size = 44, draw = false, sub, subLang, class: className } = Astro.props;
+// Clear space between mark and type: dot height (14/196 of the mark) × 6.
+const gap = Math.round(size * (14 / 196) * 6);
+---
+<span class:list={['kt-wordmark', className]} style={`gap: ${gap}px`}>
+  <KitaMark size={size} draw={draw} />
+  <span class="flex flex-col" style={`gap: ${Math.round(size * 0.16)}px`}>
+    <span class="kt-wordmark__jp" lang="ja" style={`font-size: ${Math.round(size * 0.6)}px`}>北の手</span>
+    <span class="kt-wordmark__latin" style={`font-size: ${Math.max(10, Math.round(size * 0.24))}px`}>KITA NO TE</span>
+    {sub && <span class="kt-label kt-label--sm opacity-60" lang={subLang} style="margin-top: 0.15em">{sub}</span>}
+  </span>
+</span>

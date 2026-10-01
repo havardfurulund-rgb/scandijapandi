@@ -1,0 +1,13 @@
+---
+// 北の手 · Kita no Te — chapter page (ja). One static page per published chapter.
+import ChapterPage from '../../components/kitanote/ChapterPage.astro';
+import { loadIssue } from '../../lib/kitanote';
+
+export async function getStaticPaths() {
+  const { chapters } = await loadIssue();
+  return chapters.map((c) => ({ params: { maker: c.slug } }));
+}
+
+const { maker } = Astro.params;
+---
+<ChapterPage lang="ja" slug={maker!} />
