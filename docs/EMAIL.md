@@ -53,7 +53,50 @@ Adresser i bruk på siden/i koden:
 - Mulig årsak: en videresending hos Domeneshop sluttet å virke da NS ble flyttet
   uten at MX ble lagt inn i Netlify DNS (kan bare bekreftes i Domeneshop-kundeområdet).
 
-### Alternativer (Havard velger; ingen leverandør er valgt i koden)
+### Valgt løsning (02.10.2026): ImprovMX-videresending
+
+**Beslutning (Havard, 02.10.2026):** post til hello@, makers@, privacy@ og
+ordre@scandijapandi.no skal **videresendes til hei@skmsecure.no**. De offentlige
+adressene forblir `@scandijapandi.no`; ingen adresse i site/kode endres.
+
+Domeneshop (alt. A) var ikke mulig uten Havards tilgang (konto hf@akatombo.no,
+og videresending krever e-postprodukt hos Domeneshop), så ImprovMX (alt. C) er valgt.
+
+| Alias | Videresendes til |
+|---|---|
+| hello@scandijapandi.no | hei@skmsecure.no |
+| makers@scandijapandi.no | hei@skmsecure.no |
+| privacy@scandijapandi.no | hei@skmsecure.no |
+| ordre@scandijapandi.no | hei@skmsecure.no |
+
+Ingen catch-all.
+
+**ImprovMX-konto:** innlogging `hf+improvmx@skmsecure.no` (gratisplan, domenet
+scandijapandi.no er lagt til). Passordet står ikke her; legitimasjonen ligger på
+agent-boksen i `~/secrets/improvmx-scandijapandi.txt`.
+
+**DNS-records som må legges i Netlify DNS** (status: ikke lagt inn ennå, fordi
+agent-boksen mangler Netlify-tilgang):
+
+| Type | Navn | Prioritet | Verdi |
+|---|---|---|---|
+| MX | `@` | 10 | `mx1.improvmx.com` |
+| MX | `@` | 20 | `mx2.improvmx.com` |
+| TXT | `@` | | `v=spf1 include:spf.improvmx.com ~all` |
+| TXT | `_dmarc` | | `v=DMARC1; p=none; rua=mailto:hello@scandijapandi.no` |
+
+Netlify UI: app.netlify.com → Domains → scandijapandi.no → DNS records → Add new record.
+Resend-recordene (`resend._domainkey`, `send.*`) skal stå urørt.
+
+**Verifisering:**
+
+1. `npm run check:mail-dns` skal vise OK for rot-MX, `ImprovMX MX`, `ImprovMX SPF` og `_dmarc`.
+2. Sjekk at domenet vises som verifisert i ImprovMX-dashbordet.
+3. Send test fra ekstern adresse til hello@, makers@, privacy@ og ordre@ og
+   bekreft at de lander i hei@skmsecure.no.
+4. Send `admin-test-email` og bekreft at utgående (Resend) fortsatt passerer SPF/DKIM/DMARC.
+
+### Alternativer (bakgrunn; ImprovMX er valgt)
 
 Records legges i Netlify DNS på roten (`@`).
 
@@ -61,7 +104,7 @@ Records legges i Netlify DNS på roten (`@`).
 |---|---|---|---|
 | A | Domeneshop e-post/videresending | `MX @ 10 mx.domeneshop.no`<br>`TXT @ "v=spf1 include:_spf.domeneshop.no ~all"` | Opprett videresendinger i Domeneshop-kundeområdet. Krever e-post-/webhotellprodukt. |
 | B | Resend Receiving | `MX @ 10 inbound-smtp.eu-west-1.amazonaws.com` (eksakt verdi: Resend → Domains → scandijapandi.no → Receiving) | Slå på Receiving og lag `email.received`-webhook; krever en funksjon i repoet som videresender. Ingen egen innboks. |
-| C | ImprovMX (gratis videresending) | `MX @ 10 mx1.improvmx.com`<br>`MX @ 20 mx2.improvmx.com`<br>`TXT @ "v=spf1 include:spf.improvmx.com ~all"` | Konto på improvmx.com, aliaser til ønsket innboks. |
+| C | **VALGT:** ImprovMX (gratis videresending) | `MX @ 10 mx1.improvmx.com`<br>`MX @ 20 mx2.improvmx.com`<br>`TXT @ "v=spf1 include:spf.improvmx.com ~all"` | Konto på improvmx.com, aliaser til ønsket innboks. |
 | D | Google Workspace (innbokser, betalt) | `MX @ 1 smtp.google.com`<br>`TXT @ "v=spf1 include:_spf.google.com ~all"` + DKIM fra Admin Console | Workspace-konto og brukere/aliaser. |
 
 For alle: legg til DMARC når mottak virker:

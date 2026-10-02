@@ -46,6 +46,20 @@ for (const c of checks) {
   }
 }
 
+// ImprovMX-videresending (valgt løsning, se docs/EMAIL.md)
+try {
+  const mx = await lookup(domain, "MX");
+  const hosts = mx.map((v) => v.split(/\s+/).pop().replace(/\.$/, "").toLowerCase());
+  const mxOk = ["mx1.improvmx.com", "mx2.improvmx.com"].every((h) => hosts.includes(h));
+  rows.push([mxOk ? "OK" : "MISSING", "ImprovMX MX", domain, mxOk ? "mx1 + mx2.improvmx.com" : "forventer mx1/mx2.improvmx.com"]);
+  const txt = (await lookup(domain, "TXT")).filter((v) => v.startsWith("v=spf1"));
+  const spfOk = txt.some((v) => v.includes("include:spf.improvmx.com"));
+  rows.push([spfOk ? "OK" : "MISSING", "ImprovMX SPF", domain, spfOk ? "include:spf.improvmx.com" : "forventer include:spf.improvmx.com"]);
+} catch (err) {
+  failed = true;
+  rows.push(["ERROR", "ImprovMX", domain, err.message]);
+}
+
 const w = (i) => Math.max(...rows.map((r) => r[i].length));
 console.log(`Mail-DNS for ${domain} (via dns.google)\n`);
 for (const r of rows) {
