@@ -1,0 +1,51 @@
+---
+// Paper bar above the cover. The mark itself lives on the ink plate right
+// below it, so the bar carries the name as text only.
+import { HTML_LANG, LANGS, STORE_LANG, UI, issueUrl, type Lang } from '../../lib/kitanote';
+
+interface Props {
+  lang: Lang;
+  paths: Record<Lang, string>;
+  issueLabel: string;
+}
+const { lang, paths, issueLabel } = Astro.props;
+const ui = UI[lang];
+const short: Record<Lang, string> = { ja: '日本語', en: 'EN', no: 'NO' };
+const hint: Record<Lang, string> = { ja: '日本語で読む', en: 'Read in English', no: 'Les på norsk' };
+---
+
+<header class="kt-nav">
+  <div class="kt-wrap flex h-full items-center justify-between gap-6">
+    <a href={issueUrl(lang)} class="kt-label flex items-baseline gap-[0.9em] whitespace-nowrap hover:opacity-70">
+      <span lang="ja" class="text-[0.8125rem]">北の手</span>
+      <span class="hidden sm:inline">Kita no Te</span>
+    </a>
+    <p class="kt-label kt-label--sm kt-stone hidden lg:block">{issueLabel}</p>
+    <nav aria-label={ui.magazine} class="flex items-center gap-6 md:gap-10">
+      <ul class="kt-langs kt-label kt-label--sm flex items-center gap-[1.1em]" aria-label={ui.languages}>
+        {LANGS.map((l) => (
+          <li>
+            <a
+              href={paths[l]}
+              hreflang={HTML_LANG[l]}
+              lang={HTML_LANG[l]}
+              aria-current={l === lang ? 'page' : undefined}
+              data-lang-switch={STORE_LANG[l]}
+            >{short[l]}</a>
+          </li>
+        ))}
+      </ul>
+      <a href="/" class="kt-label kt-label--sm hidden hover:opacity-70 sm:inline">
+        {ui.shop} <span class="kt-arrow" aria-hidden="true">→</span>
+      </a>
+    </nav>
+  </div>
+</header>
+<!-- Shown by the client when the reader's saved language (sj-lang) differs. -->
+<p class="kt-wrap flex justify-end pt-3" data-lang-hint hidden>
+  {LANGS.filter((l) => l !== lang).map((l) => (
+    <a href={paths[l]} hreflang={HTML_LANG[l]} lang={HTML_LANG[l]} class="kt-label kt-label--sm kt-link" data-lang-switch={STORE_LANG[l]} data-hint-for={STORE_LANG[l]} hidden>
+      {hint[l]} <span class="kt-arrow" aria-hidden="true">→</span>
+    </a>
+  ))}
+</p>

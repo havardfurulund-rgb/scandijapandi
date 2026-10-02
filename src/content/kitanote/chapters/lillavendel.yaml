@@ -1,0 +1,118 @@
+# Kapittel: Lillavendel (Guro Rimstad). Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
+# Japansk er ikke kvalitetssikret (jp_qa: false).
+slug: lillavendel
+order: 2
+published: true
+draft: true
+jp_qa: false
+status: published
+maker_name: Lillavendel
+maker_name_ja: リラヴェンデル
+maker_person: Guro Rimstad
+location: { ja: ヴェストフォル県ヘルゲロア, en: "Helgeroa, Vestfold", no: "Helgeroa, Vestfold" }
+craft: { ja: 石けんとキャンドル, en: Soap and candles, no: Såpe og lys }
+title:
+  ja: ヘルゲロア、ラベンダー、グーロ
+  en: Helgeroa. Lavender. Guro.
+  no: Helgeroa. Lavendel. Guro.
+dek:
+  ja: ヴェストフォル県ヘルゲロア（Helgeroa）で、グーロ・リムスタさんが石けんとキャンドル、農場の品をつくっています。
+  en: In Helgeroa, Vestfold, Guro Rimstad makes soap, candles and farm goods.
+  no: I Helgeroa i Vestfold lager Guro Rimstad såper, lys og gårdsprodukter.
+body:
+  ja: |-
+    リラヴェンデル（Lillavendel）では、仕事の速さを決めるのは農場です。道具は、手と鼻です。
+
+    この章では、グーロさんの一日を、原料から石けんとキャンドルができあがるまで追います。
+  en: |-
+    At Lillavendel the farm sets the pace. The tools are hands and nose.
+
+    This chapter follows Guro through a working day, from raw material to finished soap and candle.
+  no: |-
+    Hos Lillavendel er det gården som setter tempoet. Redskapene er hendene og nesen.
+
+    Kapitlet følger Guro gjennom en arbeidsdag, fra råvare til ferdig såpe og lys.
+interview:
+  - q:
+      ja: リラヴェンデルは、どのように始まりましたか。
+      en: How did Lillavendel begin?
+      no: Hvordan begynte Lillavendel?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。始まりと、その場所について。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the beginning, and about the place."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om begynnelsen, og om stedet."
+  - q:
+      ja: よい石けんとは、どのようなものですか。
+      en: What makes a good soap?
+      no: Hva gjør en god såpe?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。原料と時間、目に見えない小さな選択について。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about ingredients, time and the small choices that don’t show."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om råvarer, tid og de små valgene som ikke synes."
+  - q:
+      ja: 農場での普段の一日は、どのようなものですか。
+      en: What does an ordinary day on the farm look like?
+      no: Hvordan ser en vanlig dag ut på gården?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。一年のリズムについて。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the rhythm of the year."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om rytmen gjennom året."
+quotes:
+  - text:
+      ja: "［仮］ここに、作り手自身の言葉が一行入ります。"
+      en: "[draft] One line in the maker’s own words goes here."
+      no: "[utkast] Her står én linje med håndverkerens egne ord."
+    attribution: Plassholder · ikke et sitat
+    after: 1
+    draft: true
+hero_loop:
+  src: /media/kitanote/loops/lillavendel-hero.mp4
+  src_mobile: /media/kitanote/loops/lillavendel-hero-4x5.mp4
+  poster: /media/kitanote/posters/lillavendel-hero.webp
+  poster_small: /media/kitanote/posters/lillavendel-hero-800.webp
+  poster_mobile: /media/kitanote/posters/lillavendel-hero-4x5.webp
+  alt:
+    ja: 木の柵に掛けられたリネンのシャツ。
+    en: A linen shirt hung on a wooden fence.
+    no: En linskjorte hengt på et tregjerde.
+  placeholder: true
+og_image: /media/kitanote/posters/lillavendel-hero-og.jpg
+film:
+  src: /media/kitanote/films/lillavendel-film.mp4
+  poster: /media/kitanote/posters/lillavendel-film.webp
+  poster_small: /media/kitanote/posters/lillavendel-film-800.webp
+  duration: 8
+  captions_ja: /media/kitanote/captions/lillavendel-ja.vtt
+  captions_en: /media/kitanote/captions/lillavendel-en.vtt
+  captions_no: /media/kitanote/captions/lillavendel-no.vtt
+  placeholder: true
+gallery:
+  - src: /media/kitanote/stills/robe.webp
+    src_small: /media/kitanote/stills/robe-sm.webp
+    width: 520
+    height: 650
+    alt:
+      ja: リネンのローブの腰ひもと、ポケットに入れた手。
+      en: The tie of a linen robe, a hand in the pocket.
+      no: Knytebåndet på en linkåpe, en hånd i lomma.
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/kitanote/stills/kimono.webp
+    src_small: /media/kitanote/stills/kimono-sm.webp
+    width: 800
+    height: 600
+    alt:
+      ja: リネンの羽織の腰ひもに添えた手。
+      en: A hand at the tie of a linen wrap.
+      no: En hånd ved knytebåndet på en linkåpe.
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+product_slugs: []
+producer_name_match: Lillavendel
+credits:
+  - role: { ja: 映像, en: Film, no: Film }
+    name: { ja: 仮, en: Placeholder, no: Plassholder }
+  - role: { ja: 写真, en: Photography, no: Foto }
+    name: { ja: "仮 · Scandi Japandi lookbook", en: "Placeholder · Scandi Japandi lookbook", no: "Plassholder · Scandi Japandi lookbook" }
+  - role: { ja: 文, en: Words, no: Tekst }
+    name: { ja: 下書き, en: Draft, no: Utkast }

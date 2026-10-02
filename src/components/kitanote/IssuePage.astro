@@ -1,0 +1,282 @@
+---
+// Issue front page, shared by /kitanote (ja), /kitanote/en and /kitanote/no.
+// Cover follows the YouTube thumbnail / opening plate template: image or film
+// on about 2/3, an ink plate on 1/3 with the mark, the Japanese title, the
+// Latin title and a label. Nothing is set on top of the film.
+import KitaLayout from './KitaLayout.astro';
+import KitaWordmark from './KitaWordmark.astro';
+import LoopVideo from './LoopVideo.astro';
+import JpTitle from './JpTitle.astro';
+import Tag from './Tag.astro';
+import {
+  BASE, HTML_LANG, SENDER, UI, abs, chapterUrl, formatDuration, known, latinLang, loadIssue, monthYear, pad, paragraphs, t, tn,
+  type Lang,
+} from '../../lib/kitanote';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const ui = UI[lang];
+const latin = latinLang(lang);
+const isJa = lang === 'ja';
+const { issue, chapters, coming } = await loadIssue();
+
+const issueLabel = ui.issueLabel(pad(issue.number), t(issue.season, lang));
+const letter = paragraphs(t(issue.letter.body, lang));
+// Any unreviewed Japanese on the page keeps it out of search results.
+const jpUnreviewed = !issue.jp_qa || chapters.some((c) => !c.jp_qa) || coming.some((c) => !c.jp_qa);
+// Elements in the page language get its lang; Japanese elements always say ja.
+const pageLang = HTML_LANG[lang];
+
+const title = isJa
+  ? `北の手 Kita no Te — ${issueLabel}「${issue.title.ja}」`
+  : `Kita no Te 北の手 — ${issueLabel}: ${t(issue.title, lang)}`;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'PublicationIssue',
+    name: `${issue.title.ja} · ${t(issue.title, latin)}`,
+    issueNumber: String(issue.number),
+    datePublished: issue.published_at.toISOString().slice(0, 10),
+    inLanguage: pageLang,
+    url: abs(BASE[lang]),
+    image: issue.og_image ? abs(issue.og_image) : abs(issue.cover_loop.poster),
+    description: t(issue.manifest, lang),
+    isPartOf: {
+      '@type': 'Periodical',
+      name: '北の手 Kita no Te',
+      publisher: { '@type': 'Organization', name: 'Scandi Japandi Collection', url: 'https://scandijapandi.no' },
+    },
+    hasPart: chapters.map((c) => ({ '@type': 'Article', headline: `${c.title.ja} ${t(c.title, latin)}`, url: abs(chapterUrl(lang, c.slug)) })),
+  },
+];
+---
+
+<KitaLayout
+  lang={lang}
+  title={title}
+  description={t(issue.manifest, lang)}
+  paths={{ ja: BASE.ja, en: BASE.en, no: BASE.no }}
+  ogImage={issue.og_image ?? issue.cover_loop.poster}
+  issueLabel={issueLabel}
+  jsonLd={jsonLd}
+  noindex={jpUnreviewed}
+>
+  <!-- 1 · Cover: film 2/3, ink plate 1/3 -->
+  <section class="kt-split" aria-labelledby="kt-cover-title">
+    <LoopVideo loop={issue.cover_loop} lang={lang} eager class="kt-split__media" />
+    <div class="kt-split__plate kt-ink">
+      <a href={BASE[lang]} class="self-start" aria-label="北の手 · Kita no Te">
+        <KitaWordmark size={52} draw />
+      </a>
+      <div class="kt-plate-title">
+        <h1 id="kt-cover-title">
+          <JpTitle text={issue.title.ja} class="block" />
+          <span class="kt-latin block" lang={HTML_LANG[latin]}>{t(issue.title, latin)}</span>
+        </h1>
+        <p class="kt-label kt-plate-label mt-7">{issueLabel}</p>
+      </div>
+      <div class="flex flex-col gap-5">
+        {(issue.draft || !issue.jp_qa) && (
+          <p class="flex flex-wrap gap-3">
+            {!issue.jp_qa && <Tag lang={lang} kind="jpQa" />}
+            {issue.draft && <Tag lang={lang} kind="draft" />}
+          </p>
+        )}
+        <p class="kt-label kt-label--sm kt-plate-foot" lang={pageLang}>{SENDER[lang]}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · Manifest: Japanese first, the page language below in stone -->
+  <section class="kt-wrap kt-grid pt-[clamp(5rem,11vw,10rem)]" aria-label={ui.magazine}>
+    <div class="col-span-4 md:col-span-8 md:col-start-3 lg:col-span-7 lg:col-start-3">
+      <p class="kt-jp kt-reveal text-[clamp(1.5rem,2.6vw,2.375rem)] !leading-[1.75]" lang="ja">
+        {issue.manifest.ja.split('。').filter(Boolean).map((s) => <span class="kt-phrase">{s}。</span>)}
+      </p>
+      {!isJa && <p class="kt-lede kt-second kt-reveal mt-6" style="--d: 80ms">{t(issue.manifest, lang)}</p>}
+    </div>
+  </section>
+
+  <!-- 3 · Brev fra Norge / ノルウェーからの手紙 -->
+  <section class="kt-section" aria-labelledby="kt-letter">
+    <div class="kt-wrap kt-grid gap-y-10">
+      <div class="col-span-4 md:col-span-3">
+        <p class="kt-label kt-stone">{ui.letter}</p>
+      </div>
+      <div class="col-span-4 md:col-span-8 md:col-start-5 lg:col-span-6 lg:col-start-5">
+        <h2 id="kt-letter" class="kt-reveal">
+          <JpTitle text={issue.letter.title.ja} class="block text-[clamp(1.75rem,2.8vw,2.625rem)]" />
+          {!isJa && <span class="kt-latin kt-second mt-3 block text-[clamp(1.25rem,1.7vw,1.625rem)]">{t(issue.letter.title, lang)}</span>}
+        </h2>
+        <div class="kt-body kt-reveal mt-12 md:mt-14" lang={pageLang} style="--d: 80ms">
+          {letter.map((p) => <p>{p}</p>)}
+        </div>
+        <div class="kt-reveal mt-12 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <p class="kt-label kt-stone" lang={pageLang}>— {t(issue.letter.signature, lang)}</p>
+          {issue.letter.draft && <Tag lang={lang} kind="draft" />}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · Contents -->
+  <section id="contents" class="pb-[clamp(4rem,8vw,7rem)]" aria-labelledby="kt-contents">
+    <div class="kt-wrap">
+      <div class="kt-grid items-end gap-y-6 pb-10 md:pb-14">
+        <p class="kt-label kt-stone col-span-4 md:col-span-3">{ui.contents}</p>
+        <h2 id="kt-contents" class:list={['col-span-4 md:col-span-6 md:col-start-5 text-[clamp(1.5rem,2.4vw,2.25rem)]', isJa ? 'kt-jp' : 'kt-latin']}>
+          {ui.chaptersInIssue}
+        </h2>
+        <p class="kt-label kt-label--sm kt-stone hidden md:col-span-2 md:col-start-11 md:block md:text-right">
+          {ui.chapterCount(chapters.length)}
+        </p>
+      </div>
+      <ol>
+        {chapters.map((c, i) => {
+          const flip = i % 2 === 1;
+          const poster = c.hero_loop;
+          const meta = [c.maker_name, t(c.location, lang)].filter(known);
+          return (
+            <li class="border-t border-ink/10">
+              <a href={chapterUrl(lang, c.slug)} class="group block py-10 md:py-16 lg:py-20">
+                <div class="kt-grid kt-reveal items-start gap-y-7">
+                  <span class="kt-num kt-stone hidden text-[clamp(2.5rem,4.6vw,4.5rem)] leading-[0.85] md:col-span-2 md:block" aria-hidden="true">
+                    {pad(i + 1)}
+                  </span>
+                  {poster && (
+                    <div class:list={[
+                      'kt-media kt-zoom col-span-4 aspect-[4/3] md:col-span-5 md:row-start-1',
+                      flip ? 'md:col-start-8' : 'md:col-start-3',
+                    ]}>
+                      <img
+                        src={poster.poster_small ?? poster.poster}
+                        srcset={poster.poster_small ? `${poster.poster_small} 800w, ${poster.poster} 1200w` : undefined}
+                        sizes="(min-width: 768px) 40vw, 92vw"
+                        width="800"
+                        height="600"
+                        alt={t(poster.alt, lang)}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                  )}
+                  <div class:list={[
+                    'col-span-4 md:row-start-1 md:pt-1',
+                    flip ? 'md:col-span-4 md:col-start-3' : 'md:col-span-4 md:col-start-9',
+                  ]}>
+                    <p class="kt-label kt-label--sm kt-stone flex flex-wrap items-center gap-x-[0.6em] gap-y-2">
+                      <span class="md:hidden">{pad(i + 1)} ·</span>
+                      <span>{meta.join(' · ')}</span>
+                      {c.film && <span>· {ui.film} {formatDuration(c.film.duration)}</span>}
+                    </p>
+                    <h3 class="mt-5">
+                      <JpTitle text={c.title.ja} class="block text-[clamp(1.5rem,2.2vw,2.125rem)] transition-opacity duration-500 group-hover:opacity-70" />
+                      <span class="kt-latin kt-second mt-2 block text-[1.1875rem]" lang={HTML_LANG[latin]}>{t(c.title, latin)}</span>
+                    </h3>
+                    <p class:list={['kt-body mt-6 max-w-[40ch] !text-[0.9375rem] text-ink/75', isJa && '!max-w-[24em]']} lang={pageLang}>{t(c.dek, lang)}</p>
+                    <p class="kt-label kt-label--sm mt-8 flex flex-wrap items-center gap-4">
+                      <span>{ui.readChapter} <span class="kt-arrow" aria-hidden="true">→</span></span>
+                      {c.title_draft && <Tag lang={lang} kind="titleDraft" />}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+      <hr class="kt-rule" />
+    </div>
+  </section>
+
+  <!-- 5 · Coming -->
+  {coming.length > 0 && (
+    <section id="coming" class="kt-oat kt-section" aria-labelledby="kt-coming">
+      <div class="kt-wrap">
+        <div class="kt-grid gap-y-8">
+          <p class="kt-label kt-stone-deep col-span-4 md:col-span-3">{ui.coming}</p>
+          <div class="col-span-4 md:col-span-6 md:col-start-5">
+            <h2 id="kt-coming" class:list={['kt-reveal text-[clamp(1.5rem,2.4vw,2.25rem)]', isJa ? 'kt-jp' : 'kt-latin']}>{ui.comingTitle}</h2>
+            <p class="kt-body kt-reveal mt-6 max-w-[44ch] text-ink/80" lang={pageLang} style="--d: 80ms">{ui.comingBody}</p>
+          </div>
+        </div>
+        <ul class="kt-grid mt-16 gap-y-20 md:mt-24">
+          {coming.map((c, i) => (
+            <li class:list={[
+              'kt-coming kt-reveal col-span-4',
+              i % 2 === 0 ? 'md:col-span-4 md:col-start-3' : 'md:col-span-4 md:col-start-8 md:mt-32',
+            ]} style={`--d: ${i * 120}ms`}>
+              {c.teaser_image && (
+                <div class="kt-media aspect-[4/5]">
+                  <img src={c.teaser_image} width="640" height="800" alt="" loading="lazy" decoding="async" />
+                </div>
+              )}
+              <p class="kt-label kt-label--sm kt-stone-deep mt-7">
+                {ui.filming} {c.shoot_date ? monthYear(c.shoot_date, lang) : ''}
+              </p>
+              <h3 class="mt-4">
+                <JpTitle text={c.title.ja} class="block text-[1.5rem]" />
+                <span class="kt-latin kt-second mt-1 block text-[1.0625rem]" lang={HTML_LANG[latin]}>{t(c.title, latin)}</span>
+              </h3>
+              <p class="kt-label kt-label--sm mt-5">{c.maker_name}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <!-- 6 · The channel: episodes, LINE, makers, media partners -->
+  <section class="kt-section" aria-labelledby="kt-channel" data-channel>
+    <div class="kt-wrap kt-grid gap-y-10">
+      <p class="kt-label kt-stone col-span-4 md:col-span-3">{ui.channel}</p>
+      <div class="col-span-4 md:col-span-7 md:col-start-5">
+        <h2 id="kt-channel" class:list={['text-[clamp(1.5rem,2.4vw,2.25rem)]', isJa ? 'kt-jp' : 'kt-latin']}>{ui.channelTitle}</h2>
+        <p class="kt-body mt-6 max-w-[46ch]" lang={pageLang}>{ui.channelBody}</p>
+        <p class="kt-label kt-label--sm mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <a href="/stories" class="kt-button">{ui.allEpisodes} <span class="kt-arrow" aria-hidden="true">→</span></a>
+          <a href="#" class="kt-button" data-line hidden rel="noopener">{ui.line}</a>
+        </p>
+      </div>
+
+      <div class="col-span-4 md:col-span-8 md:col-start-5" data-latest hidden>
+        <p class="kt-label kt-label--sm kt-stone mb-8 mt-6">{ui.latest}</p>
+        <ul class="grid grid-cols-1 gap-10 sm:grid-cols-3" data-latest-grid data-lang={lang}></ul>
+      </div>
+
+      <hr class="kt-rule col-span-4 mt-10 md:col-span-8 md:col-start-5" />
+
+      <div class="col-span-4 md:col-span-4 md:col-start-5">
+        <h3 class="kt-label kt-stone">{ui.forMakers}</h3>
+        <p class="kt-body mt-4 !text-[0.9375rem]" lang={pageLang}>{ui.forMakersBody}</p>
+        <a href="/makers" class="kt-label kt-label--sm kt-link mt-6 inline-block">{ui.forMakersLink} <span class="kt-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="col-span-4 md:col-span-4 md:col-start-9">
+        <h3 class="kt-label kt-stone">{ui.forMedia}</h3>
+        <p class="kt-body mt-4 !text-[0.9375rem]" lang={pageLang}>{ui.forMediaBody}</p>
+        <a href="mailto:hello@scandijapandi.no" class="kt-label kt-label--sm kt-link mt-6 inline-block !normal-case !tracking-[0.12em]">hello@scandijapandi.no <span class="kt-arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · Colophon -->
+  <section class="kt-section--tight border-t border-ink/10" aria-labelledby="kt-colophon">
+    <div class="kt-wrap kt-grid gap-y-12">
+      <h2 id="kt-colophon" class="kt-label kt-stone col-span-4 md:col-span-3">{ui.colophon}</h2>
+      <dl class="col-span-4 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2 md:col-span-7 md:col-start-5">
+        {issue.colophon.entries.map((e) => (
+          <div>
+            <dt class="kt-label kt-label--sm kt-stone" lang={pageLang}>{t(e.role, lang)}</dt>
+            <dd class="mt-2.5 text-[1.0625rem] leading-snug" lang={pageLang}>{e.names.map((n) => tn(n, lang)).join(', ')}</dd>
+          </div>
+        ))}
+      </dl>
+      {issue.colophon.note && (
+        <p class="kt-body col-span-4 max-w-[60ch] !text-[0.875rem] kt-stone md:col-span-6 md:col-start-5" lang={pageLang}>
+          {t(issue.colophon.note, lang)}
+        </p>
+      )}
+    </div>
+  </section>
+</KitaLayout>

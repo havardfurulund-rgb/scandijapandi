@@ -1,0 +1,21 @@
+# Kommer: filmes ca. 11. oktober 2026.
+slug: skredderen-fra-damaskus
+order: 7
+published: true
+draft: true
+jp_qa: false
+status: coming
+maker_name: Skredderen fra Damaskus
+location: { ja: "—", en: "—", no: "—" }
+craft: { ja: リネンと綿の服, en: Linen and cotton garments, no: Plagg i lin og bomull }
+title:
+  ja: リネンと綿
+  en: Linen and cotton.
+  no: Lin og bomull.
+title_draft: true
+dek:
+  ja: リネンと綿でつくる、大きくゆったりとした服です。この章は10月に撮影します。
+  en: Large, airy garments in linen and cotton. This chapter is filmed in October.
+  no: Store, luftige plagg i lin og bomull. Kapitlet filmes i oktober.
+teaser_image: /media/kitanote/stills/robe.webp
+shoot_date: 2026-10-11

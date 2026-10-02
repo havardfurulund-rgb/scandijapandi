@@ -1,0 +1,40 @@
+---
+import KitaWordmark from './KitaWordmark.astro';
+import { HTML_LANG, LANGS, SENDER, STORE_LANG, UI, issueUrl, type Lang } from '../../lib/kitanote';
+
+interface Props {
+  lang: Lang;
+  paths: Record<Lang, string>;
+  issueLabel: string;
+}
+const { lang, paths, issueLabel } = Astro.props;
+const ui = UI[lang];
+---
+
+<footer class="border-t border-ink/10 bg-paper">
+  <div class="kt-wrap kt-grid gap-y-12 py-16 md:py-20">
+    <div class="col-span-4 md:col-span-5">
+      <a href={issueUrl(lang)} aria-label="北の手 · Kita no Te" class="inline-block p-1">
+        <KitaWordmark size={40} />
+      </a>
+      <p class="kt-label kt-label--sm kt-stone mt-8">{issueLabel}</p>
+    </div>
+    <div class="col-span-4 md:col-span-6 md:col-start-7 md:self-end">
+      <ul class="kt-label kt-label--sm flex flex-wrap gap-x-8 gap-y-3 md:justify-end">
+        <li><a href="/stories" class="kt-link">{ui.allEpisodes}</a></li>
+        <li><a href="/makers" class="kt-link">{ui.forMakers}</a></li>
+        <li><a href="/" class="kt-link">{ui.shop}</a></li>
+        {LANGS.filter((l) => l !== lang).map((l) => (
+          <li><a href={paths[l]} hreflang={HTML_LANG[l]} lang={HTML_LANG[l]} class="kt-link" data-lang-switch={STORE_LANG[l]}>{UI[l].langName}</a></li>
+        ))}
+      </ul>
+    </div>
+    <div class="col-span-4 border-t border-ink/10 pt-8 md:col-span-12 md:flex md:items-baseline md:justify-between md:gap-10">
+      <p class="kt-label kt-label--sm kt-stone">
+        <span lang="ja" class="block md:inline">{SENDER.ja}</span>
+        {lang !== 'ja' && <span class="mt-2 block md:ml-6 md:mt-0 md:inline">{SENDER[lang]}</span>}
+      </p>
+      <p class="kt-label kt-label--sm kt-stone mt-4 md:mt-0">© 2026 Scandi Japandi</p>
+    </div>
+  </div>
+</footer>

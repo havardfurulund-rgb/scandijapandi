@@ -1,0 +1,119 @@
+# Kapittel: Alvadal (Magnus). Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
+# Japansk er ikke kvalitetssikret (jp_qa: false).
+slug: alvadal
+order: 3
+published: true
+draft: true
+jp_qa: false
+status: published
+maker_name: Alvadal
+maker_name_ja: アルヴァダール
+maker_person: Magnus
+website: https://alvadal.se
+location: { ja: スウェーデン, en: Sweden, no: Sverige }
+craft: { ja: 木のまな板, en: Wooden cutting boards, no: Skjærefjøler i tre }
+title:
+  ja: スウェーデン、木、マグヌス
+  en: Sweden. Wood. Magnus.
+  no: Sverige. Tre. Magnus.
+dek:
+  ja: アルヴァダール（Alvadal）のマグヌスさんは、スウェーデンで木のまな板をつくっています。まな板には生涯保証がついています。
+  en: Magnus at Alvadal makes wooden cutting boards in Sweden, with a lifetime warranty.
+  no: Magnus i Alvadal lager skjærefjøler i tre i Sverige, med livstidsgaranti.
+body:
+  ja: |-
+    まな板は、オイルで手入れをしながら、長く台所で使う道具です。
+
+    この章では、スウェーデンのアルヴァダールを訪ね、一枚の板ができるまでと、その手入れの方法を見ます。
+  en: |-
+    A cutting board is a tool that is cared for with oil and stays in a kitchen for many years.
+
+    This chapter visits Alvadal in Sweden to see how a board is made, and how it is cared for.
+  no: |-
+    En skjærefjøl er et redskap som stelles med olje og blir i et kjøkken i mange år.
+
+    Kapitlet besøker Alvadal i Sverige og ser hvordan et brett blir til, og hvordan det stelles.
+interview:
+  - q:
+      ja: なぜ生涯保証をつけるのですか。
+      en: Why offer a lifetime warranty?
+      no: Hvorfor gi livstidsgaranti?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。約束と、それにともなう責任について。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the promise, and the responsibility that comes with it."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om løftet, og om ansvaret som følger med."
+  - q:
+      ja: 木は、どのように選びますか。
+      en: How do you choose the wood?
+      no: Hvordan velger du treet?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。木の種類と木目、手が最初に感じることについて。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about species, grain and what the hands notice first."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om tresorter, fiberretning og hva hendene merker først."
+  - q:
+      ja: まな板は、どのように手入れをしますか。
+      en: How should a board be cared for?
+      no: Hvordan stelles et brett?
+    a:
+      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。オイルと乾燥、急がないことについて。"
+      en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about oil, drying and calm."
+      no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om olje, tørking og ro."
+quotes:
+  - text:
+      ja: "［仮］ここに、作り手自身の言葉が一行入ります。"
+      en: "[draft] One line in the maker’s own words goes here."
+      no: "[utkast] Her står én linje med håndverkerens egne ord."
+    attribution: Plassholder · ikke et sitat
+    after: 0
+    draft: true
+hero_loop:
+  src: /media/kitanote/loops/alvadal-hero.mp4
+  src_mobile: /media/kitanote/loops/alvadal-hero-4x5.mp4
+  poster: /media/kitanote/posters/alvadal-hero.webp
+  poster_small: /media/kitanote/posters/alvadal-hero-800.webp
+  poster_mobile: /media/kitanote/posters/alvadal-hero-4x5.webp
+  alt:
+    ja: 古い木のベンチに置かれた手。
+    en: A hand resting on an old wooden bench.
+    no: En hånd som hviler på en gammel trebenk.
+  placeholder: true
+og_image: /media/kitanote/posters/alvadal-hero-og.jpg
+film:
+  src: /media/kitanote/films/alvadal-film.mp4
+  poster: /media/kitanote/posters/alvadal-film.webp
+  poster_small: /media/kitanote/posters/alvadal-film-800.webp
+  duration: 8
+  captions_ja: /media/kitanote/captions/alvadal-ja.vtt
+  captions_en: /media/kitanote/captions/alvadal-en.vtt
+  captions_no: /media/kitanote/captions/alvadal-no.vtt
+  placeholder: true
+gallery:
+  - src: /media/kitanote/stills/hats-v.webp
+    src_small: /media/kitanote/stills/hats-v-sm.webp
+    width: 560
+    height: 700
+    alt:
+      ja: 木のベンチに重ねられたウールの帽子。
+      en: Wool hats stacked on a wooden bench.
+      no: Ullluer stablet på en trebenk.
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+  - src: /media/kitanote/stills/shirt.webp
+    src_small: /media/kitanote/stills/shirt-sm.webp
+    width: 784
+    height: 980
+    alt:
+      ja: 木の柵と小屋の前に掛けられたリネンのシャツ。
+      en: A linen shirt hung in front of a wooden fence and hut.
+      no: En linskjorte hengt foran et tregjerde og en bu.
+    credit: Plassholder · Scandi Japandi lookbook
+    placeholder: true
+product_slugs: []
+producer_name_match: Alvadal
+credits:
+  - role: { ja: 映像, en: Film, no: Film }
+    name: { ja: 仮, en: Placeholder, no: Plassholder }
+  - role: { ja: 写真, en: Photography, no: Foto }
+    name: { ja: "仮 · Scandi Japandi lookbook", en: "Placeholder · Scandi Japandi lookbook", no: "Plassholder · Scandi Japandi lookbook" }
+  - role: { ja: 文, en: Words, no: Tekst }
+    name: { ja: 下書き, en: Draft, no: Utkast }

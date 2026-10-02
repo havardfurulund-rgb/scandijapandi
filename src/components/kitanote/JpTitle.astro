@@ -1,0 +1,9 @@
+---
+// Japanese title split into phrases at 、/。 so a line never breaks inside a
+// place name or a word: 「ヘルゲロア、ラベンダー、グーロ」.
+// `stack` puts one phrase per line, like the opening plate template.
+import { jpPhrases } from '../../lib/kitanote';
+interface Props { text: string; stack?: boolean; class?: string }
+const { text, stack = false, class: className } = Astro.props;
+---
+<span class:list={['kt-jp', stack && 'kt-stack', className]} lang="ja">{jpPhrases(text).map((p) => <span class="kt-phrase">{p}</span>)}</span>

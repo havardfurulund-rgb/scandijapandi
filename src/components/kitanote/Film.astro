@@ -1,0 +1,69 @@
+---
+// Main chapter film. Click-to-play: nothing but the poster loads until the
+// reader asks for it. Native controls appear once playing; captions in
+// Japanese, English and Norwegian, the page language on by default. The play
+// label sits on a small ink plate, never as bare text on the image.
+// `type: hls` plays natively where supported and falls back to `src_fallback`.
+import { HTML_LANG, UI, formatDuration, type Lang } from '../../lib/kitanote';
+import Tag from './Tag.astro';
+
+interface Props {
+  film: {
+    src: string;
+    type: 'mp4' | 'hls';
+    src_fallback?: string;
+    poster: string;
+    poster_small?: string;
+    duration: number;
+    captions_ja?: string;
+    captions_en?: string;
+    captions_no?: string;
+    placeholder: boolean;
+  };
+  title: string;
+  lang: Lang;
+}
+
+const { film, title, lang } = Astro.props;
+const ui = UI[lang];
+const duration = formatDuration(film.duration);
+const tracks = [
+  { src: film.captions_ja, srclang: 'ja', label: '日本語' },
+  { src: film.captions_en, srclang: 'en', label: 'English' },
+  { src: film.captions_no, srclang: 'nb', label: 'Norsk' },
+].filter((tr) => tr.src);
+---
+
+<figure>
+  <div class="kt-film" data-film data-captions={HTML_LANG[lang]} data-src={film.src} data-type={film.type} data-fallback={film.src_fallback}>
+    <video preload="none" playsinline aria-label={`${ui.film}: ${title}`}>
+      {tracks.map((tr) => <track kind="captions" src={tr.src} srclang={tr.srclang} label={tr.label} />)}
+    </video>
+    <button type="button" class="kt-film__play" aria-label={`${ui.playFilm}: ${title}, ${duration}`}>
+      <picture>
+        <img
+          src={film.poster}
+          srcset={film.poster_small ? `${film.poster_small} 800w, ${film.poster} 1600w` : undefined}
+          sizes="(min-width: 1520px) 1400px, 92vw"
+          width="1600"
+          height="900"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+      <span class="kt-film__label" aria-hidden="true">
+        <span class="kt-film__tri"></span>
+        <span class="kt-label" lang={lang === 'ja' ? 'ja' : undefined}>{ui.watchFilm}</span>
+        <span class="kt-label opacity-60">{duration}</span>
+      </span>
+    </button>
+  </div>
+  <figcaption class="mt-5 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+    <span class="text-[0.9375rem] text-ink/75">{title}</span>
+    <span class="kt-label kt-label--sm kt-stone flex flex-wrap items-center gap-x-4 gap-y-2">
+      {film.placeholder && <Tag lang={lang} kind="placeholder" />}
+      <span>{ui.film} · {duration}{tracks.length > 0 && ` · ${ui.withCaptions}`}</span>
+    </span>
+  </figcaption>
+</figure>

@@ -1,0 +1,24 @@
+# Kapittel: Keli bijou. Estetikken er ikke verifisert, derfor status: hidden og ingen medier.
+# Sett status: published og legg inn hero_loop for å vise kapitlet.
+slug: keli-bijou
+order: 5
+published: true
+draft: true
+jp_qa: false
+status: hidden
+maker_name: Keli bijou
+maker_name_ja: ケリ・ビジュー
+website: https://kelibijou.com
+location: { ja: "—", en: "—", no: "—" }
+craft: { ja: ジュエリー, en: Jewellery, no: Smykker }
+title:
+  ja: ジュエリー
+  en: Jewellery.
+  no: Smykker.
+title_draft: true
+dek:
+  ja: 小さなジュエリーについての章です。
+  en: A chapter about small pieces of jewellery.
+  no: Et kapittel om små smykker.
+product_slugs: []
+producer_name_match: Keli
