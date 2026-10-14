@@ -2,6 +2,7 @@
 // Returns full product data including producer story and gallery.
 import type { Config } from "@netlify/functions";
 import { db } from "../lib/db.mts";
+import { displayJpy } from "../lib/currency.mts";
 
 export default async (req: Request) => {
   const url = new URL(req.url);
@@ -24,6 +25,7 @@ export default async (req: Request) => {
         care_instructions, care_instructions_en, care_instructions_jp,
         price_nok, price_jpy,
         image_url, gallery_urls,
+        stock_quantity, product_type, price_from, brand_slug, one_of_a_kind,
         active, created_at
       FROM products
       WHERE slug = ${slug} AND active = TRUE
@@ -60,7 +62,14 @@ export default async (req: Request) => {
       dimensions: r.dimensions || null,
       care_instructions: r.care_instructions || null,
       price_nok: Number(r.price_nok),
-      price_jpy: r.price_jpy ? Number(r.price_jpy) : null,
+      // JPY is always shown (explicit value, or derived from NOK at the fixed rate).
+      price_jpy: displayJpy(Number(r.price_nok), r.price_jpy ? Number(r.price_jpy) : null),
+      price_from: Boolean(r.price_from),
+      product_type: r.product_type || "product",
+      brand_slug: r.brand_slug || null,
+      one_of_a_kind: Boolean(r.one_of_a_kind),
+      stock_quantity: r.stock_quantity === null || r.stock_quantity === undefined ? null : Number(r.stock_quantity),
+      in_stock: r.product_type === "made_to_measure" || r.stock_quantity === null || r.stock_quantity === undefined || Number(r.stock_quantity) > 0,
       image_url: r.image_url,
       gallery_urls: Array.isArray(r.gallery_urls) ? r.gallery_urls : [],
       created_at: r.created_at,

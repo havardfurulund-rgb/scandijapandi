@@ -1,0 +1,221 @@
+---
+// Maker pages for the Japan launch: /makers/dyra-pa-garden and
+// /makers/skredderen-fra-damaskus.
+//
+// Scandi Japandi Collection is a curated platform, not a producer — these pages
+// present the maker in the maker's own name. Copy is English (Japan market) and
+// limited to confirmed facts: the interview placeholders in
+// content/launch/copy/BRAND-STORIES.md are deliberately NOT rendered. Add the
+// biography here only after the interview exists.
+//
+// Logos: dark mark on light backgrounds, light mark on dark (public/brand/<brand>/).
+// Products are fetched client-side from /api/products?brand=<slug>, so the list
+// follows the database without a rebuild.
+import Base from '../../layouts/Base.astro';
+
+export const prerender = true;
+
+type Brand = {
+  slug: string;
+  name: string;
+  collective: string;
+  kicker: string;
+  tagline: string;
+  logoDark: string;   // for light backgrounds
+  logoLight: string;  // for dark backgrounds
+  logoAlt: string;
+  story: string[];
+  craft: string;
+  sibling: string;    // the other maker at Langrønningen
+  productsHeading: string;
+  productsNote?: string;
+};
+
+const BRANDS: Record<string, Brand> = {
+  'dyra-pa-garden': {
+    slug: 'dyra-pa-garden',
+    name: 'Dyra på Gården',
+    collective: 'Stammehandverk',
+    kicker: 'Hand-spun, hand-knit wool · Langrønningen, Norway',
+    tagline: 'Wool you can trace to the animal.',
+    logoDark: '/brand/dyra/dyra-logo-dark.svg',
+    logoLight: '/brand/dyra/dyra-logo-light.svg',
+    logoAlt: 'Dyra på Gården — sheep and wool cloud mark',
+    story: [
+      'At Langrønningen, a farm in Norway, the wool starts with the animals: alpacas, mohair goats and angora rabbits. They live outdoors in the grass and in the straw of the barn. Their fleece is carded and spun by hand on the farm, at a wooden spinning wheel, then woven on an old loom or knitted into pieces that are made one at a time.',
+      'Nothing here is mass-produced. Each sweater, scarf and hat is the only one of its kind, and the colour is often just the colour the animal grew.',
+    ],
+    craft: 'Wool · hand-knit · one of a kind',
+    sibling: 'skredderen-fra-damaskus',
+    productsHeading: 'Pieces by Dyra på Gården',
+    productsNote: 'Every piece is one of one. When it is sold, it is gone.',
+  },
+  'skredderen-fra-damaskus': {
+    slug: 'skredderen-fra-damaskus',
+    name: 'Skredderen fra Damaskus',
+    collective: 'Stammehandverk',
+    kicker: 'Made-to-measure tailoring · Langrønningen, Norway',
+    tagline: 'Made for you alone.',
+    logoDark: '/brand/skredderen/skredderen-logo-dark.svg',
+    logoLight: '/brand/skredderen/skredderen-logo-light.svg',
+    logoAlt: 'Skredderen fra Damaskus — needle and jasmine mark',
+    story: [
+      'The Tailor from Damascus works at Langrønningen, the Norwegian farm where the Dyra på Gården wool pieces are also made. Every garment is made to measure (skreddersøm etter mål): cut for one body, sewn by hand, never off the rack.',
+      'The jasmine in the mark is Damascus’s flower; the needle is the work.',
+    ],
+    craft: 'Made to measure · skreddersøm etter mål',
+    sibling: 'dyra-pa-garden',
+    productsHeading: 'Made to measure',
+    productsNote: 'Prices are "from". You send your measurements; the garment is cut for you alone. Lead time, fabrics and process: details on request.',
+  },
+};
+
+// getStaticPaths is hoisted and runs in isolation: it cannot reference BRANDS
+// above, so the slugs are listed again here. Keep the two in sync.
+export function getStaticPaths() {
+  return [
+    { params: { brand: 'dyra-pa-garden' } },
+    { params: { brand: 'skredderen-fra-damaskus' } },
+  ];
+}
+
+const { brand: brandSlug } = Astro.params;
+const brand = BRANDS[brandSlug as string];
+if (!brand) return Astro.redirect('/');
+const sibling = BRANDS[brand.sibling];
+
+const title = `${brand.name} — ${brand.collective} · ScandiJapandi`;
+const description = `${brand.story[0].slice(0, 150)}…`;
+---
+
+<Base title={title} description={description} lang="en" ogImage={`https://scandijapandi.no/brand/${brand.slug === 'dyra-pa-garden' ? 'dyra/dyra' : 'skredderen/skredderen'}-logo-dark-512.png`}>
+
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-ink/5 bg-paper/80 backdrop-blur-md">
+    <div class="mx-auto flex h-20 max-w-6xl items-center justify-between px-6 sm:px-12">
+      <a href="/" class="font-serif text-xl tracking-tight transition-opacity hover:opacity-70">ScandiJapandi</a>
+      <nav class="flex items-center gap-6 sm:gap-10 text-[10px] font-medium uppercase tracking-widest text-stone">
+        <a href="/#collection" class="transition-colors hover:text-ink">Collection</a>
+        <a href="/about" class="transition-colors hover:text-ink">About</a>
+        <a href="/stories" class="transition-colors hover:text-ink">Kita no Te</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="bg-paper min-h-screen pt-20">
+
+    <!-- HERO: mark + name -->
+    <section class="mx-auto max-w-6xl px-6 sm:px-12 pt-20 pb-16 lg:pt-28 lg:pb-24">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        <div class="lg:col-span-4">
+          <div class="aspect-[4/3] flex items-center justify-center bg-oat p-10">
+            <img src={brand.logoDark} alt={brand.logoAlt} class="max-h-full max-w-full object-contain" loading="eager" />
+          </div>
+        </div>
+        <div class="lg:col-span-8">
+          <p class="text-[10px] uppercase tracking-widest text-stone mb-5">{brand.collective} / {brand.name}</p>
+          <h1 class="font-serif text-5xl lg:text-6xl text-ink font-light leading-[1.05] mb-6">{brand.name}</h1>
+          <p class="text-sm text-stone uppercase tracking-wider mb-8">{brand.kicker}</p>
+          <p class="font-serif text-2xl lg:text-3xl text-ink font-light italic leading-snug">“{brand.tagline}”</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STORY -->
+    <section class="bg-oat py-20 lg:py-28">
+      <div class="mx-auto max-w-2xl px-6">
+        <p class="text-[10px] uppercase tracking-widest text-stone mb-8">The maker</p>
+        {brand.story.map((para) => (
+          <p class="text-lg text-ink/80 font-light leading-relaxed mb-6">{para}</p>
+        ))}
+        <p class="text-[10px] uppercase tracking-widest text-stone mt-10">{brand.craft}</p>
+      </div>
+    </section>
+
+    <!-- PRODUCTS (client-rendered from the database) -->
+    <section class="mx-auto max-w-6xl px-6 sm:px-12 py-20 lg:py-28" id="pieces">
+      <div class="flex items-baseline justify-between gap-6 mb-4 flex-wrap">
+        <h2 class="font-serif text-3xl lg:text-4xl text-ink font-light">{brand.productsHeading}</h2>
+        <a href="/#collection" class="text-[10px] uppercase tracking-widest text-stone hover:text-ink transition-colors">Whole collection →</a>
+      </div>
+      {brand.productsNote && <p class="text-sm text-stone mb-12 max-w-xl">{brand.productsNote}</p>}
+      <div id="brand-grid" data-brand={brand.slug} class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+        <p class="text-sm text-stone col-span-full">Loading pieces…</p>
+      </div>
+    </section>
+
+    <!-- ALSO MADE AT LANGRØNNINGEN -->
+    <section class="bg-ink text-paper py-20 lg:py-24">
+      <div class="mx-auto max-w-6xl px-6 sm:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-3">
+          <div class="aspect-[4/3] flex items-center justify-center p-6">
+            <img src={sibling.logoLight} alt={sibling.logoAlt} class="max-h-full max-w-full object-contain opacity-90" loading="lazy" />
+          </div>
+        </div>
+        <div class="lg:col-span-9">
+          <p class="text-[10px] uppercase tracking-widest text-paper/50 mb-4">Also made at Langrønningen</p>
+          <h2 class="font-serif text-3xl lg:text-4xl font-light mb-4">{sibling.name}</h2>
+          <p class="text-paper/70 font-light leading-relaxed max-w-xl mb-8">{sibling.story[0]}</p>
+          <a href={`/makers/${sibling.slug}`} class="inline-block border border-paper/40 text-paper px-8 py-4 text-[10px] uppercase tracking-widest hover:bg-paper hover:text-ink transition-colors">
+            Visit {sibling.name} →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-ink/8 py-14 text-center">
+      <p class="text-[10px] uppercase tracking-widest text-stone mb-3">Presented by Scandi Japandi Collection</p>
+      <p class="text-xs text-stone/70 max-w-md mx-auto leading-relaxed">A curated platform for Nordic design craft. Each piece is made and credited to its maker.</p>
+    </section>
+  </main>
+
+  <footer class="bg-ink text-paper/70 py-12 text-center text-sm">
+    <p>© 2026 ScandiJapandi. All rights reserved.</p>
+  </footer>
+
+  <script is:inline>
+    (function () {
+      const grid = document.getElementById('brand-grid');
+      if (!grid) return;
+      const brand = grid.getAttribute('data-brand');
+      const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+      const jpyFmt = new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
+      const esc = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      const ENQUIRY_EMAIL = 'hello@scandijapandi.no';
+
+      fetch('/api/products?brand=' + encodeURIComponent(brand))
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          const products = data && Array.isArray(data.products) ? data.products : [];
+          if (!products.length) { grid.innerHTML = '<p class="text-sm text-stone col-span-full">New pieces are on their way.</p>'; return; }
+          grid.innerHTML = products.map((p) => {
+            const mtm = p.product_type === 'made_to_measure';
+            const cta = mtm
+              ? `<a href="mailto:${ENQUIRY_EMAIL}?subject=${encodeURIComponent('Enquiry: ' + (p.name || '') + ' (made to measure)')}" class="mt-6 block w-full border border-ink text-ink py-4 text-[10px] font-medium uppercase tracking-widest text-center hover:bg-ink hover:text-paper transition-colors">Enquire →</a>`
+              : p.in_stock === false
+              ? `<span class="mt-6 block w-full bg-stone/20 text-stone py-4 text-[10px] font-medium uppercase tracking-widest text-center cursor-not-allowed">Sold</span>`
+              : `<a href="/products/${esc(p.slug)}" class="mt-6 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center hover:bg-clay transition-colors">View piece →</a>`;
+            const imgClass = mtm ? 'h-full w-full object-contain p-12' : 'h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105';
+            return `
+              <article class="flex flex-col justify-between group">
+                <div>
+                  <a href="/products/${esc(p.slug)}" class="block aspect-[4/5] bg-oat overflow-hidden">
+                    <img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" class="${imgClass}" />
+                  </a>
+                  <div class="mt-6 flex justify-between items-baseline gap-4 border-b border-ink/5 pb-2">
+                    <a href="/products/${esc(p.slug)}" class="hover:text-clay transition-colors"><h3 class="font-serif text-xl text-ink">${esc(p.name)}</h3></a>
+                    <span class="text-right shrink-0">
+                      ${p.price_from ? '<span class="block text-[9px] uppercase tracking-widest text-stone">from</span>' : ''}
+                      <span class="block text-base font-light text-ink">${jpyFmt.format(p.price_jpy || 0)}</span>
+                      <span class="block text-[11px] text-stone">${nokFmt.format(p.price || 0)}</span>
+                    </span>
+                  </div>
+                  ${p.one_of_a_kind ? '<p class="mt-2 text-[9px] uppercase tracking-widest text-clay">One of a kind · only one made</p>' : ''}
+                </div>
+                ${cta}
+              </article>`;
+          }).join('');
+        })
+        .catch(() => { grid.innerHTML = '<p class="text-sm text-stone col-span-full">The collection could not be loaded right now.</p>'; });
+    })();
+  </script>
+</Base>

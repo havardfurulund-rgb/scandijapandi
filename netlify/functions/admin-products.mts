@@ -61,7 +61,8 @@ export default async (req: Request, context: Context) => {
           origin_story_en, origin_story_jp, producer_story_en, producer_story_jp,
           material_en, material_jp, care_instructions_en, care_instructions_jp,
           name_en, name_jp, description_en, description_jp, price_jpy,
-          stripe_link, stock_quantity, weight_grams, country_of_origin, gallery_urls
+          stripe_link, stock_quantity, weight_grams, country_of_origin, gallery_urls,
+          product_type, price_from, brand_slug, one_of_a_kind
         )
         VALUES (
           ${slug}, ${name}, ${body.producer || null}, ${producerEmail},
@@ -78,7 +79,8 @@ export default async (req: Request, context: Context) => {
           ${body.stock_quantity != null ? Number(body.stock_quantity) : null},
           ${body.weight_grams != null ? Number(body.weight_grams) : null},
           ${body.country_of_origin || null},
-          ${JSON.stringify(Array.isArray(body.gallery_urls) ? body.gallery_urls : [])}::jsonb
+          ${JSON.stringify(Array.isArray(body.gallery_urls) ? body.gallery_urls : [])}::jsonb,
+          ${body.product_type === 'made_to_measure' ? 'made_to_measure' : 'product'}, ${body.price_from === true}, ${body.brand_slug || null}, ${body.one_of_a_kind === true}
         )
         RETURNING *
       `;
@@ -132,6 +134,10 @@ export default async (req: Request, context: Context) => {
           weight_grams = COALESCE(${body.weight_grams != null ? Number(body.weight_grams) : null}, weight_grams),
           country_of_origin = ${body.country_of_origin ?? null},
           gallery_urls = ${JSON.stringify(Array.isArray(body.gallery_urls) ? body.gallery_urls : [])}::jsonb,
+          product_type = COALESCE(${body.product_type === 'made_to_measure' ? 'made_to_measure' : body.product_type === 'product' ? 'product' : null}, product_type),
+          price_from = COALESCE(${typeof body.price_from === 'boolean' ? body.price_from : null}, price_from),
+          brand_slug = ${body.brand_slug ?? null},
+          one_of_a_kind = COALESCE(${typeof body.one_of_a_kind === 'boolean' ? body.one_of_a_kind : null}, one_of_a_kind),
           updated_at = NOW()
         WHERE slug = ${slugParam}
         RETURNING *

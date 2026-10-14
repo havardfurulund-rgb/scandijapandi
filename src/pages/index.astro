@@ -368,6 +368,9 @@ const checkoutHref = (product) =>
         footer_admin: 'Admin',
         product_buy: 'Kjøp nå →',
         product_sold_out: 'Utsolgt',
+        product_enquire: 'Send forespørsel →',
+        product_from: 'fra',
+        product_one_of_a_kind: 'Unikat · kun ett eksemplar',
         designer_cta: 'Søk som designer',
         designer_eyebrow: 'For designere',
         designer_title: 'Søk som designer',
@@ -432,6 +435,9 @@ const checkoutHref = (product) =>
         footer_admin: 'Admin',
         product_buy: 'Buy now →',
         product_sold_out: 'Sold out',
+        product_enquire: 'Enquire →',
+        product_from: 'from',
+        product_one_of_a_kind: 'One of a kind · only one made',
         designer_cta: 'Apply as a designer',
         designer_eyebrow: 'For designers',
         designer_title: 'Apply as a designer',
@@ -496,6 +502,9 @@ const checkoutHref = (product) =>
         footer_admin: '管理',
         product_buy: '購入する →',
         product_sold_out: '売り切れ',
+        product_enquire: 'お問い合わせ →',
+        product_from: '〜から',
+        product_one_of_a_kind: '一点もの · 世界にひとつ',
         designer_cta: 'デザイナーとして応募',
         designer_eyebrow: 'デザイナーの方へ',
         designer_title: 'デザイナーとして応募',
@@ -552,6 +561,8 @@ const checkoutHref = (product) =>
 
   <script>
     const nokFmt = new Intl.NumberFormat('nb-NO', { style: 'currency', currency: 'NOK', maximumFractionDigits: 0 });
+    const jpyFmt = new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY', maximumFractionDigits: 0 });
+    const ENQUIRY_EMAIL = 'hello@scandijapandi.no';
     const ref = new URLSearchParams(window.location.search).get('ref');
 
     function checkoutHref(product) {
@@ -582,10 +593,17 @@ const checkoutHref = (product) =>
                 <a href="/products/${p.slug}" class="hover:text-clay transition-colors"><h3 class="font-serif text-2xl text-ink transition-colors group-hover:text-clay">${p.name || ''}</h3></a>
                 <p class="text-[10px] text-stone uppercase tracking-wider mt-1">${p.producer || ''}</p>
               </div>
-              <span class="text-base font-light text-ink">${nokFmt.format(p.price || 0)}</span>
+              <span class="text-right">
+                ${p.price_from ? `<span class="block text-[9px] uppercase tracking-widest text-stone" data-i18n="product_from">fra</span>` : ''}
+                <span class="block text-base font-light text-ink">${p.price_jpy ? jpyFmt.format(p.price_jpy) : nokFmt.format(p.price || 0)}</span>
+                ${p.price_jpy ? `<span class="block text-[11px] text-stone">${nokFmt.format(p.price || 0)}</span>` : ''}
+              </span>
             </div>
+            ${p.one_of_a_kind ? `<p class="mt-2 text-[9px] uppercase tracking-widest text-clay" data-i18n="product_one_of_a_kind">Unikat · kun ett eksemplar</p>` : ''}
           </div>
-          ${p.in_stock === false
+          ${p.product_type === 'made_to_measure'
+            ? `<a href="mailto:${ENQUIRY_EMAIL}?subject=${encodeURIComponent('Enquiry: ' + (p.name || '') + ' (made to measure)')}" class="mt-8 block w-full border border-ink text-ink py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-ink hover:text-paper" data-i18n="product_enquire">Send forespørsel →</a>`
+            : p.in_stock === false
             ? `<span class="mt-8 block w-full bg-stone/20 text-stone py-4 text-[10px] font-medium uppercase tracking-widest text-center cursor-not-allowed" data-i18n="product_sold_out">Utsolgt</span>`
             : `<a href="${checkoutHref(p)}" class="checkout-btn mt-8 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay shadow-sm" data-i18n="product_buy">Kjøp nå →</a>`
           }
