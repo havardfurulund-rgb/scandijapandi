@@ -8,11 +8,10 @@ Sist oppdatert: 2026-10-14 (Claude)
 - Japan-lansering LIVE 14.10 (PR #97, GO Håvard): 6 Dyra + 4 Skredderen, maker-sider, JPY først
   (kurs 16.6, env JPY_PER_NOK), prisøkning gjennomført, testrad eikebolle deaktivert.
 - stammehandverk.no: kildekode på GitHub (PR #1), Dyra+Skredderen i produktlisten (PR #2) – begge live.
-- DNS: _dmarc TXT lagt inn 14.10 (p=none, rua hf@skmsecure.no).
+- DNS/e-post 14.10: _dmarc TXT (p=none), DKIM CNAME ds202610._domainkey → Domeneshop, videresending hello@/makers@/privacy@/ordre@ → hei@skmsecure.no. #89 kan lukkes.
 
 ## Åpent (trenger Havard)
 - GO på PR #92 (manus).
-- Domeneshop-innlogging for videresending hello@/makers@/privacy@/ordre@ → hei@skmsecure.no (forespørselsknappen peker på hello@).
 - [CONFIRM]-felt (fiber, størrelser, mål, leveringstid skreddersøm) må bekreftes av gården før de kan skrives inn.
 - Intervju med Dyra og Skredderen → biografi på maker-sidene (bevisst utelatt nå).
 
