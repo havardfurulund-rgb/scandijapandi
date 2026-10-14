@@ -23,5 +23,6 @@ Sist oppdatert: 2026-10-14 (Claude)
 - Japansk native-QA (Saki) før JP-tekster indekseres.
 
 ## Regler
+- Never-/treobjekter prises etter japansk markedspris for importert kunsthåndverk (JPY først, NOK avledet): content/launch/PRICING-JP.md.
 - Ingen merge/publisering/betaling uten Havards GO. SJ er plattform, ikke produsent («by Stammehandverk / …»).
 - Produktbilder: kun ekte studio-cutouts. AI-bilder kun IG/Substack. Magasinet heter Kita no Te – Hands of the North.
