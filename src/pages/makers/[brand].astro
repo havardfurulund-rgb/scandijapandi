@@ -70,8 +70,13 @@ const BRANDS: Record<string, Brand> = {
   },
 };
 
+// getStaticPaths is hoisted and runs in isolation: it cannot reference BRANDS
+// above, so the slugs are listed again here. Keep the two in sync.
 export function getStaticPaths() {
-  return Object.keys(BRANDS).map((brand) => ({ params: { brand } }));
+  return [
+    { params: { brand: 'dyra-pa-garden' } },
+    { params: { brand: 'skredderen-fra-damaskus' } },
+  ];
 }
 
 const { brand: brandSlug } = Astro.params;
