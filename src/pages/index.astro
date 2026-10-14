@@ -586,7 +586,7 @@ const checkoutHref = (product) =>
         <article class="reveal is-visible flex flex-col justify-between group">
           <div>
             <div class="relative aspect-[4/5] bg-oat overflow-hidden">
-              <img src="${p.image || ''}" alt="${(p.name || '').replace(/"/g, '&quot;')}" loading="lazy" class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+              <img src="${p.image || ''}" alt="${(p.name || '').replace(/"/g, '&quot;')}" loading="lazy" class="${p.product_type === 'made_to_measure' ? 'h-full w-full object-contain p-12' : 'h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105'}" />
             </div>
             <div class="mt-8 flex justify-between items-baseline border-b border-ink/5 pb-2">
               <div>
