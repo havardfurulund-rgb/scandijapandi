@@ -170,6 +170,29 @@ import Base from '../layouts/Base.astro';
               <input type="number" id="p-stock" min="0" step="1" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="f.eks. 3" />
             </label>
             <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Merke / maker-side (brand_slug)</span>
+              <select id="p-brand-slug" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                <option value="">— ingen —</option>
+                <option value="dyra-pa-garden">Stammehandverk / Dyra på Gården</option>
+                <option value="skredderen-fra-damaskus">Stammehandverk / Skredderen fra Damaskus</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="text-[10px] uppercase tracking-widest text-stone">Type</span>
+              <select id="p-product-type" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none">
+                <option value="product">Produkt (kjøp nå)</option>
+                <option value="made_to_measure">Skreddersøm etter mål (forespørsel, «fra»-pris)</option>
+              </select>
+            </label>
+            <label class="flex items-center gap-3 mt-6">
+              <input type="checkbox" id="p-one-of-a-kind" class="h-4 w-4" />
+              <span class="text-[10px] uppercase tracking-widest text-stone">Unikat (kun ett eksemplar)</span>
+            </label>
+            <label class="flex items-center gap-3 mt-2">
+              <input type="checkbox" id="p-price-from" class="h-4 w-4" />
+              <span class="text-[10px] uppercase tracking-widest text-stone">Vis pris som «fra»</span>
+            </label>
+            <label class="block">
               <span class="text-[10px] uppercase tracking-widest text-stone">Vekt (gram) — for frakt</span>
               <input type="number" id="p-weight-grams" min="0" step="1" class="mt-2 w-full bg-paper p-4 border border-ink/10 focus:border-ink outline-none" placeholder="f.eks. 450" />
             </label>
@@ -2089,6 +2112,10 @@ scandijapandi.no/makers</div>
       $('p-slug-edit').value = p.slug || '';
       $('p-stripe-link').value = p.stripe_link || '';
       $('p-stock').value = p.stock_quantity ?? '';
+      $('p-brand-slug').value = p.brand_slug || '';
+      $('p-product-type').value = p.product_type === 'made_to_measure' ? 'made_to_measure' : 'product';
+      $('p-one-of-a-kind').checked = !!p.one_of_a_kind;
+      $('p-price-from').checked = !!p.price_from;
       $('p-weight-grams').value = p.weight_grams ?? '';
       $('p-country-of-origin').value = p.country_of_origin || '';
       const gallery = Array.isArray(p.gallery_urls) ? p.gallery_urls : [];
@@ -2173,6 +2200,10 @@ scandijapandi.no/makers</div>
         care_instructions:    $('p-care').value.trim() || null,
         stripe_link:          $('p-stripe-link').value.trim() || null,
         stock_quantity:       $('p-stock').value !== '' ? Number($('p-stock').value) : null,
+        brand_slug:           $('p-brand-slug').value || null,
+        product_type:         $('p-product-type').value,
+        one_of_a_kind:        $('p-one-of-a-kind').checked,
+        price_from:           $('p-price-from').checked,
         weight_grams:         $('p-weight-grams').value !== '' ? Number($('p-weight-grams').value) : null,
         country_of_origin:    $('p-country-of-origin').value.trim() || null,
         gallery_urls:         [$('p-gallery-1').value.trim(), $('p-gallery-2').value.trim(), $('p-gallery-3').value.trim(), $('p-gallery-4').value.trim()].filter(Boolean),

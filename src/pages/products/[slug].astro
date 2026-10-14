@@ -37,6 +37,16 @@ const jpyFmt = new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JP
 
 const gallery = Array.isArray(product.gallery_urls) ? product.gallery_urls : [];
 
+// Japan launch: made-to-measure listings are enquiry-only ("from" prices, no
+// add-to-cart); one-of-a-kind pieces carry a badge; makers link to their page.
+const madeToMeasure = product.product_type === 'made_to_measure';
+const priceFrom = Boolean(product.price_from);
+const oneOfAKind = Boolean(product.one_of_a_kind) || product.stock_quantity === 1;
+const soldOut = product.in_stock === false;
+const makerHref = product.brand_slug ? `/makers/${product.brand_slug}` : null;
+const ENQUIRY_EMAIL = 'hello@scandijapandi.no';
+const enquiryHref = `mailto:${ENQUIRY_EMAIL}?subject=${encodeURIComponent(`Enquiry: ${product.name} (made to measure)`)}`;
+
 // Schema.org Product markup so Google can show price and availability in
 // results. Escaping "<" keeps a stray "</script>" inside any product copy from
 // closing the tag early.
@@ -54,7 +64,9 @@ const productJsonLd = JSON.stringify({
     '@type': 'Offer',
     price: product.price_nok,
     priceCurrency: 'NOK',
-    availability: 'https://schema.org/InStock',
+    availability: madeToMeasure
+      ? 'https://schema.org/PreOrder'
+      : soldOut ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
     url: `https://scandijapandi.no/products/${product.slug}`,
     seller: {
       '@type': 'Organization',
@@ -64,6 +76,7 @@ const productJsonLd = JSON.stringify({
   manufacturer: {
     '@type': 'Organization',
     name: product.producer || 'ScandiJapandi',
+    ...(makerHref ? { url: `https://scandijapandi.no${makerHref}` } : {}),
   },
 }).replace(/</g, '\\u003c');
 ---
@@ -138,20 +151,29 @@ const productJsonLd = JSON.stringify({
             {product.name}
           </h1>
 
-          <!-- Producer -->
-          <p class="text-sm text-stone mb-8">{product.producer}</p>
+          <!-- Producer / maker (Scandi Japandi is a curated platform: every piece is credited to its maker) -->
+          <p class="text-sm text-stone mb-3">
+            <span data-i18n-by>by</span>
+            {makerHref
+              ? <a href={makerHref} class="text-ink underline decoration-ink/20 underline-offset-4 hover:decoration-clay transition-colors">{product.producer}</a>
+              : <span class="text-ink">{product.producer}</span>}
+          </p>
+          {(oneOfAKind || madeToMeasure) && (
+            <p class="text-[10px] uppercase tracking-widest text-clay mb-8" data-i18n-badge data-badge={madeToMeasure ? 'mtm' : 'ooak'}>
+              {madeToMeasure ? 'Made to measure · skreddersøm etter mål' : 'One of a kind · only one made'}
+            </p>
+          )}
 
           <!-- Price -->
           <div class="mb-8 pb-8 border-b border-ink/8">
-            <div class="flex items-baseline gap-4">
-              <span id="price-nok" class="font-serif text-3xl text-ink">
+            <div class="flex items-baseline gap-4 flex-wrap">
+              {priceFrom && <span class="text-[10px] uppercase tracking-widest text-stone" data-i18n-from>from</span>}
+              <span id="price-jpy" class="font-serif text-3xl text-ink">
+                {jpyFmt.format(product.price_jpy)}
+              </span>
+              <span id="price-nok" class="text-base text-stone">
                 {nokFmt.format(product.price_nok)}
               </span>
-              {product.price_jpy && (
-                <span id="price-jpy" class="text-base text-stone">
-                  {jpyFmt.format(product.price_jpy)}
-                </span>
-              )}
             </div>
             <p class="text-[10px] text-stone mt-2 uppercase tracking-wider" data-i18n-shipping>
               Frakt beregnes i kassen · Toll kan påløpe ved import
@@ -165,14 +187,33 @@ const productJsonLd = JSON.stringify({
             </p>
           )}
 
-          <!-- Buy button -->
-          <a
-            id="checkout-btn"
-            href={`/api/checkout?slug=${product.slug}`}
-            class="block w-full bg-ink text-paper py-5 text-[11px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay mb-4"
-          >
-            <span data-i18n-buy>Kjøp nå</span>
-          </a>
+          <!-- Buy / enquire / sold out -->
+          {madeToMeasure ? (
+            <a
+              id="enquiry-btn"
+              href={enquiryHref}
+              class="block w-full bg-ink text-paper py-5 text-[11px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay mb-2"
+            >
+              <span data-i18n-enquire>Enquire about this piece</span>
+            </a>
+          ) : soldOut ? (
+            <span class="block w-full bg-stone/20 text-stone py-5 text-[11px] font-medium uppercase tracking-widest text-center cursor-not-allowed mb-4">
+              <span data-i18n-soldout>Sold</span>
+            </span>
+          ) : (
+            <a
+              id="checkout-btn"
+              href={`/api/checkout?slug=${product.slug}`}
+              class="block w-full bg-ink text-paper py-5 text-[11px] font-medium uppercase tracking-widest text-center transition-all duration-300 hover:bg-clay mb-4"
+            >
+              <span data-i18n-buy>Kjøp nå</span>
+            </a>
+          )}
+          {madeToMeasure && (
+            <p class="text-[10px] text-stone leading-relaxed mb-6" data-i18n-mtm-note>
+              You send your measurements; the garment is cut for you alone. Lead time, fabrics and process: details on request.
+            </p>
+          )}
 
           <a id="story-link" href="/stories" class="hidden text-[10px] uppercase tracking-widest text-clay hover:text-ink transition-colors mb-6 inline-flex items-center gap-2">
   <img src="/brand/kitanote-avatar.svg" alt="" class="h-5 w-5" /> <span data-i18n-story>Se historien</span> →
@@ -301,6 +342,13 @@ const productJsonLd = JSON.stringify({
     no: {
       back: 'Tilbake',
       buy: 'Kjøp nå',
+      by: 'av',
+      from: 'fra',
+      enquire: 'Send forespørsel',
+      soldout: 'Solgt',
+      'badge-ooak': 'Unikat · kun ett eksemplar',
+      'badge-mtm': 'Skreddersøm etter mål',
+      'mtm-note': 'Du sender dine mål; plagget skjæres for deg alene. Leveringstid, stoffer og prosess: på forespørsel.',
       shipping: 'Frakt beregnes i kassen · Toll kan påløpe ved import',
       material: 'Materiale',
       dimensions: 'Dimensjoner',
@@ -310,6 +358,13 @@ const productJsonLd = JSON.stringify({
     en: {
       back: 'Back',
       buy: 'Buy now',
+      by: 'by',
+      from: 'from',
+      enquire: 'Enquire about this piece',
+      soldout: 'Sold',
+      'badge-ooak': 'One of a kind · only one made',
+      'badge-mtm': 'Made to measure · skreddersøm etter mål',
+      'mtm-note': 'You send your measurements; the garment is cut for you alone. Lead time, fabrics and process: details on request.',
       shipping: 'Shipping calculated at checkout · Import duties may apply',
       material: 'Material',
       dimensions: 'Dimensions',
@@ -319,6 +374,13 @@ const productJsonLd = JSON.stringify({
     jp: {
       back: '戻る',
       buy: '今すぐ購入',
+      by: '作り手',
+      from: '〜から',
+      enquire: 'お問い合わせ',
+      soldout: '完売',
+      'badge-ooak': '一点もの · 世界にひとつ',
+      'badge-mtm': 'オーダーメイド · 採寸仕立て',
+      'mtm-note': 'お客様の採寸をお送りいただき、お一人のために裁断します。納期・生地・工程はお問い合わせください。',
       shipping: '送料はチェックアウト時に計算されます · 輸入関税が発生する場合があります',
       material: '素材',
       dimensions: 'サイズ',
@@ -342,6 +404,12 @@ const productJsonLd = JSON.stringify({
     document.querySelectorAll('[data-i18n-dimensions]').forEach(el => el.textContent = t.dimensions);
     document.querySelectorAll('[data-i18n-care]').forEach(el => el.textContent = t.care);
     document.querySelectorAll('[data-i18n-back-collection]').forEach(el => el.textContent = t['back-collection']);
+    document.querySelectorAll('[data-i18n-by]').forEach(el => el.textContent = t.by);
+    document.querySelectorAll('[data-i18n-from]').forEach(el => el.textContent = t.from);
+    document.querySelectorAll('[data-i18n-enquire]').forEach(el => el.textContent = t.enquire);
+    document.querySelectorAll('[data-i18n-soldout]').forEach(el => el.textContent = t.soldout);
+    document.querySelectorAll('[data-i18n-mtm-note]').forEach(el => el.textContent = t['mtm-note']);
+    document.querySelectorAll('[data-i18n-badge]').forEach(el => el.textContent = t['badge-' + (el.getAttribute('data-badge') || 'ooak')]);
 
     // Product content
     const nameEl = document.getElementById('product-name');
