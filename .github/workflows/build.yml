@@ -1,10 +1,14 @@
 # Build check for pull requests: catches Astro/TypeScript build errors on
-# GitHub so the log is readable from the PR, independent of Netlify.
+# GitHub so the log is readable from the PR, independent of Netlify. On
+# failure the tail of the build output is posted as a PR comment.
 name: build
 on:
   pull_request:
   push:
     branches: [main]
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,6 +19,17 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - name: Build
+        id: build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build.log
         env:
           PUBLIC_SITE_URL: https://scandijapandi.no
+      - name: Report failure on PR
+        if: failure() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { echo "**Build failed** (\`${GITHUB_SHA::7}\`). Last 60 lines:"; echo; echo '```'; tail -n 60 build.log | cut -c1-400; echo '```'; } > comment.md
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file comment.md
