@@ -3,19 +3,19 @@ Voice on Scandi Japandi: curator, not producer. Always credit the maker as "by S
 FX used: 1 NOK = 16.6 JPY (spot 13 Oct 2026, exa/forex JPYNOK 0.060148). JPY rounded to Japanese price points (…800). Prices include no shipping/duties. Recheck the rate before going live.
 Every fact marked [CONFIRM] must be checked with the farm before publishing. Fibre blends, maker names and time-to-make are NOT known yet.
 
-Price logic: hand-knit, hand-spun-at-farm pieces from small Nordic makers retail in Japanese select shops at ¥40–200k (benchmarks: hand-spun/hand-knit 未未 MIBI and KASAGI farm wool; Nordic knit at Lapuan Kankurit Omotesando, Tokyo). The collection positions the pieces at the top of that range: one-of-a-kind, traceable to named animals.
+Price logic: hand-knit, hand-spun-at-farm pieces from small Nordic makers retail in Japanese select shops at ¥40–200k (benchmarks: hand-spun/hand-knit 未未 MIBI and KASAGI farm wool; Nordic knit at Lapuan Kankurit Omotesando, Tokyo). Adjusted 16 Oct 2026 (Havard): the pieces now sit in the upper-middle of that range (premium but competitive), not at the very top.
 
 Both brands are made at the same farm: Langrønningen (Norway).
 
 ## Stammehandverk / Dyra på Gården: Scandi Japandi Collection (6 wool pieces)
 | # | Product | Photo | NOK | JPY |
 |---|---|---|---|---|
-| 1 | Yoke Sweater: Nordic Pattern, hand-knit | img/IMG_5475.jpg | 12 000 | ¥198,000 |
-| 2 | Natural Brown Cardigan, hand-knit | img/IMG_5476.jpg | 10 500 | ¥174,800 |
-| 3 | Lace Scarf: Undyed Cream | img/IMG_5479.jpg | 4 800 | ¥79,800 |
-| 4 | Alpaca Motif Knitted Bag | img/IMG_5477.jpg | 3 600 | ¥59,800 |
-| 5 | Ribbed Beanie: Natural Brown | img/IMG_5465.jpg | 2 400 | ¥39,800 |
-| 6 | Farm Socks: Heather Grey | img/IMG_5469.jpg | 1 800 | ¥29,800 |
+| 1 | Yoke Sweater: Nordic Pattern, hand-knit | img/IMG_5475.jpg | 6 900 | ¥114,800 |
+| 2 | Natural Brown Cardigan, hand-knit | img/IMG_5476.jpg | 5 900 | ¥97,800 |
+| 3 | Lace Scarf: Undyed Cream | img/IMG_5479.jpg | 2 400 | ¥39,800 |
+| 4 | Alpaca Motif Knitted Bag | img/IMG_5477.jpg | 1 900 | ¥31,800 |
+| 5 | Ribbed Beanie: Natural Brown | img/IMG_5465.jpg | 1 200 | ¥19,800 |
+| 6 | Farm Socks: Heather Grey | img/IMG_5469.jpg | 890 | ¥14,800 |
 Process/animal images for galleries: IMG_5483–5485 (loom, spinning wheel), 5491–5494 (raw fleece), 5499 (angora rabbit), 5503–5505 (goats).
 
 ### 1. Yoke Sweater: Nordic Pattern
@@ -50,10 +50,10 @@ Other pieces in the shoot that can be added later: hats IMG_5456/5458/5459/5460/
 NO IMAGES FOUND on Drive (searched "Laagen", "Skredder", "Damask", "tailor"). Listings ready, images missing.
 | Product | NOK | JPY |
 |---|---|---|
-| Bespoke Shirt: made to measure | from 4 800 | from ¥79,800 |
-| Bespoke Trousers: made to measure | from 6 500 | from ¥107,800 |
-| Bespoke Jacket: made to your measurements | from 12 800 | from ¥212,800 |
-| Alteration / re-cut of a treasured garment | from 1 200 | from ¥19,800 |
-(Rescaled 13 Oct per Havard: garments start at 4,800 NOK.)
+| Bespoke Shirt: made to measure | from 3 400 | from ¥56,800 |
+| Bespoke Trousers: made to measure | from 4 900 | from ¥81,800 |
+| Bespoke Jacket: made to your measurements | from 11 800 | from ¥195,800 |
+| Alteration / re-cut of a treasured garment | from 650 | from ¥10,800 |
+(Rescaled 13 Oct per Havard; adjusted 16 Oct 2026 to market-aligned levels, see migration 20261016090000.)
 Copy (each): "Cut and sewn by hand to your own measurements by Skredderen fra Damaskus, the tailor at Langrønningen, the Norwegian farm where Dyra på Gården's wool pieces are also made. Not off-the-rack: made to measure (skreddersøm etter mål). You send measurements (guide + video call [CONFIRM process]); the garment is cut for you alone. Lead time [CONFIRM] weeks. Fabric options [CONFIRM]."
 [PLACEHOLDER – INTERVIEW: the tailor's name, training, story. Do not write any of it until he has been interviewed.]
