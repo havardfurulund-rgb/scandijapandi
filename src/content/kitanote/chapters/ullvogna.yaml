@@ -1,10 +1,10 @@
 # Kapittel: Ullvogna AS. Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
-# Japansk er ikke kvalitetssikret (jp_qa: false). Stedet i tittelen må bekreftes.
+# Japansk er korrekturlest 16.10.2026 (jp_qa: true). Stedet i tittelen må bekreftes.
 slug: ullvogna
 order: 1
 published: true
 draft: true
-jp_qa: false
+jp_qa: true
 status: published
 maker_name: Ullvogna AS
 maker_name_ja: ウルヴォグナ
@@ -17,14 +17,14 @@ title:
   no: Norge. Ull. Varme.
 title_draft: true
 dek:
-  ja: ウルヴォグナ（Ullvogna）は、ウール100％の製品をつくっています。掲げている言葉は「私たちが、あなたを暖めます」です。
+  ja: ウルヴォグナ（Ullvogna）は、ウール100％の製品をつくっています。掲げる言葉は「あなたを、暖かく」です。
   en: Ullvogna makes goods in one hundred per cent pure wool. Their line is “We keep you warm”.
   no: Ullvogna lager produkter i hundre prosent ren ull. Løftet deres er «Vi holder dere varme».
 body:
   ja: |-
-    ウールは、もっとも古い素材のひとつです。呼吸をし、湿っていても暖かく、長い年月の使用に耐えます。
+    ウールは、人がもっとも古くから使ってきた素材のひとつです。呼吸し、湿っても暖かさを保ち、長い年月の使用に耐えます。
 
-    ウルヴォグナが使うのは、純粋なウールだけです。この章では、繊維から一枚の服になるまでを追います。
+    ウルヴォグナが使うのは、混じりけのないウールだけです。この章では、繊維から一枚の服になるまでを追います。
   en: |-
     Wool is one of the oldest materials we have. It breathes, stays warm when damp and lasts for years of use.
 
@@ -35,19 +35,19 @@ body:
     Ullvogna bruker bare ren ull. Kapitlet følger arbeidet fra fiber til ferdig plagg.
 interview:
   - q:
-      ja: 「私たちが、あなたを暖めます」という言葉には、どんな意味がありますか。
+      ja: 「あなたを、暖かく」という言葉には、どんな思いが込められていますか。
       en: What does “We keep you warm” mean to you?
       no: Hva betyr «Vi holder dere varme» for dere?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。言葉の裏にある約束について、二文から四文ほど。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。言葉の裏にある約束について、二文から四文ほど。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: two to four sentences about the promise behind the words."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: to til fire setninger om løftet bak ordene."
   - q:
-      ja: なぜ純粋なウールだけを使うのですか。
+      ja: なぜウール100％なのですか。
       en: Why only pure wool?
       no: Hvorfor bare ren ull?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。素材の選び方と、ほかに何も混ぜないことについて。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。素材の選び方と、ほかに何も混ぜないことについて。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the choice of material, and what happens when nothing else is blended in."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om materialvalget, og hva som skjer når man ikke blander inn noe annet."
   - q:
@@ -55,7 +55,7 @@ interview:
       en: How should a wool piece be cared for?
       no: Hvordan bør et ullplagg stelles?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。風に当てること、あまり洗わないこと、待つことについて。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。風に当てること、あまり洗わないこと、待つことについて。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: airing, little washing and patience."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: lufting, lite vask og tålmodighet."
 quotes:

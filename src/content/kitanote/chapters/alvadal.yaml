@@ -1,10 +1,10 @@
 # Kapittel: Alvadal (Magnus). Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
-# Japansk er ikke kvalitetssikret (jp_qa: false).
+# Japansk er korrekturlest 16.10.2026 (jp_qa: true).
 slug: alvadal
 order: 3
 published: true
 draft: true
-jp_qa: false
+jp_qa: true
 status: published
 maker_name: Alvadal
 maker_name_ja: アルヴァダール
@@ -17,14 +17,14 @@ title:
   en: Sweden. Wood. Magnus.
   no: Sverige. Tre. Magnus.
 dek:
-  ja: アルヴァダール（Alvadal）のマグヌスさんは、スウェーデンで木のまな板をつくっています。まな板には生涯保証がついています。
+  ja: スウェーデンのアルヴァダール（Alvadal）で、マグヌスさんが生涯保証つきの木のまな板をつくっています。
   en: Magnus at Alvadal makes wooden cutting boards in Sweden, with a lifetime warranty.
   no: Magnus i Alvadal lager skjærefjøler i tre i Sverige, med livstidsgaranti.
 body:
   ja: |-
     まな板は、オイルで手入れをしながら、長く台所で使う道具です。
 
-    この章では、スウェーデンのアルヴァダールを訪ね、一枚の板ができるまでと、その手入れの方法を見ます。
+    この章では、スウェーデンのアルヴァダールを訪ね、一枚の板ができるまでと、その手入れの仕方をたどります。
   en: |-
     A cutting board is a tool that is cared for with oil and stays in a kitchen for many years.
 
@@ -39,7 +39,7 @@ interview:
       en: Why offer a lifetime warranty?
       no: Hvorfor gi livstidsgaranti?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。約束と、それにともなう責任について。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。約束と、それにともなう責任について。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the promise, and the responsibility that comes with it."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om løftet, og om ansvaret som følger med."
   - q:
@@ -47,15 +47,15 @@ interview:
       en: How do you choose the wood?
       no: Hvordan velger du treet?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。木の種類と木目、手が最初に感じることについて。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。木の種類と木目、手が最初に感じることについて。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about species, grain and what the hands notice first."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om tresorter, fiberretning og hva hendene merker først."
   - q:
-      ja: まな板は、どのように手入れをしますか。
+      ja: まな板は、どのように手入れをすればよいですか。
       en: How should a board be cared for?
       no: Hvordan stelles et brett?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。オイルと乾燥、急がないことについて。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。オイルと乾燥、急がないことについて。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about oil, drying and calm."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om olje, tørking og ro."
 quotes:

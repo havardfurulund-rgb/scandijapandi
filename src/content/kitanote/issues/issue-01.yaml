@@ -1,17 +1,17 @@
 # 北の手 · Kita no Te — Issue 01 «Hender fra Nord».
-# Alle tekster er UTKAST. Japansk er ikke kvalitetssikret (jp_qa: false).
+# Alle tekster er UTKAST. Japansk er korrekturlest 16.10.2026 (jp_qa: true).
 number: 1
 title:
   ja: 北欧の作り手
   en: Hands from the North
   no: Hender fra Nord
 season:
-  ja: 2026年 秋
+  ja: 2026年秋
   en: Autumn 2026
   no: Høst 2026
 published_at: 2026-10-12
 draft: true
-jp_qa: false
+jp_qa: true
 # Bio-tekstene fra merkevareguiden (docs/brand/kitanote/BRAND_GUIDE.md).
 manifest:
   ja: 北欧の作り手を、その工房で。彼らの声を、日本語で。
@@ -43,11 +43,11 @@ letter:
     ja: |-
       日本には、北欧デザインの写真がたくさんあります。けれど、作り手の声はほとんど届いていません。
 
-      北の手は、北欧の作り手をその工房に訪ねる記録です。質問は画面の外からします。話すのは作り手です。その言葉に、日本語の字幕をつけてお届けします。
+      北の手は、北欧の作り手をその工房に訪ねる記録です。聞き手は画面に映りません。語るのは、作り手自身です。その言葉に、日本語の字幕をつけてお届けします。
 
-      第一号では、ノルウェーとスウェーデンの四つの工房を訪ねます。ウール、ラベンダー、木、ホーロー。それぞれの場所で、ものがどのように生まれるのかを記録しました。
+      創刊号では、ノルウェーとスウェーデンの四つの工房を訪ねます。ウール、ラベンダー、木、ホーロー。それぞれの場所で、ものがどのように生まれるのかを記録します。
 
-      各章の終わりには、その回に登場した作品を載せています。
+      各章の最後に、その回に登場した作品を紹介しています。
     en: |-
       There are a thousand pictures of Nordic design in Japan. There are almost no voices.
 
@@ -81,7 +81,7 @@ colophon:
     - role: { ja: 文, en: Words, no: Tekst }
       names: [{ ja: 下書き, en: Draft, no: Utkast }]
     - role: { ja: 日本語, en: Japanese, no: Japansk }
-      names: [{ ja: 下書き · ネイティブ確認待ち, en: "Draft · awaiting native review", no: "Utkast · venter på native QA" }]
+      names: [{ ja: 校正済み, en: "Proofread", no: "Korrekturlest" }]
   note:
     ja: このプレビューの映像と写真はすべて仮のものです。工房での撮影は2026年10月に行い、その後差し替えます。
     en: All films and images in this preview are placeholders. Footage from the workshops will be added after filming in October 2026.
