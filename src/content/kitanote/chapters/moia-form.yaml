@@ -1,10 +1,10 @@
 # Kapittel: MOIA form (Ruby Semb). Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
-# Japansk er ikke kvalitetssikret (jp_qa: false).
+# Japansk er korrekturlest 16.10.2026 (jp_qa: true).
 slug: moia-form
 order: 4
 published: true
 draft: true
-jp_qa: false
+jp_qa: true
 status: published
 maker_name: MOIA form
 maker_name_ja: モイア・フォルム
@@ -16,12 +16,12 @@ title:
   en: Norway. Wool and enamel. Ruby.
   no: Norge. Ull og emalje. Ruby.
 dek:
-  ja: ルビー・セムさんのモイア・フォルム（MOIA form）は、ウールのブランケットとシートパッド、ホーローのマグ、キッチンテキスタイルをつくっています。
+  ja: ルビー・セムさんのモイア・フォルム（MOIA form）は、ウールのブランケットやシートパッド、ホーローのマグ、キッチンテキスタイルを手がけています。
   en: Ruby Semb and MOIA form make wool throws, seat pads, enamel mugs and kitchen textiles.
   no: Ruby Semb og MOIA form lager ullpledd, sitteunderlag, emaljekrus og kjøkkentekstiler.
 body:
   ja: |-
-    ソファに掛けたブランケット。いつも出しておくマグ。涼しい夜、玄関の段に敷くシートパッド。毎日、手に触れるものです。
+    ソファに掛けたブランケット。いつも出しておくマグ。涼しい夜、玄関先の階段に敷くシートパッド。どれも、毎日手に触れるものです。
 
     この章では、モイア・フォルムのかたちと色、その背景にある考えを見ていきます。
   en: |-
@@ -38,7 +38,7 @@ interview:
       en: What was the first thing you made?
       no: Hva var det første du laget?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。モイア・フォルムの始まりについて。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。モイア・フォルムの始まりについて。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the origins of MOIA form."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om opprinnelsen til MOIA form."
   - q:
@@ -46,7 +46,7 @@ interview:
       en: How do you choose colours?
       no: Hvordan velger du farger?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。色の組み合わせ、光、季節について。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。色の組み合わせ、光、季節について。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about palette, light and seasons."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om palett, lys og årstider."
   - q:
@@ -54,7 +54,7 @@ interview:
       en: Which object do you use most yourself?
       no: Hvilket objekt bruker du mest selv?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。家でいちばん使うものについて。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。家でいちばん使うものについて。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the favourite at home."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om favoritten hjemme."
 quotes:

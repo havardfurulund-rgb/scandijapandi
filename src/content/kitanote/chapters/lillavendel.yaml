@@ -1,10 +1,10 @@
 # Kapittel: Lillavendel (Guro Rimstad). Alt innhold er UTKAST, alle medier er PLASSHOLDERE.
-# Japansk er ikke kvalitetssikret (jp_qa: false).
+# Japansk er korrekturlest 16.10.2026 (jp_qa: true).
 slug: lillavendel
 order: 2
 published: true
 draft: true
-jp_qa: false
+jp_qa: true
 status: published
 maker_name: Lillavendel
 maker_name_ja: リラヴェンデル
@@ -16,14 +16,14 @@ title:
   en: Helgeroa. Lavender. Guro.
   no: Helgeroa. Lavendel. Guro.
 dek:
-  ja: ヴェストフォル県ヘルゲロア（Helgeroa）で、グーロ・リムスタさんが石けんとキャンドル、農場の品をつくっています。
+  ja: ヴェストフォル県ヘルゲロア（Helgeroa）で、グーロ・リムスタさんが石けん、キャンドル、農場の産品をつくっています。
   en: In Helgeroa, Vestfold, Guro Rimstad makes soap, candles and farm goods.
   no: I Helgeroa i Vestfold lager Guro Rimstad såper, lys og gårdsprodukter.
 body:
   ja: |-
-    リラヴェンデル（Lillavendel）では、仕事の速さを決めるのは農場です。道具は、手と鼻です。
+    リラヴェンデル（Lillavendel）では、仕事のペースを決めるのは、農場です。道具は、手と鼻です。
 
-    この章では、グーロさんの一日を、原料から石けんとキャンドルができあがるまで追います。
+    この章では、原料から石けんとキャンドルができあがるまで、グーロさんの仕事の一日を追います。
   en: |-
     At Lillavendel the farm sets the pace. The tools are hands and nose.
 
@@ -34,11 +34,11 @@ body:
     Kapitlet følger Guro gjennom en arbeidsdag, fra råvare til ferdig såpe og lys.
 interview:
   - q:
-      ja: リラヴェンデルは、どのように始まりましたか。
+      ja: リラヴェンデルは、どのように始まったのですか。
       en: How did Lillavendel begin?
       no: Hvordan begynte Lillavendel?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。始まりと、その場所について。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。始まりと、その場所について。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the beginning, and about the place."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om begynnelsen, og om stedet."
   - q:
@@ -46,7 +46,7 @@ interview:
       en: What makes a good soap?
       no: Hva gjør en god såpe?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。原料と時間、目に見えない小さな選択について。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。原料と時間、目に見えない小さな選択について。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about ingredients, time and the small choices that don’t show."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om råvarer, tid og de små valgene som ikke synes."
   - q:
@@ -54,7 +54,7 @@ interview:
       en: What does an ordinary day on the farm look like?
       no: Hvordan ser en vanlig dag ut på gården?
     a:
-      ja: "［仮］作り手自身の答えは、インタビューの後に入ります。紙面のリズムを確かめるため、実際に近い長さにしています。一年のリズムについて。"
+      ja: "［仮］作り手自身の回答は、取材後に掲載します。誌面のリズムを確かめるため、実際に近い長さの仮の文章を入れています。一年のリズムについて。"
       en: "[draft] Placeholder. The maker’s own answer is added after the interview. The text is roughly the right length so the rhythm of the spread can be judged: about the rhythm of the year."
       no: "[utkast] Plassholder. Makerens eget svar skrives inn etter intervjuet. Teksten har omtrent riktig lengde, slik at rytmen i oppslaget kan vurderes: om rytmen gjennom året."
 quotes:
