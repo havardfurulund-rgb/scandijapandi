@@ -26,7 +26,7 @@ type Brand = {
   logoAlt: string;
   story: string[];
   craft: string;
-  sibling: string;    // the other maker at Langrønningen
+  sibling: string;    // the other Stammehandverk maker
   productsHeading: string;
   productsNote?: string;
 };
@@ -36,13 +36,13 @@ const BRANDS: Record<string, Brand> = {
     slug: 'dyra-pa-garden',
     name: 'Dyra på Gården',
     collective: 'Stammehandverk',
-    kicker: 'Hand-spun, hand-knit wool · Langrønningen, Norway',
+    kicker: 'Hand-spun, hand-knit wool · Norway',
     tagline: 'Wool you can trace to the animal.',
     logoDark: '/brand/dyra/dyra-logo-dark.svg',
     logoLight: '/brand/dyra/dyra-logo-light.svg',
     logoAlt: 'Dyra på Gården — sheep and wool cloud mark',
     story: [
-      'At Langrønningen, a farm in Norway, the wool starts with the animals: alpacas, mohair goats and angora rabbits. They live outdoors in the grass and in the straw of the barn. Their fleece is carded and spun by hand on the farm, at a wooden spinning wheel, then woven on an old loom or knitted into pieces that are made one at a time.',
+      'On a small farm in Norway, the wool starts with the animals: alpacas, mohair goats and angora rabbits. They live outdoors in the grass and in the straw of the barn. Their fleece is carded and spun by hand on the farm, at a wooden spinning wheel, then woven on an old loom or knitted into pieces that are made one at a time.',
       'Nothing here is mass-produced. Each sweater, scarf and hat is the only one of its kind, and the colour is often just the colour the animal grew.',
     ],
     craft: 'Wool · hand-knit · one of a kind',
@@ -54,13 +54,13 @@ const BRANDS: Record<string, Brand> = {
     slug: 'skredderen-fra-damaskus',
     name: 'Skredderen fra Damaskus',
     collective: 'Stammehandverk',
-    kicker: 'Made-to-measure tailoring · Langrønningen, Norway',
+    kicker: 'Made-to-measure tailoring · Norway',
     tagline: 'Made for you alone.',
     logoDark: '/brand/skredderen/skredderen-logo-dark.svg',
     logoLight: '/brand/skredderen/skredderen-logo-light.svg',
     logoAlt: 'Skredderen fra Damaskus — needle and jasmine mark',
     story: [
-      'The Tailor from Damascus works at Langrønningen, the Norwegian farm where the Dyra på Gården wool pieces are also made. Every garment is made to measure (skreddersøm etter mål): cut for one body, sewn by hand, never off the rack.',
+      'The Tailor from Damascus works in Norway. Every garment is made to measure (skreddersøm etter mål): cut for one body, sewn by hand, never off the rack.',
       'The jasmine in the mark is Damascus’s flower; the needle is the work.',
     ],
     craft: 'Made to measure · skreddersøm etter mål',
@@ -143,7 +143,7 @@ const description = `${brand.story[0].slice(0, 150)}…`;
       </div>
     </section>
 
-    <!-- ALSO MADE AT LANGRØNNINGEN -->
+    <!-- ALSO FROM STAMMEHANDVERK -->
     <section class="bg-ink text-paper py-20 lg:py-24">
       <div class="mx-auto max-w-6xl px-6 sm:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div class="lg:col-span-3">
@@ -152,7 +152,7 @@ const description = `${brand.story[0].slice(0, 150)}…`;
           </div>
         </div>
         <div class="lg:col-span-9">
-          <p class="text-[10px] uppercase tracking-widest text-paper/50 mb-4">Also made at Langrønningen</p>
+          <p class="text-[10px] uppercase tracking-widest text-paper/50 mb-4">Also from {brand.collective}</p>
           <h2 class="font-serif text-3xl lg:text-4xl font-light mb-4">{sibling.name}</h2>
           <p class="text-paper/70 font-light leading-relaxed max-w-xl mb-8">{sibling.story[0]}</p>
           <a href={`/makers/${sibling.slug}`} class="inline-block border border-paper/40 text-paper px-8 py-4 text-[10px] uppercase tracking-widest hover:bg-paper hover:text-ink transition-colors">

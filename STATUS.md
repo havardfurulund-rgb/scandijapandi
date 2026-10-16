@@ -21,6 +21,7 @@ Sist oppdatert: 2026-10-14 (Claude)
 - Japansk native-QA (Saki) før JP-tekster indekseres.
 
 ## Regler
+- SJ-copy nevner aldri gården (Langrønningen), aldri 500+-målet, og løfter ikke frem enkeltmakere. Gårdskoblingen hører kun til stammehandverk.no (Havard 16.10).
 - Never-/treobjekter prises etter japansk markedspris for importert kunsthåndverk (JPY først, NOK avledet): content/launch/PRICING-JP.md.
 - Ingen merge/publisering/betaling uten Havards GO. SJ er plattform, ikke produsent («by Stammehandverk / …»).
 - Produktbilder: kun ekte studio-cutouts. AI-bilder kun IG/Substack. Magasinet heter Kita no Te – Hands of the North.

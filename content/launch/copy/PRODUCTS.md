@@ -5,7 +5,7 @@ Every fact marked [CONFIRM] must be checked with the farm before publishing. Fib
 
 Price logic: hand-knit, hand-spun-at-farm pieces from small Nordic makers retail in Japanese select shops at ¥40–200k (benchmarks: hand-spun/hand-knit 未未 MIBI and KASAGI farm wool; Nordic knit at Lapuan Kankurit Omotesando, Tokyo). Adjusted 16 Oct 2026 (Havard): the pieces now sit in the upper-middle of that range (premium but competitive), not at the very top.
 
-Both brands are made at the same farm: Langrønningen (Norway).
+Both brands are Stammehandverk makers in Norway. Never name the farm on Scandi Japandi (Havard 16.10.2026); the farm tie-in belongs only to stammehandverk.no.
 
 ## Stammehandverk / Dyra på Gården: Scandi Japandi Collection (6 wool pieces)
 | # | Product | Photo | NOK | JPY |
@@ -19,7 +19,7 @@ Both brands are made at the same farm: Langrønningen (Norway).
 Process/animal images for galleries: IMG_5483–5485 (loom, spinning wheel), 5491–5494 (raw fleece), 5499 (angora rabbit), 5503–5505 (goats).
 
 ### 1. Yoke Sweater: Nordic Pattern
-A one-of-a-kind sweater knitted by hand at Langrønningen, a farm in Norway, with a traditional patterned yoke worked stitch by stitch. Wool from the farm's own animals [CONFIRM fibre: alpaca / mohair / angora / sheep blend]. No two are alike: this is the only one.
+A one-of-a-kind sweater knitted by hand on a small farm in Norway, with a traditional patterned yoke worked stitch by stitch. Wool from the farm's own animals [CONFIRM fibre: alpaca / mohair / angora / sheep blend]. No two are alike: this is the only one.
 Details: Hand-knit in Norway · Fibre [CONFIRM] · Size [CONFIRM, measure flat] · Hand wash cold, dry flat · Ships from Norway.
 Maker note: [PLACEHOLDER – INTERVIEW: who knitted this, how long it took]
 
@@ -37,7 +37,7 @@ A small knitted bag with an alpaca worked into the front. A portrait of one of t
 Details: Hand-knit · Shoulder strap · Dimensions [CONFIRM].
 
 ### 5. Ribbed Beanie: Natural Brown
-A deep-ribbed hat in undyed brown wool, with a folded brim. Simple and soft. Made at Langrønningen.
+A deep-ribbed hat in undyed brown wool, with a folded brim. Simple and soft. Hand-knit in Norway.
 Details: Hand-knit · Fibre [CONFIRM] · One size.
 
 ### 6. Farm Socks: Heather Grey
@@ -55,5 +55,5 @@ NO IMAGES FOUND on Drive (searched "Laagen", "Skredder", "Damask", "tailor"). Li
 | Bespoke Jacket: made to your measurements | from 11 800 | from ¥195,800 |
 | Alteration / re-cut of a treasured garment | from 650 | from ¥10,800 |
 (Rescaled 13 Oct per Havard; adjusted 16 Oct 2026 to market-aligned levels, see migration 20261016090000.)
-Copy (each): "Cut and sewn by hand to your own measurements by Skredderen fra Damaskus, the tailor at Langrønningen, the Norwegian farm where Dyra på Gården's wool pieces are also made. Not off-the-rack: made to measure (skreddersøm etter mål). You send measurements (guide + video call [CONFIRM process]); the garment is cut for you alone. Lead time [CONFIRM] weeks. Fabric options [CONFIRM]."
+Copy (each): "Cut and sewn by hand to your own measurements by Skredderen fra Damaskus, a tailor working in Norway. Not off-the-rack: made to measure (skreddersøm etter mål). You send measurements (guide + video call [CONFIRM process]); the garment is cut for you alone. Lead time [CONFIRM] weeks. Fabric options [CONFIRM]."
 [PLACEHOLDER – INTERVIEW: the tailor's name, training, story. Do not write any of it until he has been interviewed.]
