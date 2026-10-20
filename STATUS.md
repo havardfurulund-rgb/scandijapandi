@@ -1,6 +1,6 @@
 # STATUS — scandijapandi (max 30 lines, oppdateres av Claude/CoS)
 
-Sist oppdatert: 2026-10-14 (Claude)
+Sist oppdatert: 2026-10-20 (Claude)
 
 ## Gjort
 - E-post @scandijapandi.no i drift (Domeneshop MX/SPF i Netlify DNS; linn@, havard@, hi@, post@). #87/#89.
@@ -8,6 +8,7 @@ Sist oppdatert: 2026-10-14 (Claude)
 - Japan-lansering LIVE 14.10 (PR #97, GO Håvard): 6 Dyra + 4 Skredderen, maker-sider, JPY først
   (kurs 16.6, env JPY_PER_NOK), prisøkning gjennomført, testrad eikebolle deaktivert.
 - stammehandverk.no: kildekode på GitHub (PR #1), Dyra+Skredderen i produktlisten (PR #2) – begge live.
+- 20.10: kampanjebilder (OpenArt, modell + miljø) på 9 produkter, studio-pass v2 på Dyra, hengeren fjernet, Skredderen-logo erstattet. scripts/studio-pass.py.
 - DNS/e-post 14.10: _dmarc TXT (p=none), DKIM CNAME ds202610._domainkey → Domeneshop, videresending hello@/makers@/privacy@/ordre@ → hei@skmsecure.no. #89 kan lukkes.
 
 ## Åpent (trenger Havard)
@@ -24,4 +25,4 @@ Sist oppdatert: 2026-10-14 (Claude)
 - SJ-copy nevner aldri gården (Langrønningen), aldri 500+-målet, og løfter ikke frem enkeltmakere. Gårdskoblingen hører kun til stammehandverk.no (Havard 16.10).
 - Never-/treobjekter prises etter japansk markedspris for importert kunsthåndverk (JPY først, NOK avledet): content/launch/PRICING-JP.md.
 - Ingen merge/publisering/betaling uten Havards GO. SJ er plattform, ikke produsent («by Stammehandverk / …»).
-- Produktbilder: kun ekte studio-cutouts. AI-bilder kun IG/Substack. Magasinet heter Kita no Te – Hands of the North.
+- Produktbilder (Havard 20.10): hovedbilde = generert modellfoto (OpenArt, det ekte plagget som referanse); studio-cutout av det faktiske plagget alltid med i galleriet. AI-bilder uten plaggreferanse kun IG/Substack. Magasinet heter Kita no Te – Hands of the North.
