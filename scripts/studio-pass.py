@@ -123,6 +123,10 @@ def compose(img_rgb, alpha, out_w, out_h, fill=0.74):
 
 def process(pid):
     src = os.path.join(SRC, f"IMG_{pid}_studio_2000x2500.jpg")
+    # a retouched source (e.g. hanger removed) takes precedence when present
+    fixed = os.path.join(SRC, f"IMG_{pid}_studio_2000x2500_nohanger.jpg")
+    if os.path.exists(fixed):
+        src = fixed
     bgr = cv2.imread(src)
     mask = object_mask(bgr)
     graded = grade(bgr, mask)
