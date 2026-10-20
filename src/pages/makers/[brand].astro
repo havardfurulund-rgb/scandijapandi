@@ -194,7 +194,7 @@ const description = `${brand.story[0].slice(0, 150)}…`;
               : p.in_stock === false
               ? `<span class="mt-6 block w-full bg-stone/20 text-stone py-4 text-[10px] font-medium uppercase tracking-widest text-center cursor-not-allowed">Sold</span>`
               : `<a href="/products/${esc(p.slug)}" class="mt-6 block w-full bg-ink text-paper py-4 text-[10px] font-medium uppercase tracking-widest text-center hover:bg-clay transition-colors">View piece →</a>`;
-            const imgClass = mtm ? 'h-full w-full object-contain p-12' : 'h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105';
+            const imgClass = 'h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105';
             return `
               <article class="flex flex-col justify-between group">
                 <div>
