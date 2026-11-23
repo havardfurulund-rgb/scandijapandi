@@ -8,7 +8,7 @@ import { UI, t, type Lang, type Localized } from '../../lib/kitanote';
 
 interface Props {
   loop: {
-    src: string;
+    src?: string;
     src_mobile?: string;
     type: 'mp4' | 'hls';
     poster: string;
@@ -29,7 +29,7 @@ const ui = UI[lang];
 const mime = loop.type === 'hls' ? 'application/vnd.apple.mpegurl' : 'video/mp4';
 ---
 
-<div class:list={['kt-media kt-loop', className]} data-loop>
+<div class:list={['kt-media', loop.src && 'kt-loop', className]} data-loop={loop.src ? '' : undefined}>
   <picture>
     {loop.poster_mobile && <source media="(max-width: 767px)" srcset={loop.poster_mobile} width="720" height="900" />}
     <img
@@ -44,6 +44,8 @@ const mime = loop.type === 'hls' ? 'application/vnd.apple.mpegurl' : 'video/mp4'
       decoding={eager ? 'sync' : 'async'}
     />
   </picture>
+  {loop.src && (
+    <>
   <video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" disablepictureinpicture>
     {loop.src_mobile && <source data-src={loop.src_mobile} type={mime} media="(max-width: 767px)" />}
     <source data-src={loop.src} type={mime} />
@@ -58,4 +60,6 @@ const mime = loop.type === 'hls' ? 'application/vnd.apple.mpegurl' : 'video/mp4'
     aria-pressed="false"
     hidden
   >{ui.pauseMotion}</button>
+    </>
+  )}
 </div>

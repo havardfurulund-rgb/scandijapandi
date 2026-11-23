@@ -1,0 +1,61 @@
+---
+// 北の手 · Kita no Te — «24 Days of Nordic × Japan» (1–24 December 2026).
+// Doors open client-side at 06:30 Europe/Oslo on their day. Without JS every
+// door links to the Substack archive. Fill in `url` in advent-2026.json after
+// each post goes out (null = archive link). No makers are named here.
+// Taken out of IssuePage after 6 January 2027.
+import doors from '../../content/kitanote/advent-2026.json';
+import { HTML_LANG, type Lang } from '../../lib/kitanote';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const L = {
+  ja: { label: 'アドベントカレンダー', body: '12月1日から24日まで、北欧と日本をつなぐ物語を毎朝ひとつ（英語）。', locked: 'まもなく', sub: '無料で購読する', intro: 'カレンダーについて' },
+  en: { label: 'Advent calendar', body: 'One sourced story a day, 1–24 December, about the long conversation between the Nordic countries and Japan.', locked: 'Soon', sub: 'Subscribe free', intro: 'About the calendar' },
+  no: { label: 'Adventskalender', body: 'Én kildebelagt historie hver dag, 1.–24. desember, om samtalen mellom Norden og Japan (på engelsk).', locked: 'Snart', sub: 'Abonner gratis', intro: 'Om kalenderen' },
+}[lang];
+const UTM = 'utm_source=scandijapandi&utm_medium=web&utm_campaign=24days_site';
+const ARCHIVE = `https://kitanote.substack.com/archive?${UTM}`;
+const ANNOUNCE = `https://kitanote.substack.com/p/24-days-of-nordic-japan?${UTM}`;
+const pageLang = HTML_LANG[lang];
+---
+<section id="advent" class="kt-section" aria-labelledby="kt-advent" data-advent>
+  <div class="kt-wrap kt-grid gap-y-10">
+    <p class="kt-label kt-stone col-span-4 md:col-span-3" lang={pageLang}>{L.label}</p>
+    <div class="col-span-4 md:col-span-8 md:col-start-5">
+      <h2 id="kt-advent" class="kt-latin text-[clamp(1.5rem,2.4vw,2.25rem)]" lang="en">24 Days of Nordic × Japan</h2>
+      <p class="kt-body mt-6 max-w-[46ch]" lang={pageLang}>{L.body}</p>
+      <ol class="mt-10 grid grid-cols-4 gap-2 sm:grid-cols-6">
+        {doors.map((d) => (
+          <li>
+            <a data-day={d.day} href={d.url ?? ARCHIVE} class="kt-door flex aspect-square flex-col justify-between border border-ink/15 p-2 text-xs transition-opacity" aria-label={`${d.day}. ${d.title}`} rel="noopener">
+              <span class="kt-num block text-lg">{d.day}</span>
+              <span class="kt-door-title hidden leading-snug" lang="en">{d.title}</span>
+              <span class="kt-door-lock kt-stone" lang={pageLang}>{L.locked}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <p class="kt-label kt-label--sm mt-10 flex flex-wrap items-center gap-x-6 gap-y-4" lang={pageLang}>
+        <a href={`https://kitanote.substack.com/subscribe?${UTM}`} class="kt-button" rel="noopener">{L.sub} <span class="kt-arrow" aria-hidden="true">→</span></a>
+        <a href={ANNOUNCE} class="kt-button" rel="noopener">{L.intro}</a>
+      </p>
+    </div>
+  </div>
+</section>
+<script>
+  // Opens doors by date in Europe/Oslo (posts go out from 06:30). Without JS all doors link to the archive.
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Oslo' }));
+  document.querySelectorAll<HTMLAnchorElement>('[data-advent] .kt-door').forEach((a) => {
+    const d = Number(a.dataset.day);
+    const open = new Date(2026, 11, d, 6, 30);
+    if (now >= open) {
+      a.querySelector('.kt-door-title')?.classList.remove('hidden');
+      a.querySelector('.kt-door-lock')?.remove();
+    } else {
+      a.removeAttribute('href');
+      a.setAttribute('aria-disabled', 'true');
+      a.classList.add('opacity-40');
+    }
+  });
+</script>

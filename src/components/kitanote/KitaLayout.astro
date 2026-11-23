@@ -50,6 +50,7 @@ const ld = (o: object) => JSON.stringify(o).replace(/</g, '\\u003c');
   <Fragment slot="head">
     <link rel="stylesheet" href={jpFonts} media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href={jpFonts} /></noscript>
+    <link rel="alternate" type="application/rss+xml" title="Kita no Te on Substack" href="https://kitanote.substack.com/feed" />
     <script is:inline>document.documentElement.classList.add('kt-js');</script>
     {jsonLd.map((o) => <script type="application/ld+json" set:html={ld(o)} />)}
     <slot name="head" />

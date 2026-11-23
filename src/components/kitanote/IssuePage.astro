@@ -8,6 +8,7 @@ import KitaWordmark from './KitaWordmark.astro';
 import LoopVideo from './LoopVideo.astro';
 import JpTitle from './JpTitle.astro';
 import Tag from './Tag.astro';
+import AdventCalendar from './AdventCalendar.astro';
 import {
   BASE, HTML_LANG, SENDER, UI, abs, chapterUrl, formatDuration, known, latinLang, loadIssue, monthYear, pad, paragraphs, t, tn,
   type Lang,
@@ -19,6 +20,10 @@ const ui = UI[lang];
 const latin = latinLang(lang);
 const isJa = lang === 'ja';
 const { issue, chapters, coming } = await loadIssue();
+// Show «Filming <month>» only for shoots that are still ahead.
+const buildTime = new Date();
+// The advent block is taken out of the build after 6 January 2027.
+const showAdvent = buildTime < new Date('2027-01-07T00:00:00+01:00');
 
 const issueLabel = ui.issueLabel(pad(issue.number), t(issue.season, lang));
 const letter = paragraphs(t(issue.letter.body, lang));
@@ -120,7 +125,10 @@ const jsonLd = [
     </div>
   </section>
 
+  {showAdvent && <AdventCalendar lang={lang} />}
+
   <!-- 4 · Contents -->
+  {chapters.length > 0 && (
   <section id="contents" class="pb-[clamp(4rem,8vw,7rem)]" aria-labelledby="kt-contents">
     <div class="kt-wrap">
       <div class="kt-grid items-end gap-y-6 pb-10 md:pb-14">
@@ -189,6 +197,7 @@ const jsonLd = [
       <hr class="kt-rule" />
     </div>
   </section>
+  )}
 
   <!-- 5 · Coming -->
   {coming.length > 0 && (
@@ -213,7 +222,7 @@ const jsonLd = [
                 </div>
               )}
               <p class="kt-label kt-label--sm kt-stone-deep mt-7">
-                {ui.filming} {c.shoot_date ? monthYear(c.shoot_date, lang) : ''}
+                {c.shoot_date && c.shoot_date > buildTime ? `${ui.filming} ${monthYear(c.shoot_date, lang)}` : ui.coming}
               </p>
               <h3 class="mt-4">
                 <JpTitle text={c.title.ja} class="block text-[1.5rem]" />
@@ -226,6 +235,20 @@ const jsonLd = [
       </div>
     </section>
   )}
+
+  <!-- 5b · Newsletter (Substack embed; frame-src allowed in netlify.toml) -->
+  <section class="kt-section" aria-labelledby="kt-letter-sub">
+    <div class="kt-wrap kt-grid gap-y-10">
+      <p class="kt-label kt-stone col-span-4 md:col-span-3" lang={pageLang}>{lang === 'ja' ? 'ニュースレター（英語）' : lang === 'no' ? 'Nyhetsbrev (engelsk)' : 'Newsletter'}</p>
+      <div class="col-span-4 md:col-span-7 md:col-start-5">
+        <h2 id="kt-letter-sub" class="kt-latin text-[clamp(1.5rem,2.4vw,2.25rem)]" lang="en">Kita no Te on Substack</h2>
+        <p class="kt-body mt-6 max-w-[46ch]" lang={pageLang}>{lang === 'ja' ? '北欧と日本のものづくりをめぐる、英語の無料レター。' : lang === 'no' ? 'Et gratis engelskspråklig brev om nordisk håndverk sett med japanske øyne.' : 'A free letter about Nordic craft read through Japanese eyes.'}</p>
+        <iframe src="https://kitanote.substack.com/embed" title="Subscribe to Kita no Te" width="480" height="150" loading="lazy"
+          class="mt-8 block" style="border:1px solid #e5e0d8;background:#fff;max-width:100%" frameborder="0" scrolling="no"></iframe>
+        <noscript><a href="https://kitanote.substack.com/subscribe" class="kt-button mt-6">Subscribe</a></noscript>
+      </div>
+    </div>
+  </section>
 
   <!-- 6 · The channel: episodes, LINE, makers, media partners -->
   <section class="kt-section" aria-labelledby="kt-channel" data-channel>

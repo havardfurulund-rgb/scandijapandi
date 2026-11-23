@@ -20,8 +20,8 @@ const nameOrLocalized = z.union([z.string(), localized]);
 
 /** Short looping clip: cover and chapter heroes. Muted, no captions. */
 const loop = z.object({
-  /** 4:3 source for the image panel (MP4 now; an .m3u8 URL works when type is "hls"). */
-  src: z.string(),
+  /** 4:3 source for the image panel (MP4 now; an .m3u8 URL works when type is "hls"). Omit for a still poster. */
+  src: z.string().optional(),
   /** Optional 4:5 crop served below 768 px. */
   src_mobile: z.string().optional(),
   type: z.enum(['mp4', 'hls']).default('mp4'),
